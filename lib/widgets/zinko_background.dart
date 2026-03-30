@@ -12,9 +12,6 @@ class ZinkoBackground extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-
-
-
     return Stack(
       children: [
         // The background image toggle based on theme
