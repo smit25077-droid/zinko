@@ -17,7 +17,6 @@ import 'verification_screen.dart';
 import 'wallet_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/optimized_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const String routeName = '/profile';
@@ -160,11 +159,11 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: GlassTheme.glassBorder(context)),
               ),
-              child: const Text(
+              child: Text(
                 'EXPERT USER',
                 style: TextStyle(
                     fontSize: 9,
-                    color: OptimizedColors.white50,
+                    color: GlassTheme.secondaryTextColor(context),
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.5),
               ),
@@ -182,10 +181,10 @@ class ProfileScreen extends StatelessWidget {
         padding: const EdgeInsets.only(left: 4),
         child: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w900,
-            color: OptimizedColors.white40,
+            color: GlassTheme.tertiaryTextColor(context),
             letterSpacing: 1.2,
           ),
         ),
@@ -236,9 +235,9 @@ class ProfileScreen extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(
-                color: OptimizedColors.white08, shape: BoxShape.circle),
-            child: Icon(icon, color: OptimizedColors.white60, size: 18),
+            decoration: BoxDecoration(
+                color: GlassTheme.textColor(context).withOpacity(0.08), shape: BoxShape.circle),
+            child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 18),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -246,17 +245,17 @@ class ProfileScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 10,
-                        color: OptimizedColors.white40,
+                        color: GlassTheme.tertiaryTextColor(context),
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0.5)),
                 const SizedBox(height: 2),
                 Text(value,
-                    style: const TextStyle(
+                    style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white)),
+                        color: GlassTheme.textColor(context))),
               ],
             ),
           ),
@@ -328,8 +327,8 @@ class ProfileScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_rounded,
-                    color: AppColors.white, size: 14),
+                Icon(Icons.arrow_forward_ios_rounded,
+                    color: GlassTheme.textColor(context), size: 14),
               ],
             ),
           ),
@@ -447,17 +446,17 @@ class ProfileScreen extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: OptimizedColors.white08,
+            color: GlassTheme.textColor(context).withOpacity(0.08),
             borderRadius: BorderRadius.circular(10)),
-        child: Icon(icon, color: OptimizedColors.white70, size: 20),
+        child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 20),
       ),
       title: Text(
         title,
-        style: const TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white),
+        style: TextStyle(
+            fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context)),
       ),
-      trailing: const Icon(Icons.chevron_right_rounded,
-          color: OptimizedColors.white30, size: 18),
+      trailing: Icon(Icons.chevron_right_rounded,
+          color: GlassTheme.tertiaryTextColor(context).withOpacity(0.3), size: 18),
     );
   }
 

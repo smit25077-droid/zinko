@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-import '../../../../core/theme/optimized_colors.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 
@@ -79,7 +78,7 @@ class _BookingScreenContent extends StatelessWidget {
         }
 
         if (workspace == null) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator(color: Colors.white)));
+          return Scaffold(body: Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context))));
         }
 
         return BlocBuilder<BookingSelectionBloc, BookingSelectionState>(
@@ -95,14 +94,14 @@ class _BookingScreenContent extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 elevation: 0,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+                  icon: Icon(Icons.arrow_back_ios_new_rounded, color: GlassTheme.textColor(context), size: 20),
                   onPressed: () => Navigator.pop(context),
                 ),
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('BOOK A SEAT', style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
-                    Text(workspace.name, style: TextStyle(color: OptimizedColors.white50, fontSize: 10, fontWeight: FontWeight.w700)),
+                    Text('BOOK A SEAT', style: TextStyle(color: GlassTheme.textColor(context), fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                    Text(workspace.name, style: TextStyle(color: GlassTheme.secondaryTextColor(context), fontSize: 10, fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -159,12 +158,12 @@ class _BookingScreenContent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_rounded, size: 16, color: Colors.white),
+                    icon: Icon(Icons.arrow_back_ios_rounded, size: 16, color: GlassTheme.textColor(context)),
                     onPressed: () => context.read<BookingSelectionBloc>().add(const ChangeMonthEvent(isNext: false)),
                   ),
-                  Text(monthLabel, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.0)),
+                  Text(monthLabel, style: TextStyle(color: GlassTheme.textColor(context), fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.0)),
                   IconButton(
-                    icon: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.white),
+                    icon: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: GlassTheme.textColor(context)),
                     onPressed: () => context.read<BookingSelectionBloc>().add(const ChangeMonthEvent(isNext: true)),
                   ),
                 ],
@@ -201,15 +200,15 @@ class _BookingScreenContent extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.all(4),
             decoration: BoxDecoration(
-              color: selected ? Colors.white : (selectable ? OptimizedColors.white08 : Colors.transparent),
+              color: selected ? GlassTheme.textColor(context) : (selectable ? GlassTheme.textColor(context).withOpacity(0.08) : Colors.transparent),
               shape: BoxShape.circle,
-              border: selected ? null : Border.all(color: selectable ? OptimizedColors.white12 : Colors.transparent),
+              border: selected ? null : Border.all(color: selectable ? GlassTheme.textColor(context).withOpacity(0.12) : Colors.transparent),
             ),
             child: Center(
               child: Text(
                 '$dayNum',
                 style: TextStyle(
-                  color: selected ? Colors.black : (selectable ? Colors.white : OptimizedColors.white20),
+                  color: selected ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white) : (selectable ? GlassTheme.textColor(context) : GlassTheme.textColor(context).withOpacity(0.2)),
                   fontSize: 12,
                   fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
                 ),
@@ -239,13 +238,13 @@ class _BookingScreenContent extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? OptimizedColors.white16 : OptimizedColors.white08,
+          color: selected ? GlassTheme.textColor(context).withOpacity(0.16) : GlassTheme.textColor(context).withOpacity(0.08),
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: selected ? OptimizedColors.white40 : OptimizedColors.white10),
+          border: Border.all(color: selected ? GlassTheme.textColor(context).withOpacity(0.4) : GlassTheme.textColor(context).withOpacity(0.1)),
         ),
         child: Row(
           children: [
-            Expanded(child: Text(slot, style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: selected ? FontWeight.w800 : FontWeight.w500))),
+            Expanded(child: Text(slot, style: TextStyle(color: GlassTheme.textColor(context), fontSize: 13, fontWeight: selected ? FontWeight.w800 : FontWeight.w500))),
             if (selected) const Icon(Icons.check_circle_rounded, color: Colors.greenAccent, size: 18),
           ],
         ),
@@ -271,12 +270,12 @@ class _BookingScreenContent extends StatelessWidget {
             onTap: occupied ? null : () => context.read<BookingSelectionBloc>().add(SelectTableEvent(label)),
             child: Container(
               decoration: BoxDecoration(
-                color: occupied ? OptimizedColors.white04 : (selected ? Colors.white : OptimizedColors.white12),
+                color: occupied ? GlassTheme.textColor(context).withOpacity(0.04) : (selected ? GlassTheme.textColor(context) : GlassTheme.textColor(context).withOpacity(0.12)),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: selected ? Colors.white : OptimizedColors.white12),
+                border: Border.all(color: selected ? GlassTheme.textColor(context) : GlassTheme.textColor(context).withOpacity(0.12)),
               ),
               child: Center(
-                child: Text(label, style: TextStyle(color: selected ? Colors.black : (occupied ? OptimizedColors.white10 : Colors.white), fontSize: 14, fontWeight: FontWeight.w900)),
+                child: Text(label, style: TextStyle(color: selected ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white) : (occupied ? GlassTheme.textColor(context).withOpacity(0.1) : GlassTheme.textColor(context)), fontSize: 14, fontWeight: FontWeight.w900)),
               ),
             ).animate(target: selected ? 1 : 0).scale(begin: const Offset(1,1), end: const Offset(1.05, 1.05), duration: 200.ms),
           );
@@ -291,23 +290,23 @@ class _BookingScreenContent extends StatelessWidget {
       title: 'BILL SUMMARY',
       child: Column(
         children: [
-          _summaryRow('Subtotal', '£${sub.toStringAsFixed(2)}'),
-          _summaryRow('Gst Tax (10%)', '£${tax.toStringAsFixed(2)}'),
-          const Padding(padding: EdgeInsets.symmetric(vertical: 4), child: Divider(color: OptimizedColors.white10)),
-          _summaryRow('Total Pay', '£${total.toStringAsFixed(2)}', isBold: true),
+          _summaryRow(context, 'Subtotal', '£${sub.toStringAsFixed(2)}'),
+          _summaryRow(context, 'Gst Tax (10%)', '£${tax.toStringAsFixed(2)}'),
+          Padding(padding: const EdgeInsets.symmetric(vertical: 4), child: Divider(color: GlassTheme.textColor(context).withOpacity(0.1))),
+          _summaryRow(context, 'Total Pay', '£${total.toStringAsFixed(2)}', isBold: true),
         ],
       ),
     );
   }
 
-  Widget _summaryRow(String label, String value, {bool isBold = false}) {
+  Widget _summaryRow(BuildContext context, String label, String value, {bool isBold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(color: isBold ? Colors.white : OptimizedColors.white60, fontSize: isBold ? 14 : 12, fontWeight: isBold ? FontWeight.w900 : FontWeight.w600)),
-          Text(value, style: TextStyle(color: isBold ? Colors.white : OptimizedColors.white80, fontSize: isBold ? 16 : 13, fontWeight: FontWeight.w900)),
+          Text(label, style: TextStyle(color: isBold ? GlassTheme.textColor(context) : GlassTheme.secondaryTextColor(context), fontSize: isBold ? 14 : 12, fontWeight: isBold ? FontWeight.w900 : FontWeight.w600)),
+          Text(value, style: TextStyle(color: isBold ? GlassTheme.textColor(context) : GlassTheme.textColor(context).withOpacity(0.8), fontSize: isBold ? 16 : 13, fontWeight: FontWeight.w900)),
         ],
       ),
     );
@@ -329,7 +328,7 @@ class _BookingScreenContent extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: TextStyle(color: OptimizedColors.white30, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+              Text(title, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
               const SizedBox(height: 12),
               child,
             ],
@@ -346,8 +345,8 @@ class _BookingScreenContent extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
           decoration: BoxDecoration(
-            color: OptimizedColors.backgroundDark70,
-            border: Border(top: BorderSide(color: OptimizedColors.white10)),
+            color: GlassTheme.backgroundOverlay(context),
+            border: Border(top: BorderSide(color: GlassTheme.textColor(context).withOpacity(0.1))),
           ),
           child: GestureDetector(
             onTap: active ? () {
@@ -364,11 +363,11 @@ class _BookingScreenContent extends StatelessWidget {
             child: Container(
               height: 52,
               decoration: BoxDecoration(
-                color: active ? Colors.white : OptimizedColors.white10,
+                color: active ? GlassTheme.textColor(context) : GlassTheme.textColor(context).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               alignment: Alignment.center,
-              child: Text('CONTINUE TO REVIEW', style: TextStyle(color: active ? Colors.black : OptimizedColors.white30, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.0)),
+              child: Text('CONTINUE TO REVIEW', style: TextStyle(color: active ? (Theme.of(context).brightness == Brightness.dark ? Colors.black : Colors.white) : GlassTheme.secondaryTextColor(context), fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.0)),
             ),
           ),
         ),

@@ -1,4 +1,3 @@
-import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../bloc/event_bloc.dart';
 import '../bloc/event_event.dart';
@@ -154,9 +153,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: OptimizedColors.white30,
+                  color: GlassTheme.textColor(context).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: OptimizedColors.white30),
+                  border: Border.all(color: GlassTheme.glassBorder(context)),
                 ),
                 child: Text(
                   _event.category.toUpperCase(),
@@ -228,7 +227,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             ),
             child: Row(
               children: [
-                Icon(icon, size: 18, color: OptimizedColors.white30),
+                Icon(icon, size: 18, color: GlassTheme.secondaryTextColor(context)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -241,8 +240,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(label,
-                          style: const TextStyle(
-                              color: OptimizedColors.white50,
+                          style: TextStyle(
+                              color: GlassTheme.tertiaryTextColor(context),
                               fontSize: 8,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.5)),
@@ -265,7 +264,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         style: TextStyle(
           fontSize: 13,
           height: 1.5,
-          color: OptimizedColors.white70,
+          color: GlassTheme.textColor(context).withOpacity(0.7),
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -335,6 +334,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
   Widget _buildActionFAB(BuildContext context) {
     final isRegistered = _event.isRegistered;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
@@ -352,27 +352,13 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   child: Container(
                     height: 52,
                     decoration: BoxDecoration(
-                      color: isRegistered ? Colors.green.withOpacity(0.5) : Colors.white,
+                      color: isRegistered ? Colors.green.withOpacity(0.5) : GlassTheme.textColor(context),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    // decoration: BoxDecoration(
-                    //   color: isRegistered
-                    //       ? Colors.green.withOpacity(0.5)
-                    //       : AppColors.primary,
-                    //   borderRadius: BorderRadius.circular(16),
-                    //   boxShadow: [
-                    //     if (!isRegistered)
-                    //       BoxShadow(
-                    //           color: GlassTheme.textColor(context)
-                    //               .withOpacity(0.3),
-                    //           blurRadius: 10,
-                    //           offset: const Offset(0, 4))
-                    //   ],
-                    // ),
                     alignment: Alignment.center,
                     child: Text(isRegistered ? 'REGISTERED SUCCESSFULLY' : 'RESERVE MY SPOT',
                         style: TextStyle(
-                            color: isRegistered ? Colors.white : Colors.black,
+                            color: isRegistered ? Colors.white : (isDark ? Colors.black : Colors.white),
                             fontSize: 13,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.0)),

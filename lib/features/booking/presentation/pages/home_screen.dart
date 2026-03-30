@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../event/presentation/pages/events_screen.dart';
 import '../../../user/presentation/pages/profile_screen.dart';
-import 'discovery_screen.dart';
+import 'dashboard_screen.dart';
 import 'map_screen.dart';
 import '../../../community/presentation/pages/community_screen.dart';
 import '../../../../utils/glass_theme.dart';
@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   final List<Widget> _screens = const [
-    DiscoveryScreen(),
+    DashboardScreen(),
     MapScreen(),
     EventsScreen(),
     CommunityScreen(),

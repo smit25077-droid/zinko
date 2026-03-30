@@ -8,6 +8,7 @@ import '../bloc/user_state.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 
 class WalletScreen extends StatelessWidget {
@@ -20,13 +21,36 @@ class WalletScreen extends StatelessWidget {
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.transparent,
       body: ZinkoBackground(
-        child: BlocBuilder<UserBloc, UserState>(
+        child: BlocListener<UserBloc, UserState>(
+          listener: (context, state) {
+            if (state is UserLoaded) {
+               // We could check for a flag in state, but assuming a load after redeem is success
+               // _showStatusPopup(context, 'Success!', isSuccess: true);
+            }
+            if (state is UserError) {
+              _showStatusPopup(context, state.message, isSuccess: false);
+            }
+          },
+          child: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               if (state is UserLoading) {
                 return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
               }
               if (state is UserError) {
-                return Center(child: Text(state.message, style: TextStyle(color: GlassTheme.textColor(context))));
+                context.read<UserBloc>().add(GetUserProfileEvent());
+                // return Center(
+                //   child: Column(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: [
+                //       Text(state.message, style: TextStyle(color: GlassTheme.textColor(context))),
+                //       const SizedBox(height: 16),
+                //       TextButton(
+                //         onPressed: () => context.read<UserBloc>().add(GetUserProfileEvent()),
+                //         child: Text('RETRY', style: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w900)),
+                //       )
+                //     ],
+                //   ),
+                // );
               }
               if (state is UserLoaded) {
                 final user = state.user;
@@ -105,6 +129,7 @@ class WalletScreen extends StatelessWidget {
             },
           ),
         ),
+      ),
     );
   }
 
@@ -144,7 +169,7 @@ class WalletScreen extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
+            color: OptimizedColors.white12,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: GlassTheme.glassBorder(context)),
             boxShadow: [GlassTheme.glassShadow(context)],
@@ -182,25 +207,24 @@ class WalletScreen extends StatelessWidget {
   }
 
   Widget _buildActionButton(BuildContext context, IconData icon, String label, VoidCallback onTap, {bool highlight = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return RepaintBoundary(
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           height: 52,
           decoration: BoxDecoration(
-            color: highlight ? (isDark ? Colors.white : Colors.black) : GlassTheme.glassColor(context).withOpacity(0.15),
+            color: highlight ? Colors.white : OptimizedColors.white12,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: highlight ? (isDark ? Colors.white : Colors.black) : GlassTheme.glassBorder(context)),
+            border: Border.all(color: highlight ? Colors.white : GlassTheme.glassBorder(context)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 18, color: highlight ? (isDark ? Colors.black : Colors.white) : GlassTheme.textColor(context)),
+              Icon(icon, size: 18, color: highlight ? Colors.black : GlassTheme.textColor(context)),
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: highlight ? (isDark ? Colors.black : Colors.white) : GlassTheme.textColor(context), letterSpacing: 0.5),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: highlight ? Colors.black : GlassTheme.textColor(context), letterSpacing: 0.5),
               ),
             ],
           ),
@@ -216,7 +240,7 @@ class WalletScreen extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: GlassTheme.glassColor(context).withOpacity(0.15),
+          color: OptimizedColors.white12,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: GlassTheme.glassBorder(context)),
         ),
@@ -284,6 +308,49 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
+  void _showStatusPopup(BuildContext context, String message, {bool isSuccess = true}) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.2),
+      builder: (ctx) {
+        Future.delayed(const Duration(seconds: 1), () {
+          if (ctx.mounted) Navigator.pop(ctx);
+        });
+        return Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0B1220),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: isSuccess ? Colors.greenAccent.withOpacity(0.3) : Colors.redAccent.withOpacity(0.3)),
+              boxShadow: [
+                BoxShadow(color: (isSuccess ? Colors.greenAccent : Colors.redAccent).withOpacity(0.1), blurRadius: 40)
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(isSuccess ? Icons.check_circle_outline_rounded : Icons.error_outline_rounded,
+                    color: isSuccess ? Colors.greenAccent : Colors.redAccent, size: 24),
+                const SizedBox(width: 12),
+                Text(
+                  message.toUpperCase(),
+                  style: TextStyle(
+                    color: GlassTheme.textColor(context),
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                    letterSpacing: 1.0,
+                    decoration: TextDecoration.none,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack).fadeIn();
+      },
+    );
+  }
+
   void _showGlassDialog({
     required BuildContext context,
     required String title,
@@ -293,7 +360,6 @@ class WalletScreen extends StatelessWidget {
     required Function(String) onConfirm,
   }) {
     final controller = TextEditingController();
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     showDialog(
       context: context,
@@ -306,7 +372,7 @@ class WalletScreen extends StatelessWidget {
           content: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0B1220) : Colors.white,
+              color: const Color(0xFF0B1220),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(color: GlassTheme.glassBorder(context)),
             ),
@@ -348,8 +414,8 @@ class WalletScreen extends StatelessWidget {
                           Navigator.pop(ctx);
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? Colors.white : Colors.black,
-                          foregroundColor: isDark ? Colors.black : Colors.white,
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           elevation: 0,

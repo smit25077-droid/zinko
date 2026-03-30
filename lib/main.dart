@@ -105,7 +105,7 @@ class MyApp extends StatelessWidget {
             title: 'ZINKO',
             theme: ThemeProvider.lightTheme,
             darkTheme: ThemeProvider.darkTheme,
-            themeMode: themeProvider.themeMode,
+            themeMode: ThemeMode.dark,
             debugShowCheckedModeBanner: false,
             initialRoute: SplashScreen.routeName,
             builder: (context, child) {

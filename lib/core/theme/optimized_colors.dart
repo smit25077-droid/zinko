@@ -76,41 +76,35 @@ class OptimizedColors {
   static const Color red90 = Color(0xE6E53935);
 
   /// Helper method to get the perfect glass surface color
-  /// Optimized for visibility so content doesn't get 'washed out'
+  /// Forced to Dark Mode for consistent Zinko premium aesthetic
   static Color glassColor(BuildContext context, {bool isSelected = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
     if (isSelected) {
-      // High contrast for selection
-      // Dark mode: Brighter frosty white
-      // Light mode: Highly defined glass (smoke)
-      return isDark ? white30 : black20;
+      return white30; // High contrast frosty white for selection
     }
-    
-    // Base glass level - subtle but defines the surface
-    // Lower opacities here ensure the background depth is maintained while cards pop
-    return isDark ? white12 : black08;
+    return white12; // Base dark glass level
   }
 
+  // Define black15 for better light mode visibility
+  static const Color black15 = Color(0x26000000);
+
   /// Helper method to get high-definition glass border
+  /// Forced to Dark Mode
   static Color glassBorder(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? glassBorderLight : glassBorderDark;
+    return glassBorderLight;
   }
 
   /// Helper method to get vibrant secondary text color
+  /// Forced to Dark Mode
   static Color secondaryTextColor(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? textSecondaryDark : textSecondaryLight;
+    return textSecondaryDark;
   }
 
   /// Helper method to get high-visibility icons
+  /// Forced to Dark Mode
   static Color iconColor(BuildContext context, {bool isSelected = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     if (isSelected) {
-      return isDark ? AppColors.white : AppColors.black;
+      return AppColors.white;
     }
-    // For non-selected state, use 70% intensity for great visibility but clear 'inactive' state
-    return isDark ? white70 : black60;
+    return white70; // 70% intensity for clear 'inactive' state on dark
   }
 }

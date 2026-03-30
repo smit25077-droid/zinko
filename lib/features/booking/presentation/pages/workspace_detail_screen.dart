@@ -9,7 +9,6 @@ import '../bloc/workspace_event.dart';
 import '../bloc/workspace_state.dart';
 import 'booking_screen.dart';
 import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 
 class WorkspaceDetailScreen extends StatefulWidget {
@@ -127,13 +126,13 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.location_on_rounded, size: 14, color: OptimizedColors.white60),
+                        Icon(Icons.location_on_rounded, size: 14, color: GlassTheme.secondaryTextColor(context)),
                         const SizedBox(width: 4),
                         Text(
                           '${_workspace.location} • ${_workspace.distance}',
                           style: TextStyle(
                             fontSize: 12,
-                            color: OptimizedColors.white60,
+                            color: GlassTheme.secondaryTextColor(context),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -175,13 +174,13 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
             ),
             child: Row(
               children: [
-                Icon(icon, size: 18, color: OptimizedColors.white60),
+                Icon(icon, size: 18, color: GlassTheme.secondaryTextColor(context)),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(value, style: TextStyle(color: GlassTheme.textColor(context), fontSize: 16, fontWeight: FontWeight.w900)),
-                    Text(label, style: TextStyle(color: OptimizedColors.white50, fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+                    Text(label, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
                   ],
                 ),
               ],
@@ -200,7 +199,7 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
         style: TextStyle(
           fontSize: 13,
           height: 1.5,
-          color: OptimizedColors.white70,
+          color: GlassTheme.textColor(context).withOpacity(0.7),
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -257,10 +256,10 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
             ),
             child: Row(
               children: [
-                Icon(_workspace.amenities[index], size: 14, color: OptimizedColors.white70),
+                Icon(_workspace.amenities[index], size: 14, color: GlassTheme.secondaryTextColor(context)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(_workspace.amenityNames[index], style: TextStyle(fontSize: 11, color: OptimizedColors.white90, fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                  child: Text(_workspace.amenityNames[index], style: TextStyle(fontSize: 11, color: GlassTheme.textColor(context).withOpacity(0.9), fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
                 ),
               ],
             ),
@@ -295,7 +294,7 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(r.userName, style: TextStyle(color: GlassTheme.textColor(context), fontSize: 13, fontWeight: FontWeight.w800)),
-                        Text(r.timeAgo, style: TextStyle(color: OptimizedColors.white50, fontSize: 9, fontWeight: FontWeight.w600)),
+                        Text(r.timeAgo, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w600)),
                       ],
                     ),
                   ),
@@ -303,7 +302,7 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              Text(r.comment, style: TextStyle(color: OptimizedColors.white80, fontSize: 12, height: 1.4, fontWeight: FontWeight.w500)),
+              Text(r.comment, style: TextStyle(color: GlassTheme.textColor(context).withOpacity(0.8), fontSize: 12, height: 1.4, fontWeight: FontWeight.w500)),
             ],
           ),
         )).toList(),
@@ -327,7 +326,7 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: TextStyle(color: OptimizedColors.white50, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+              Text(title, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
               const SizedBox(height: 10),
               child,
             ],
@@ -427,13 +426,13 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('STARTING FROM', style: TextStyle(color: OptimizedColors.white50, fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.0)),
+                    Text('STARTING FROM', style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.0)),
                     const SizedBox(height: 2),
                     RichText(
                       text: TextSpan(
                         children: [
                           TextSpan(text: _workspace.price, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context))),
-                          TextSpan(text: ' ${_workspace.priceUnit}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: OptimizedColors.white50)),
+                          TextSpan(text: ' ${_workspace.priceUnit}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: GlassTheme.tertiaryTextColor(context))),
                         ],
                       ),
                     ),

@@ -27,7 +27,7 @@ class AppColors {
   // Text Colors
   static const Color textPrimaryLight = Color(0xFF000000);
   static const Color textPrimaryDark = Color(0xFFFFFFFF);
-  static const Color textSecondaryLight = Color(0xFF757575);
+  static const Color textSecondaryLight = Color(0xFF424242); // Grey 800 for better light mode contrast
   static const Color textSecondaryDark = Color(0xFFB3B3B3);
   
   // Status Colors

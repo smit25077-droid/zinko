@@ -162,20 +162,20 @@ class _EventCard extends StatelessWidget {
                       children: [
                         Text(
                           event.category.toUpperCase(),
-                          style: const TextStyle(
-                              color: OptimizedColors.white50,
+                          style: TextStyle(
+                              color: GlassTheme.tertiaryTextColor(context),
                               fontSize: 8,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.5),
                         ),
                         const Spacer(),
-                        const Icon(Icons.access_time_rounded,
-                            size: 12, color: OptimizedColors.white50),
+                        Icon(Icons.access_time_rounded,
+                            size: 12, color: GlassTheme.tertiaryTextColor(context)),
                         const SizedBox(width: 4),
                         Text(
                           '${event.date} ${event.month}',
-                          style: const TextStyle(
-                            color: OptimizedColors.white50,
+                          style: TextStyle(
+                            color: GlassTheme.secondaryTextColor(context),
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                           ),
@@ -229,17 +229,18 @@ class _PriceBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: OptimizedColors.black80,
+        color: GlassTheme.textColor(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: OptimizedColors.white12),
+        border: Border.all(color: GlassTheme.glassBorder(context)),
       ),
       child: Text(
         price,
-        style: const TextStyle(
-          color: AppColors.white,
+        style: TextStyle(
+          color: isDark ? Colors.black : Colors.white,
           fontSize: 12,
           fontWeight: FontWeight.w900,
         ),
@@ -257,7 +258,7 @@ class _HostAvatar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: OptimizedColors.white08,
+        color: GlassTheme.textColor(context).withOpacity(0.08),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -329,7 +330,7 @@ class _CategorySelectorState extends State<_CategorySelector> {
               child: Text(
                 cat,
                 style: TextStyle(
-                  color: isSelected ? Colors.white : OptimizedColors.white60,
+                  color: isSelected ? Colors.white : GlassTheme.secondaryTextColor(context),
                   fontSize: 11,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.0,

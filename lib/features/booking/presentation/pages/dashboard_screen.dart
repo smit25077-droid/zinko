@@ -16,14 +16,14 @@ import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/optimized_colors.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class DiscoveryScreen extends StatefulWidget {
-  const DiscoveryScreen({super.key});
+class DashboardScreen extends StatefulWidget {
+  const DashboardScreen({super.key});
 
   @override
-  State<DiscoveryScreen> createState() => _DiscoveryScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DiscoveryScreenState extends State<DiscoveryScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   final List<String> _categories = const [
     'All',
     'Cafes',
@@ -38,8 +38,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
     context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
   }
 
-  void _goSeeAll() =>
-      Navigator.pushNamed(context, AllWorkspacesScreen.routeName);
+  void _goSeeAll() => Navigator.pushNamed(context, AllWorkspacesScreen.routeName);
 
   @override
   Widget build(BuildContext context) {
@@ -50,17 +49,13 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
         child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
           builder: (context, state) {
             if (state is WorkspaceLoading) {
-              return Center(
-                  child: CircularProgressIndicator(
-                      color: GlassTheme.textColor(context)));
+              return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
             } else if (state is WorkspaceError) {
               return Center(
-                  child: Text('Error: ${state.message}',
-                      style: TextStyle(color: GlassTheme.textColor(context))));
+                  child: Text('Error: ${state.message}', style: TextStyle(color: GlassTheme.textColor(context))));
             } else if (state is WorkspaceLoaded) {
               final workspaces = state.workspaces;
-              final recommended =
-                  workspaces.where((p) => p.discount != null).toList();
+              final recommended = workspaces.where((p) => p.discount != null).toList();
               final selectedCategory = state.selectedCategory;
 
               List<WorkspaceEntity> nearby;
@@ -68,11 +63,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                 nearby = workspaces;
               } else {
                 final cat = selectedCategory.toLowerCase();
-                nearby = workspaces
-                    .where((w) => w.type.name
-                        .toLowerCase()
-                        .startsWith(cat.substring(0, 3)))
-                    .toList();
+                nearby = workspaces.where((w) => w.type.name.toLowerCase().startsWith(cat.substring(0, 3))).toList();
               }
 
               return SingleChildScrollView(
@@ -81,34 +72,21 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 0),
-                    const _TopBar()
-                        .animate()
-                        .fadeIn(duration: 500.ms)
-                        .slideY(begin: -0.2),
+                    const _TopBar().animate().fadeIn(duration: 500.ms).slideY(begin: -0.2),
                     const SizedBox(height: 4),
-                    const _Title()
-                        .animate()
-                        .fadeIn(duration: 500.ms, delay: 100.ms)
-                        .slideX(begin: -0.1),
+                    const _Title().animate().fadeIn(duration: 500.ms, delay: 100.ms).slideX(begin: -0.1),
                     const SizedBox(height: 8),
                     _SectionHeader(title: 'RECOMMENDED', onSeeAll: _goSeeAll)
                         .animate()
                         .fadeIn(duration: 500.ms, delay: 200.ms),
                     _RecommendedList(
                       workspaces: recommended,
-                      onFavTap: (id) => context
-                          .read<WorkspaceBloc>()
-                          .add(ToggleFavoriteWorkspaceEvent(id)),
-                    )
-                        .animate()
-                        .fadeIn(duration: 500.ms, delay: 400.ms)
-                        .slideX(begin: 0.1),
+                      onFavTap: (id) => context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(id)),
+                    ).animate().fadeIn(duration: 500.ms, delay: 400.ms).slideX(begin: 0.1),
                     _CategoryChips(
                       categories: _categories,
                       selected: selectedCategory,
-                      onSelect: (cat) => context
-                          .read<WorkspaceBloc>()
-                          .add(FilterWorkspacesByCategoryEvent(cat)),
+                      onSelect: (cat) => context.read<WorkspaceBloc>().add(FilterWorkspacesByCategoryEvent(cat)),
                     ).animate().fadeIn(duration: 500.ms, delay: 500.ms),
                     _SectionHeader(title: 'NEARBY PLACES', onSeeAll: _goSeeAll)
                         .animate()
@@ -123,13 +101,8 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                         final w = nearby[index];
                         return _NearbyCard(
                           workspace: w,
-                          onFavTap: () => context
-                              .read<WorkspaceBloc>()
-                              .add(ToggleFavoriteWorkspaceEvent(w.id)),
-                        )
-                            .animate()
-                            .fadeIn(delay: (index * 80).ms)
-                            .slideY(begin: 0.1);
+                          onFavTap: () => context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(w.id)),
+                        ).animate().fadeIn(delay: (index * 80).ms).slideY(begin: 0.1);
                       },
                     ),
                     const SizedBox(height: 100),
@@ -172,8 +145,7 @@ class _TopBar extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                          color: GlassTheme.glassBorder(context), width: 1.5),
+                      border: Border.all(color: GlassTheme.glassBorder(context), width: 1.5),
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(22),
@@ -181,8 +153,7 @@ class _TopBar extends StatelessWidget {
                           ? Image.network(profileImage, fit: BoxFit.cover)
                           : Container(
                               color: GlassTheme.glassColor(context),
-                              child: Icon(Icons.person,
-                                  color: GlassTheme.textColor(context))),
+                              child: Icon(Icons.person, color: GlassTheme.textColor(context))),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -197,19 +168,14 @@ class _TopBar extends StatelessWidget {
                               letterSpacing: 1.2)),
                       Text('${firstName.toUpperCase()} 👋',
                           style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: GlassTheme.textColor(context))),
+                              fontSize: 16, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context))),
                     ],
                   ),
                 ],
               ),
               _GlassIconButton(
                 icon: Icons.notifications_none_rounded,
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen())),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
               ),
             ],
           ),
@@ -222,6 +188,7 @@ class _TopBar extends StatelessWidget {
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+
   const _GlassIconButton({required this.icon, required this.onTap});
 
   @override
@@ -284,17 +251,11 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Text(title,
               style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: GlassTheme.textColor(context),
-                  letterSpacing: 1.5)),
+                  fontSize: 12, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context), letterSpacing: 1.5)),
           TextButton(
             onPressed: onSeeAll,
             child: Text('SEE ALL',
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 11,
-                    color: GlassTheme.textColor(context))),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: GlassTheme.textColor(context))),
           ),
         ],
       ),
@@ -320,9 +281,7 @@ class _RecommendedList extends StatelessWidget {
         itemBuilder: (_, i) {
           final w = workspaces[i];
           return GestureDetector(
-            onTap: () => Navigator.pushNamed(
-                context, WorkspaceDetailScreen.routeName,
-                arguments: w),
+            onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: w),
             child: Container(
               width: 280,
               margin: const EdgeInsets.only(right: 20),
@@ -330,11 +289,7 @@ class _RecommendedList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(28),
                 child: Stack(
                   children: [
-                    ZinkoNetworkImage(
-                        imageUrl: w.imageUrl,
-                        width: 280,
-                        height: double.infinity,
-                        borderRadius: 28),
+                    ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 28),
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
@@ -342,10 +297,7 @@ class _RecommendedList extends StatelessWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             stops: const [0.4, 1.0],
-                            colors: [
-                              AppColors.transparent,
-                              AppColors.black.withOpacity(0.85)
-                            ],
+                            colors: [AppColors.transparent, AppColors.black.withOpacity(0.85)],
                           ),
                         ),
                       ),
@@ -355,16 +307,12 @@ class _RecommendedList extends StatelessWidget {
                       left: 16,
                       child: w.discount != null
                           ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                  color: AppColors.error,
-                                  borderRadius: BorderRadius.circular(10)),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration:
+                                  BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(10)),
                               child: Text(w.discount!,
                                   style: const TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900)),
+                                      color: AppColors.white, fontSize: 10, fontWeight: FontWeight.w900)),
                             )
                           : const SizedBox(),
                     ),
@@ -376,33 +324,24 @@ class _RecommendedList extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(w.name,
-                              style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900)),
+                              style:
+                                  const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(Icons.location_on_rounded,
-                                  color: OptimizedColors.white70,
-                                  size: 12),
+                              Icon(Icons.location_on_rounded, color: OptimizedColors.white70, size: 12),
                               const SizedBox(width: 4),
                               Expanded(
                                   child: Text(w.location,
                                       style: const TextStyle(
-                                          color: OptimizedColors.white70,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600),
+                                          color: OptimizedColors.white70, fontSize: 12, fontWeight: FontWeight.w600),
                                       overflow: TextOverflow.ellipsis)),
                               const SizedBox(width: 8),
-                              const Icon(Icons.star_rounded,
-                                  color: AppColors.gold, size: 14),
+                              const Icon(Icons.star_rounded, color: AppColors.gold, size: 14),
                               const SizedBox(width: 4),
                               Text(w.rating.toStringAsFixed(1),
                                   style: const TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800)),
+                                      color: AppColors.white, fontSize: 12, fontWeight: FontWeight.w800)),
                             ],
                           ),
                         ],
@@ -424,10 +363,7 @@ class _CategoryChips extends StatelessWidget {
   final String selected;
   final void Function(String) onSelect;
 
-  const _CategoryChips(
-      {required this.categories,
-      required this.selected,
-      required this.onSelect});
+  const _CategoryChips({required this.categories, required this.selected, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
@@ -452,14 +388,11 @@ class _CategoryChips extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? (isDark ? AppColors.white : AppColors.black)
-                      : GlassTheme.glassColor(context),
+                  color: isSelected ? (isDark ? AppColors.white : AppColors.black) : GlassTheme.glassColor(context),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
-                      color: isSelected
-                          ? (isDark ? AppColors.white : AppColors.black)
-                          : GlassTheme.glassBorder(context)),
+                      color:
+                          isSelected ? (isDark ? AppColors.white : AppColors.black) : GlassTheme.glassBorder(context)),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -490,8 +423,7 @@ class _NearbyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName,
-          arguments: workspace),
+      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: workspace),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: BackdropFilter(
@@ -511,35 +443,25 @@ class _NearbyCard extends StatelessWidget {
                   child: Stack(
                     children: [
                       ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(24)),
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                         child: ZinkoNetworkImage(
-                            imageUrl: workspace.imageUrl,
-                            width: double.infinity,
-                            height: 140,
-                            fit: BoxFit.cover),
+                            imageUrl: workspace.imageUrl, width: double.infinity, height: 140, fit: BoxFit.cover),
                       ),
                       Positioned(
                         top: 12,
                         right: 12,
-                        child: _GlassFavButton(
-                            isFavorite: workspace.isFavorite, onTap: onFavTap),
+                        child: _GlassFavButton(isFavorite: workspace.isFavorite, onTap: onFavTap),
                       ),
                       if (workspace.isBooked)
                         Positioned(
                           top: 12,
                           left: 12,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                                color: AppColors.success.withOpacity(0.8),
-                                borderRadius: BorderRadius.circular(8)),
+                                color: AppColors.success.withOpacity(0.8), borderRadius: BorderRadius.circular(8)),
                             child: const Text('BOOKED',
-                                style: TextStyle(
-                                    color: AppColors.white,
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w900)),
+                                style: TextStyle(color: AppColors.white, fontSize: 9, fontWeight: FontWeight.w900)),
                           ),
                         ),
                     ],
@@ -562,23 +484,17 @@ class _NearbyCard extends StatelessWidget {
                                       letterSpacing: -0.5))),
                           Text('${workspace.price}${workspace.priceUnit}',
                               style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
-                                  color: GlassTheme.textColor(context))),
+                                  fontSize: 16, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context))),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(Icons.location_on_rounded,
-                              size: 12,
-                              color: OptimizedColors.white70),
+                          Icon(Icons.location_on_rounded, size: 12, color: OptimizedColors.white70),
                           const SizedBox(width: 4),
                           Text('${workspace.location} • ${workspace.distance}',
                               style: const TextStyle(
-                                  fontSize: 13,
-                                  color: OptimizedColors.white70,
-                                  fontWeight: FontWeight.w600)),
+                                  fontSize: 13, color: OptimizedColors.white70, fontWeight: FontWeight.w600)),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -588,11 +504,8 @@ class _NearbyCard extends StatelessWidget {
                             margin: const EdgeInsets.only(right: 8),
                             padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
-                                color: GlassTheme.glassColor(context),
-                                borderRadius: BorderRadius.circular(8)),
-                            child: Icon(icon,
-                                size: 14,
-                                color: OptimizedColors.white80),
+                                color: GlassTheme.glassColor(context), borderRadius: BorderRadius.circular(8)),
+                            child: Icon(icon, size: 14, color: OptimizedColors.white80),
                           );
                         }).toList(),
                       ),
@@ -611,6 +524,7 @@ class _NearbyCard extends StatelessWidget {
 class _GlassFavButton extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onTap;
+
   const _GlassFavButton({required this.isFavorite, required this.onTap});
 
   @override
@@ -633,9 +547,7 @@ class _GlassFavButton extends StatelessWidget {
               onTap: onTap,
               borderRadius: BorderRadius.circular(18),
               child: Icon(
-                isFavorite
-                    ? Icons.favorite_rounded
-                    : Icons.favorite_border_rounded,
+                isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
                 color: isFavorite ? AppColors.error : AppColors.white,
                 size: 18,
               ),

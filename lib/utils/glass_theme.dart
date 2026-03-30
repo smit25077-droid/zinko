@@ -13,16 +13,14 @@ class GlassTheme {
     return OptimizedColors.glassBorder(context);
   }
 
-  /// Primary text color that adapts to the theme
+  /// Primary text color (Forced Dark)
   static Color textColor(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight;
+    return AppColors.textPrimaryDark;
   }
 
-  /// Secondary text color (muted)
+  /// Secondary text color (Forced Dark)
   static Color secondaryTextColor(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight;
+    return AppColors.textSecondaryDark;
   }
 
   /// Tertiary text color (more muted)
@@ -30,12 +28,9 @@ class GlassTheme {
     return OptimizedColors.secondaryTextColor(context);
   }
 
-  /// Background overlay factor for general screens
+  /// Background overlay factor (Forced Dark)
   static Color backgroundOverlay(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark
-        ? OptimizedColors.backgroundDark70
-        : OptimizedColors.backgroundLight50;
+    return OptimizedColors.backgroundDark70;
   }
 
   /// Shadow color for glass depth
@@ -48,15 +43,12 @@ class GlassTheme {
     return OptimizedColors.iconColor(context, isSelected: isSelected);
   }
 
-  /// Shadow for extra depth on glass containers
+  /// Shadow for extra depth (Forced Dark)
   static BoxShadow glassShadow(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return BoxShadow(
-      color: isDark
-          ? OptimizedColors.black30
-          : OptimizedColors.black05,
+    return const BoxShadow(
+      color: OptimizedColors.black30,
       blurRadius: 20,
-      offset: const Offset(0, 10),
+      offset: Offset(0, 10),
     );
   }
 }

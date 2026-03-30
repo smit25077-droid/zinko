@@ -3,15 +3,13 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 
 class ThemeProvider with ChangeNotifier {
-  ThemeMode _themeMode = ThemeMode.system;
+  final ThemeMode _themeMode = ThemeMode.dark; // Always dark
 
   ThemeMode get themeMode => _themeMode;
-  bool get isDarkMode => _themeMode == ThemeMode.dark;
+  bool get isDarkMode => true;
 
   void toggleTheme() {
-    _themeMode =
-        _themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark;
-    notifyListeners();
+    // Hard-locked to dark mode for Zinko's premium identity
   }
 
   static ThemeData get lightTheme => _lightTheme;

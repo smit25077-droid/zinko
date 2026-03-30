@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum WorkspaceType { cafe, coworking, office, event }
+enum WorkspaceType { cafe, coworking, office, event, studio }
 
 class WorkspaceEntity {
   final String id;

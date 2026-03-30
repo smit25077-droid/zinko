@@ -10,27 +10,23 @@ class ZinkoBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Stack(
       children: [
-        // The background image toggle based on theme
+        // Forced Dark Theme Background
         Positioned.fill(
           child: Image.asset(
-            isDark ? 'assets/images/dark_theme_bg.png' : 'assets/images/light_theme_bg.png',
+            'assets/images/dark_theme_bg.png',
             fit: BoxFit.cover,
-            cacheWidth: 1080, 
+            cacheWidth: 1080,
           ),
         ),
-        // Premium Blur and Theme Overlay for deep visibility
+        // Premium Dark Blur Overlay
         Positioned.fill(
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 4.0, sigmaY: 4.0),
+            filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
             child: Container(
               decoration: BoxDecoration(
-                color: isDark
-                    ? AppColors.backgroundDark.withValues(alpha: 0.6)
-                    : AppColors.backgroundLight.withValues(alpha: 0.3),
+                color: AppColors.backgroundDark.withValues(alpha: 0.6),
               ),
             ),
           ),

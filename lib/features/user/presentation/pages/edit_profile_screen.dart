@@ -8,6 +8,7 @@ import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -308,7 +309,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           style: TextStyle(color: GlassTheme.textColor(context), fontSize: 14, fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             filled: true,
-            fillColor: GlassTheme.textColor(context).withOpacity(0.03),
+            fillColor: OptimizedColors.white12,
             prefixIcon: Icon(icon, color: GlassTheme.iconColor(context).withOpacity(0.4), size: 18),
             hintText: 'Enter $label',
             hintStyle: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.2), fontSize: 13),

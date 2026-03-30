@@ -82,15 +82,15 @@ class ReviewBookingScreen extends StatelessWidget {
         return Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
-            title: const Text('REVIEW BOOKING',
+            title: Text('REVIEW BOOKING',
                 style: TextStyle(
-                    color: Colors.white,
+                    color: GlassTheme.textColor(context),
                     fontSize: 15,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.5)),
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white, size: 20),
+              icon: Icon(Icons.arrow_back_ios_new_rounded,
+                  color: GlassTheme.textColor(context), size: 20),
               onPressed: () => Navigator.pop(context),
             ),
             elevation: 0,
@@ -165,22 +165,22 @@ class ReviewBookingScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(workspace.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
-                              color: Colors.white,
+                              color: GlassTheme.textColor(context),
                               letterSpacing: -0.8)),
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_rounded,
-                              size: 11, color: OptimizedColors.white60),
+                          Icon(Icons.location_on_rounded,
+                              size: 11, color: GlassTheme.secondaryTextColor(context)),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(workspace.location,
-                                style: const TextStyle(
+                                style: TextStyle(
                                     fontSize: 12,
-                                    color: OptimizedColors.white60,
+                                    color: GlassTheme.secondaryTextColor(context),
                                     fontWeight: FontWeight.w600)),
                           ),
                         ],
@@ -224,9 +224,9 @@ class ReviewBookingScreen extends StatelessWidget {
       title: 'TIMING & LOCATION',
       child: Column(
         children: [
-          _buildRow('Reservation Date', DateFormat('EEEE, MMM d, yyyy').format(date)),
-          _buildRow('Selected Window', timeSlot),
-          _buildRow('Assigned Desk/Table', table),
+          _buildRow(context, 'Reservation Date', DateFormat('EEEE, MMM d, yyyy').format(date)),
+          _buildRow(context, 'Selected Window', timeSlot),
+          _buildRow(context, 'Assigned Desk/Table', table),
         ],
       ),
     ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.05);
@@ -238,25 +238,25 @@ class ReviewBookingScreen extends StatelessWidget {
       title: 'SUMMARY OF CHARGES',
       child: Column(
         children: [
-          _buildRow('Booking Subtotal', '£${sub.toStringAsFixed(0)}'),
-          _buildRow('Service Fees & VAT', '£${tax.toStringAsFixed(0)}'),
+          _buildRow(context, 'Booking Subtotal', '£${sub.toStringAsFixed(0)}'),
+          _buildRow(context, 'Service Fees & VAT', '£${tax.toStringAsFixed(0)}'),
           Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Divider(color: OptimizedColors.white12, height: 1)),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('TOTAL PAYABLE',
+              Text('TOTAL PAYABLE',
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                      color: GlassTheme.textColor(context),
                       letterSpacing: 1.2)),
               Text('£${total.toStringAsFixed(0)}',
-                  style: const TextStyle(
+                  style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w900,
-                      color: Colors.white,
+                      color: GlassTheme.textColor(context),
                       letterSpacing: -1.0)),
             ],
           ),
@@ -277,29 +277,29 @@ class ReviewBookingScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                    color: OptimizedColors.white30,
+                    color: GlassTheme.textColor(context).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                      color: OptimizedColors.white30),),
-                child: const Icon(Icons.account_balance_wallet_rounded,
-                    color: Colors.white, size: 20),
+                      color: GlassTheme.textColor(context).withOpacity(0.1)),),
+                child: Icon(Icons.account_balance_wallet_rounded,
+                    color: GlassTheme.textColor(context), size: 20),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('AVAILABLE BALANCE',
+                    Text('AVAILABLE BALANCE',
                         style: TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
-                            color: OptimizedColors.white50,
+                            color: GlassTheme.secondaryTextColor(context),
                             letterSpacing: 1.2)),
                     Text('£${balance.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
-                            color: Colors.white,
+                            color: GlassTheme.textColor(context),
                             letterSpacing: -0.5)),
                   ],
                 ),
@@ -313,20 +313,20 @@ class ReviewBookingScreen extends StatelessWidget {
     ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.05);
   }
 
-  Widget _buildRow(String label, String value) {
+  Widget _buildRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(
-                  color: OptimizedColors.white60,
+              style: TextStyle(
+                  color: GlassTheme.secondaryTextColor(context),
                   fontSize: 12,
                   fontWeight: FontWeight.w700)),
           Text(value,
-              style: const TextStyle(
-                  color: Colors.white,
+              style: TextStyle(
+                  color: GlassTheme.textColor(context),
                   fontSize: 14,
                   fontWeight: FontWeight.w800)),
         ],
@@ -352,8 +352,8 @@ class ReviewBookingScreen extends StatelessWidget {
             children: [
               if (title != null) ...[
                 Text(title,
-                          style: const TextStyle(
-                              color: OptimizedColors.white50,
+                          style: TextStyle(
+                              color: GlassTheme.secondaryTextColor(context),
                               fontSize: 8,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.5)),
@@ -380,9 +380,9 @@ class ReviewBookingScreen extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(28, 20, 28, 28 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
-        color: AppColors.black.withOpacity(0.8),
+        color: GlassTheme.backgroundOverlay(context),
         borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-        border: Border.all(color: AppColors.white.withOpacity(0.1)),
+        border: Border.all(color: GlassTheme.glassBorder(context)),
       ),
       child: GestureDetector(
         onTap: loading
@@ -393,15 +393,11 @@ class ReviewBookingScreen extends StatelessWidget {
           duration: 300.ms,
           height: 64,
           decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Colors.white, Color(0xFFF0F0F0)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+              color: GlassTheme.textColor(context),
               borderRadius: BorderRadius.circular(22),
               boxShadow: [
                 BoxShadow(
-                    color: AppColors.white.withOpacity(0.2),
+                    color: Colors.black.withValues(alpha: 0.2),
                     blurRadius: 20,
                     offset: const Offset(0, 10))
               ]),
@@ -411,10 +407,10 @@ class ReviewBookingScreen extends StatelessWidget {
                   width: 24,
                   height: 24,
                   child: CircularProgressIndicator(
-                      color: AppColors.black, strokeWidth: 2.5))
+                      color: Colors.black, strokeWidth: 2.5))
               : const Text('CONFIRM & PAY',
                   style: TextStyle(
-                      color: AppColors.black,
+                      color: Colors.black,
                       fontSize: 15,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 2.0)),

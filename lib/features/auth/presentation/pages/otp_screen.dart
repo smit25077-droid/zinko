@@ -1,9 +1,10 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../../user/presentation/bloc/user_event.dart';
+import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 // I'll add the events to user_event.dart later, for now let's hope it exists or I'll add them next.
 // Actually, I'll just use UpdateUserProfileEvent to set the verified status for now if I want to keep it simple.
@@ -65,18 +66,12 @@ class _OtpScreenState extends State<OtpScreen> {
         title: const Text('VERIFICATION', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, letterSpacing: 2.0, fontSize: 16)),
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-              child: Image.asset('assets/images/cafe_hotel_bg.png', fit: BoxFit.cover)),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: Colors.black.withOpacity(0.7)),
-            ),
-          ),
+      body: ZinkoBackground(
+        child: Stack(
+          children: [
           SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
@@ -85,23 +80,24 @@ class _OtpScreenState extends State<OtpScreen> {
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: GlassTheme.textColor(context).withOpacity(0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.15)),
+                      border: Border.all(color: GlassTheme.glassBorder(context)),
                     ),
                     child: Icon(
                       widget.type == 'Email' ? Icons.mail_outline_rounded : Icons.phone_iphone_rounded,
-                      color: Colors.white,
+                      color: GlassTheme.textColor(context),
                       size: 44,
                     ),
-                  ).animate().scale(curve: Curves.elasticOut, duration: 800.ms),
+                  ).animate().scale(curve: Curves.easeOutBack, duration: 800.ms).fadeIn(),
                   const SizedBox(height: 32),
-                  const Text('IDENTITY VERIFICATION', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5)),
+                  Text('IDENTITY VERIFICATION', 
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context), letterSpacing: -0.5)),
                   const SizedBox(height: 12),
                   Text(
                     'We sent a 6-digit security code to\n${widget.target}',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 15, color: Colors.white.withOpacity(0.5), fontWeight: FontWeight.w600, height: 1.5),
+                    style: TextStyle(fontSize: 14, color: GlassTheme.secondaryTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w600, height: 1.5),
                   ),
                   const SizedBox(height: 48),
                   Row(
@@ -114,19 +110,20 @@ class _OtpScreenState extends State<OtpScreen> {
                     child: _isVerifying
                         ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2))
                         : const Text('VERIFY ACCOUNT', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 1.0, fontSize: 13)),
-                  ),
+                  ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.1),
                   const SizedBox(height: 24),
                   TextButton(
                     onPressed: () {},
-                    child: Text('RESEND CODE', style: TextStyle(color: Colors.white.withOpacity(0.5), fontWeight: FontWeight.w900, letterSpacing: 1.0, fontSize: 11)),
-                  ),
+                    child: Text('RESEND CODE', style: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w900, letterSpacing: 1.0, fontSize: 11)),
+                  ).animate(delay: 600.ms).fadeIn(),
+                  const SizedBox(height: 48), // Bottom safe space
                 ],
               ),
             ),
           ),
           if (_isSuccess)
             Container(
-              color: const Color(0xFF0D121B),
+              color: const Color(0xFF0B1220),
               child: Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -136,26 +133,27 @@ class _OtpScreenState extends State<OtpScreen> {
                       height: 100,
                       decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
                       child: const Icon(Icons.check_rounded, color: Colors.black, size: 50),
-                    ).animate().scale(curve: Curves.elasticOut, duration: 800.ms),
+                    ).animate().scale(curve: Curves.easeOutBack, duration: 800.ms),
                     const SizedBox(height: 24),
                     const Text('VERIFIED', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
                   ],
                 ),
               ),
-            ).animate().fadeIn(),
+            ).animate().fadeIn(duration: 400.ms),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildOtpBox(int index) {
     return Container(
       width: 50,
       height: 60,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: GlassTheme.textColor(context).withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.12)),
+        border: Border.all(color: GlassTheme.glassBorder(context)),
       ),
       child: TextField(
         controller: _controllers[index],
@@ -163,7 +161,7 @@ class _OtpScreenState extends State<OtpScreen> {
         textAlign: TextAlign.center,
         keyboardType: TextInputType.number,
         maxLength: 1,
-        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white),
+        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context)),
         decoration: const InputDecoration(counterText: "", border: InputBorder.none),
         onChanged: (value) {
           if (value.isNotEmpty && index < 5) {

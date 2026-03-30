@@ -43,50 +43,50 @@ class BookingsScreen extends StatelessWidget {
       ),
       body: ZinkoBackground(
         child: SafeArea(
-            child: BlocBuilder<BookingBloc, BookingState>(
-              builder: (context, state) {
-                if (state is BookingLoading) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          color: GlassTheme.textColor(context)));
-                } else if (state is BookingsLoaded) {
-                  final filteredBookings = state.bookings.where((b) {
-                    if (state.tabIndex == 0) return !b.isCompleted;
-                    return b.isCompleted;
-                  }).toList();
+          child: BlocBuilder<BookingBloc, BookingState>(
+            builder: (context, state) {
+              if (state is BookingLoading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                        color: GlassTheme.textColor(context)));
+              } else if (state is BookingsLoaded) {
+                final filteredBookings = state.bookings.where((b) {
+                  if (state.tabIndex == 0) return !b.isCompleted;
+                  return b.isCompleted;
+                }).toList();
 
-                  return Column(
-                    children: [
-                      const SizedBox(height: 8),
-                      _buildTabs(context, state.tabIndex),
-                      Expanded(
-                        child: filteredBookings.isEmpty
-                            ? _buildEmptyState(context)
-                            : ListView.builder(
-                                padding:
-                                    const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                                physics: const BouncingScrollPhysics(),
-                                itemCount: filteredBookings.length,
-                                itemBuilder: (context, index) {
-                                  return _BookingCard(
-                                    booking: filteredBookings[index],
-                                  )
-                                      .animate()
-                                      .fadeIn(delay: (index * 80).ms)
-                                      .slideY(begin: 0.1);
-                                },
-                              ),
-                      ),
-                    ],
-                  );
-                } else if (state is BookingError) {
-                  return Center(
-                      child: Text(state.message,
-                          style:
-                              TextStyle(color: GlassTheme.textColor(context))));
-                }
-                return const SizedBox.shrink();
-              },
+                return Column(
+                  children: [
+                    const SizedBox(height: 8),
+                    _buildTabs(context, state.tabIndex),
+                    Expanded(
+                      child: filteredBookings.isEmpty
+                          ? _buildEmptyState(context)
+                          : ListView.builder(
+                              padding:
+                                  const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: filteredBookings.length,
+                              itemBuilder: (context, index) {
+                                return _BookingCard(
+                                  booking: filteredBookings[index],
+                                )
+                                    .animate()
+                                    .fadeIn(delay: (index * 80).ms)
+                                    .slideY(begin: 0.1);
+                              },
+                            ),
+                    ),
+                  ],
+                );
+              } else if (state is BookingError) {
+                return Center(
+                    child: Text(state.message,
+                        style:
+                            TextStyle(color: GlassTheme.textColor(context))));
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ),
       ),
@@ -134,17 +134,49 @@ class BookingsScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.calendar_month_rounded,
-              size: 56, color: GlassTheme.textColor(context).withOpacity(0.05)),
-          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: GlassTheme.glassColor(context),
+              shape: BoxShape.circle,
+              border: Border.all(color: GlassTheme.glassBorder(context)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 30,
+                  offset: const Offset(0, 10),
+                )
+              ],
+            ),
+            child: Icon(
+              Icons.event_busy_rounded,
+              size: 40,
+              color: GlassTheme.textColor(context).withOpacity(0.4),
+            ),
+          ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+          const SizedBox(height: 24),
           Text(
-            'YOU HAVE NO BOOKINGS',
+            'NO BOOKINGS',
             style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: GlassTheme.textColor(context).withOpacity(0.5),
-                letterSpacing: 1.5),
-          ),
+              fontSize: 18,
+              fontWeight: FontWeight.w900,
+              color: GlassTheme.textColor(context),
+              letterSpacing: -0.5,
+            ),
+          ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 48),
+            child: Text(
+              'Your future reservations will appear here. Start exploring workspaces now.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                color: GlassTheme.secondaryTextColor(context),
+                height: 1.5,
+              ),
+            ),
+          ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
         ],
       ),
     );
@@ -161,16 +193,13 @@ class _TabItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected
-                ? (isDark ? Colors.white : Colors.black)
-                : Colors.transparent,
+            color: isSelected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Text(
@@ -180,7 +209,7 @@ class _TabItem extends StatelessWidget {
               fontSize: 10,
               fontWeight: FontWeight.w900,
               color: isSelected
-                  ? (isDark ? Colors.black : Colors.white)
+                  ? Colors.black
                   : GlassTheme.textColor(context).withOpacity(0.4),
               letterSpacing: 1.0,
             ),
@@ -335,7 +364,6 @@ class _CheckInButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, QRScannerScreen.routeName, arguments: {
@@ -346,18 +374,18 @@ class _CheckInButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white : Colors.black,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(Icons.qr_code_scanner_rounded,
-                size: 16, color: isDark ? Colors.black : Colors.white),
+            const Icon(Icons.qr_code_scanner_rounded,
+                size: 16, color: Colors.black),
             const SizedBox(width: 8),
-            Text(
+            const Text(
               'CHECK IN',
               style: TextStyle(
-                  color: isDark ? Colors.black : Colors.white,
+                  color: Colors.black,
                   fontWeight: FontWeight.w900,
                   fontSize: 11,
                   letterSpacing: 0.5),
