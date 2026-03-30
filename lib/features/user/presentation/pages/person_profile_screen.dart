@@ -11,6 +11,7 @@ import '../bloc/user_bloc.dart';
 import '../bloc/user_state.dart';
 import 'subscription_plans_screen.dart';
 import '../../../chat/presentation/pages/chat_screen.dart';
+import '../../../../widgets/zinko_background.dart';
 
 // ── Main Person Profile Screen ─────────────────────────────────────────────────
 class PersonProfileScreen extends StatefulWidget {
@@ -109,26 +110,8 @@ class _PersonProfileScreenState extends State<PersonProfileScreen>
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
-        children: [
-          // Background Image
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          // Blur Overlay
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(
-                color: Colors.black.withOpacity(0.55),
-              ),
-            ),
-          ),
-          // Content
-          BlocBuilder<UserBloc, UserState>(
+      body: ZinkoBackground(
+        child: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               final isPremiumUser = state is UserLoaded ? state.user.isPremium : false;
               final p = widget.person;
@@ -258,8 +241,7 @@ class _PersonProfileScreenState extends State<PersonProfileScreen>
               );
             },
           ),
-        ],
-      ),
+        ),
     );
   }
 

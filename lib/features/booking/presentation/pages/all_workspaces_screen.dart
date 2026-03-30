@@ -8,6 +8,7 @@ import '../bloc/workspace_event.dart';
 import '../bloc/workspace_state.dart';
 import 'workspace_detail_screen.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class AllWorkspacesScreen extends StatelessWidget {
   static const String routeName = '/all-workspaces';
@@ -17,21 +18,8 @@ class AllWorkspacesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: Column(
               children: [
                 Padding(
@@ -150,9 +138,8 @@ class AllWorkspacesScreen extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ],
+        ),
+      ),
       ),
     );
   }

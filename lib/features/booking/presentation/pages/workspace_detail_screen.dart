@@ -10,6 +10,7 @@ import '../bloc/workspace_state.dart';
 import 'booking_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/optimized_colors.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class WorkspaceDetailScreen extends StatefulWidget {
   static const String routeName = '/workspace-detail';
@@ -50,21 +51,10 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
 
         return Scaffold(
           extendBodyBehindAppBar: true,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/cafe_hotel_bg.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(color: GlassTheme.backgroundOverlay(context)),
-                ),
-              ),
-              CustomScrollView(
+          body: ZinkoBackground(
+            child: Stack(
+              children: [
+                CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
                   _buildSliverAppBar(context),
@@ -97,7 +87,8 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
                 right: 0,
                 child: _buildActionFAB(context),
               ),
-            ],
+              ],
+            ),
           ),
         );
       },

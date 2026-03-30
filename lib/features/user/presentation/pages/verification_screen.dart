@@ -6,6 +6,7 @@ import '../bloc/user_bloc.dart';
 import '../bloc/user_state.dart';
 import '../../../auth/presentation/pages/otp_screen.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = '/verification';
@@ -36,22 +37,8 @@ class VerificationScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: BlocBuilder<UserBloc, UserState>(
               builder: (context, state) {
                 if (state is UserLoading) {
@@ -131,8 +118,7 @@ class VerificationScreen extends StatelessWidget {
                 return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
               },
             ),
-          ),
-        ],
+        ),
       ),
     );
   }

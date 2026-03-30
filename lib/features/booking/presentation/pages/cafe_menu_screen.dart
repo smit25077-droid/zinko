@@ -11,6 +11,7 @@ import '../../../../injection_container.dart';
 import '../../../../widgets/zinko_success_overlay.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/optimized_colors.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class CafeMenuScreen extends StatelessWidget {
   static const String routeName = '/cafe-menu';
@@ -60,45 +61,34 @@ class _CafeMenuContent extends StatelessWidget {
             ),
             centerTitle: true,
           ),
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Image.asset('assets/images/cafe_hotel_bg.png', fit: BoxFit.cover),
-              ),
-              Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                  child: Container(color: GlassTheme.backgroundOverlay(context)),
-                ),
-              ),
-              SafeArea(
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                      color: GlassTheme.glassColor(context),
-                      child: const Text(
-                        'Select items to order with your check-in:',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: OptimizedColors.white70),
-                      ),
+          body: ZinkoBackground(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    color: GlassTheme.glassColor(context),
+                    child: const Text(
+                      'Select items to order with your check-in:',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: OptimizedColors.white70),
                     ),
-                    Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
-                        itemCount: state.menuItems.length,
-                        itemBuilder: (context, index) {
-                          final item = state.menuItems[index];
-                          return _buildMenuItemCard(context, item, index);
-                        },
-                      ),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 100),
+                      itemCount: state.menuItems.length,
+                      itemBuilder: (context, index) {
+                        final item = state.menuItems[index];
+                        return _buildMenuItemCard(context, item, index);
+                      },
                     ),
-                    _buildCheckoutSection(context, state.totalOrder),
-                  ],
-                ),
+                  ),
+                  _buildCheckoutSection(context, state.totalOrder),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },

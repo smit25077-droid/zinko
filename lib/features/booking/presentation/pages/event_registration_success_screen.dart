@@ -8,6 +8,7 @@ import '../bloc/booking_event.dart';
 import 'bookings_screen.dart';
 import 'home_screen.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class EventRegistrationSuccessScreen extends StatefulWidget {
   static const String routeName = '/registration-success';
@@ -39,21 +40,10 @@ class _EventRegistrationSuccessScreenState extends State<EventRegistrationSucces
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: Stack(
+          children: [
+            SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 32),
               child: Column(
@@ -84,7 +74,8 @@ class _EventRegistrationSuccessScreenState extends State<EventRegistrationSucces
           ),
           if (_isSuccessTransition)
             _buildSuccessOverlay(),
-        ],
+          ],
+        ),
       ),
     );
   }

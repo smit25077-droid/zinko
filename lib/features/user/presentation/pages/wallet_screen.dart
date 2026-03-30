@@ -8,6 +8,7 @@ import '../bloc/user_state.dart';
 import '../../domain/entities/transaction_entity.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class WalletScreen extends StatelessWidget {
   static const String routeName = '/wallet';
@@ -18,25 +19,8 @@ class WalletScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.transparent,
-      body: Stack(
-        children: [
-          // Background Image - Full Screen Cover
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                color: GlassTheme.backgroundOverlay(context).withOpacity(0.4),
-              ),
-            ),
-          ),
-          
-          BlocBuilder<UserBloc, UserState>(
+      body: ZinkoBackground(
+        child: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               if (state is UserLoading) {
                 return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
@@ -120,8 +104,7 @@ class WalletScreen extends StatelessWidget {
               return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
             },
           ),
-        ],
-      ),
+        ),
     );
   }
 

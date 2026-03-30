@@ -7,6 +7,7 @@ import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class SubscriptionPlansScreen extends StatelessWidget {
   static const String routeName = '/subscription-plans';
@@ -47,21 +48,8 @@ class SubscriptionPlansScreen extends StatelessWidget {
           ),
           centerTitle: true,
         ),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                'assets/images/cafe_hotel_bg.png',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Positioned.fill(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                child: Container(color: GlassTheme.backgroundOverlay(context)),
-              ),
-            ),
-            SafeArea(
+        body: ZinkoBackground(
+          child: SafeArea(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 60),
@@ -128,8 +116,7 @@ class SubscriptionPlansScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -10,6 +10,7 @@ import '../bloc/workspace_state.dart';
 import 'workspace_detail_screen.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class WishlistScreen extends StatelessWidget {
   static const String routeName = '/wishlist';
@@ -40,21 +41,8 @@ class WishlistScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
               builder: (context, state) {
                 if (state is WorkspaceLoading)
@@ -98,8 +86,7 @@ class WishlistScreen extends StatelessWidget {
               },
             ),
           ),
-        ],
-      ),
+        ),
     );
   }
 

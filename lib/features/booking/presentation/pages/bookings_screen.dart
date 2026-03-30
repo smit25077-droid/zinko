@@ -10,6 +10,7 @@ import '../bloc/booking_state.dart';
 import '../../domain/entities/booking_entity.dart';
 import 'qr_scanner_screen.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class BookingsScreen extends StatelessWidget {
   static const String routeName = '/bookings';
@@ -40,21 +41,8 @@ class BookingsScreen extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: BlocBuilder<BookingBloc, BookingState>(
               builder: (context, state) {
                 if (state is BookingLoading) {
@@ -99,9 +87,8 @@ class BookingsScreen extends StatelessWidget {
                 }
                 return const SizedBox.shrink();
               },
-            ),
           ),
-        ],
+        ),
       ),
     );
   }

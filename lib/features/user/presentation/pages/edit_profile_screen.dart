@@ -8,6 +8,7 @@ import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class EditProfileScreen extends StatefulWidget {
   static const String routeName = '/edit-profile';
@@ -129,21 +130,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: BlocBuilder<UserBloc, UserState>(
               builder: (context, state) {
                 if (state is UserLoading) {
@@ -287,8 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               },
             ),
           ),
-        ],
-      ),
+        ),
     );
   }
 

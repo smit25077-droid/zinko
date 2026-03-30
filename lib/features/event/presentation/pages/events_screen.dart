@@ -1,5 +1,5 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
+import '../../../../widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/entities/event_entity.dart';
@@ -32,67 +32,48 @@ class _EventsScreenState extends State<EventsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: AppColors.transparent,
-      body: Stack(
-        children: [
-          // Background
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-              child: Container(
-                  color:
-                      GlassTheme.backgroundOverlay(context).withOpacity(0.4)),
-            ),
-          ),
-
-          BlocBuilder<EventBloc, EventState>(
-            builder: (context, state) {
-              if (state is EventLoading) {
-                return Center(
-                    child: CircularProgressIndicator(
-                        color: GlassTheme.textColor(context)));
-              }
-              if (state is EventLoaded) {
-                final events = state.events;
-                return CustomScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  slivers: [
-                    _buildSliverAppBar(context),
-                    const SliverToBoxAdapter(child: SizedBox(height: 10)),
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final event = events[index];
-                            return _EventCard(event: event)
-                                .animate()
-                                .fadeIn(duration: 400.ms)
-                                .slideY(begin: 0.05);
-                          },
-                          childCount: events.length,
-                        ),
+      body: ZinkoBackground(
+        child: BlocBuilder<EventBloc, EventState>(
+          builder: (context, state) {
+            if (state is EventLoading) {
+              return Center(
+                  child: CircularProgressIndicator(
+                      color: GlassTheme.textColor(context)));
+            }
+            if (state is EventLoaded) {
+              final events = state.events;
+              return CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  _buildSliverAppBar(context),
+                  const SliverToBoxAdapter(child: SizedBox(height: 10)),
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    sliver: SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          final event = events[index];
+                          return _EventCard(event: event)
+                              .animate()
+                              .fadeIn(duration: 400.ms)
+                              .slideY(begin: 0.05);
+                        },
+                        childCount: events.length,
                       ),
                     ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 120)),
-                  ],
-                );
-              }
-              if (state is EventError) {
-                return Center(
-                    child: Text(state.message,
-                        style:
-                            TextStyle(color: GlassTheme.textColor(context))));
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-        ],
+                  ),
+                  const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                ],
+              );
+            }
+            if (state is EventError) {
+              return Center(
+                  child: Text(state.message,
+                      style: TextStyle(color: GlassTheme.textColor(context))));
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
@@ -189,8 +170,7 @@ class _EventCard extends StatelessWidget {
                         ),
                         const Spacer(),
                         const Icon(Icons.access_time_rounded,
-                            size: 12,
-                            color: OptimizedColors.white50),
+                            size: 12, color: OptimizedColors.white50),
                         const SizedBox(width: 4),
                         Text(
                           '${event.date} ${event.month}',
@@ -349,9 +329,7 @@ class _CategorySelectorState extends State<_CategorySelector> {
               child: Text(
                 cat,
                 style: TextStyle(
-                  color: isSelected
-                      ? Colors.white
-                      : OptimizedColors.white60,
+                  color: isSelected ? Colors.white : OptimizedColors.white60,
                   fontSize: 11,
                   fontWeight: FontWeight.w900,
                   letterSpacing: 1.0,
@@ -367,4 +345,3 @@ class _CategorySelectorState extends State<_CategorySelector> {
     );
   }
 }
-

@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class NotificationsScreen extends StatelessWidget {
   static const String routeName = '/notifications';
@@ -40,22 +41,8 @@ class NotificationsScreen extends StatelessWidget {
           const SizedBox(width: 16),
         ],
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: GlassTheme.backgroundOverlay(context)),
-            ),
-          ),
-          
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               physics: const BouncingScrollPhysics(),
@@ -118,8 +105,7 @@ class NotificationsScreen extends StatelessWidget {
               ],
             ),
           ),
-        ],
-      ),
+        ),
     );
   }
 }

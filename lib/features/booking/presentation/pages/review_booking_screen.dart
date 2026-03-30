@@ -17,6 +17,7 @@ import '../../../../widgets/zinko_success_overlay.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/optimized_colors.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class ReviewBookingScreen extends StatelessWidget {
   static const String routeName = '/review-booking';
@@ -96,44 +97,34 @@ class ReviewBookingScreen extends StatelessWidget {
             backgroundColor: Colors.transparent,
             centerTitle: true,
           ),
-          body: Stack(
-            children: [
-              Positioned.fill(
-                  child: Image.asset('assets/images/cafe_hotel_bg.png',
-                      fit: BoxFit.cover)),
-              Positioned.fill(
-                child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                    child: Container(color: GlassTheme.backgroundOverlay(context))),
-              ),
-              SafeArea(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildGlassWorkspaceCard(context, workspace),
-                            const SizedBox(height: 12),
-                            _buildGlassDetailCard(context, date, timeSlot, table),
-                            const SizedBox(height: 12),
-                            _buildGlassPaymentCard(context, subtotal, tax, total),
-                            const SizedBox(height: 12),
-                            _buildGlassWalletInfo(context),
-                          ],
-                        ),
+          body: ZinkoBackground(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildGlassWorkspaceCard(context, workspace),
+                          const SizedBox(height: 12),
+                          _buildGlassDetailCard(context, date, timeSlot, table),
+                          const SizedBox(height: 12),
+                          _buildGlassPaymentCard(context, subtotal, tax, total),
+                          const SizedBox(height: 12),
+                          _buildGlassWalletInfo(context),
+                        ],
                       ),
                     ),
-                    _buildConfirmAction(context, workspace, date, timeSlot,
-                        table, subtotal, tax, total, state is BookingLoading),
-                  ],
-                ),
+                  ),
+                  _buildConfirmAction(context, workspace, date, timeSlot,
+                      table, subtotal, tax, total, state is BookingLoading),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },

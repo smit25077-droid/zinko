@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/models/app_models.dart';
-import '../../domain/entities/chat_entity.dart';
 import '../bloc/chat_bloc.dart';
 import '../bloc/chat_event.dart';
 import '../bloc/chat_state.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import 'call_screen.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class ChatScreen extends StatefulWidget {
   static const String routeName = '/chat';
@@ -101,22 +101,8 @@ class _ChatScreenState extends State<ChatScreen> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Stack(
-        children: [
-          // Background
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/cafe_hotel_bg.png',
-              fit: BoxFit.cover,
-            ),
-          ),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(color: Colors.black.withOpacity(0.7)),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: BlocBuilder<ChatBloc, ChatState>(
               builder: (context, state) {
                 if (state is MessagesLoading) {
@@ -148,9 +134,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 }
                 return const SizedBox();
               },
-            ),
-          ),
-        ],
+        ),
+      ),
       ),
     );
   }

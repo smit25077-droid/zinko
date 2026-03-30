@@ -8,6 +8,7 @@ import '../../../community/presentation/bloc/community_event.dart';
 import '../../../community/presentation/bloc/community_state.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_background.dart';
 
 class ConnectionRequestsScreen extends StatelessWidget {
   static const String routeName = '/connection-requests';
@@ -16,7 +17,6 @@ class ConnectionRequestsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -29,18 +29,8 @@ class ConnectionRequestsScreen extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(child: Image.asset('assets/images/cafe_hotel_bg.png', fit: BoxFit.cover)),
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-              child: Container(
-                color: GlassTheme.backgroundOverlay(context).withOpacity(isDark ? 0.7 : 0.85),
-              ),
-            ),
-          ),
-          SafeArea(
+      body: ZinkoBackground(
+        child: SafeArea(
             child: BlocBuilder<CommunityBloc, CommunityState>(
               builder: (context, state) {
                 List<PersonEntity> requests = [];
@@ -76,8 +66,7 @@ class ConnectionRequestsScreen extends StatelessWidget {
               },
             ),
           ),
-        ],
-      ),
+        ),
     );
   }
 
