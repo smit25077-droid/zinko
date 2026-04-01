@@ -51,6 +51,8 @@ import 'features/event/domain/entities/event_entity.dart';
 import 'features/chat/domain/entities/chat_entity.dart';
 import 'features/event/presentation/bloc/event_bloc.dart';
 import 'features/chat/presentation/bloc/chat_bloc.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/auth_event.dart';
 
 import 'widgets/zinko_background.dart';
 import 'widgets/global_network_overlay.dart';
@@ -84,6 +86,9 @@ void main() async {
           ),
           BlocProvider(
             create: (_) => di.sl<ChatBloc>(),
+          ),
+          BlocProvider(
+            create: (_) => di.sl<AuthBloc>()..add(CheckAuthStatus()),
           ),
         ],
         child: const MyApp(),

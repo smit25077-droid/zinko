@@ -1,45 +1,69 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../datasources/auth_local_data_source.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../models/auth_requests.dart';
+import '../models/auth_responses.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
+  final AuthLocalDataSource localDataSource;
 
-  AuthRepositoryImpl({required this.remoteDataSource});
+  AuthRepositoryImpl({
+    required this.remoteDataSource,
+    required this.localDataSource,
+  });
 
   @override
-  Future<Either<Failure, Unit>> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<Either<Failure, AuthResponse<UserData>>> login(LoginRequest params) async {
     try {
-      await remoteDataSource.login(
-        email: email,
-        password: password,
-      );
-      return Right(unit);
+      final response = await remoteDataSource.login(params);
+      if (response.statusCode == 200 && response.data != null) {
+        await localDataSource.cacheUserData(response.data!);
+        return Right(response);
+      }
+      return Left(ServerFailure(response.message));
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Unknown error occurred'));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, Unit>> register({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
+  Future<Either<Failure, AuthResponse<dynamic>>> register(RegisterRequest params) async {
     try {
-      await remoteDataSource.register(
-        name: name,
-        email: email,
-        password: password,
-      );
-      return const Right(unit);
+      final response = await remoteDataSource.signup(params);
+      if (response.statusCode == 200) {
+        return Right(response);
+      }
+      return Left(ServerFailure(response.message));
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Unknown error occurred'));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserData?>> getCachedUser() async {
+    try {
+      final user = await localDataSource.getLastUserData();
+      return Right(user);
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> logout() async {
+    try {
+      await localDataSource.clearCache();
+      return const Right(null);
+    } catch (e) {
+      return Left(CacheFailure(e.toString()));
     }
   }
 }
-

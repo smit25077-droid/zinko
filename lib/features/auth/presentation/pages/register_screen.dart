@@ -1,14 +1,13 @@
 import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../injection_container.dart' as di;
-import '../bloc/register/register_bloc.dart';
-import '../bloc/register/register_event.dart';
-import '../bloc/register/register_state.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
+import '../../data/models/auth_requests.dart';
 
 class RegisterScreen extends StatefulWidget {
   static const String routeName = '/register';
@@ -22,16 +21,20 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
+
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _userNameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -41,11 +44,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
     FocusScope.of(context).unfocus();
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    context.read<RegisterBloc>().add(
+    context.read<AuthBloc>().add(
           RegisterSubmitted(
-            name: _nameController.text.trim(),
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
+            RegisterRequest(
+              userName: _userNameController.text.trim(),
+              password: _passwordController.text,
+              mobileNo: _phoneController.text.trim(),
+              emailId: _emailController.text.trim(),
+            ),
           ),
         );
   }
@@ -54,189 +60,116 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return BlocProvider(
-      create: (_) => di.sl<RegisterBloc>(),
-      child: BlocListener<RegisterBloc, RegisterState>(
-        listener: (context, state) {
-          if (state.status == RegisterStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account created successfully! Welcome.'),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-            Navigator.pop(context);
-          }
-          if (state.status == RegisterStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? 'Registration Failure'),
-                backgroundColor: Colors.redAccent,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-          }
-        },
-        child: Builder(
-          builder: (context) => AnnotatedRegion<SystemUiOverlayStyle>(
-            value: SystemUiOverlayStyle.light,
-            child: Scaffold(
-              resizeToAvoidBottomInset: true,
-              body: Stack(
-                children: [
-                  // Background Image
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/images/cafe_hotel_bg.png',
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  // Dark Overlay for Contrast
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.3),
-                            Colors.black.withOpacity(0.7),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  // Content
-                  SafeArea(
-                    child: Center(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 50,
-                                  ),
-                                  Text(
-                                    'Register with Zinko',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 34,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: -0.5,
-                                      shadows: [
-                                        Shadow(
-                                          color: Colors.black.withOpacity(0.3),
-                                          offset: const Offset(0, 4),
-                                          blurRadius: 10,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    'Begin your journey with the finest experiences.',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.85),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: 0.2,
-                                    ),
-                                  ),
-                                ],
-                              )
-                                  .animate(delay: 200.ms)
-                                  .fadeIn()
-                                  .slideY(begin: 0.1, end: 0),
-                              const SizedBox(height: 40),
-                              // Glassmorphism Register Card
-                              _GlassRegisterCard(
-                                formKey: _formKey,
-                                nameController: _nameController,
-                                emailController: _emailController,
-                                passwordController: _passwordController,
-                                confirmPasswordController:
-                                    _confirmPasswordController,
-                                onRegister: () => _handleRegister(context),
-                                isDark: isDark,
-                              )
-                                  .animate(delay: 400.ms)
-                                  .fadeIn()
-                                  .slideY(begin: 0.1, end: 0),
-                              const SizedBox(height: 32),
-                              // Footer/Login link
-                              _LoginFooter().animate(delay: 600.ms).fadeIn(),
-                              const SizedBox(height: 40),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthSuccess) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
             ),
+          );
+          Navigator.pop(context);
+        }
+        if (state is AuthFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      },
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          body: Stack(
+            children: [
+              // Background Image
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/cafe_hotel_bg.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.3),
+                        Colors.black.withOpacity(0.7),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              SafeArea(
+                child: Center(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const SizedBox(height: 50),
+                          Column(
+                            children: [
+                              Text(
+                                'Register with Zinko',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 34,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -0.5,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black.withOpacity(0.3),
+                                      offset: const Offset(0, 4),
+                                      blurRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Begin your journey with the finest experiences.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400,
+                                  letterSpacing: 0.2,
+                                ),
+                              ),
+                            ],
+                          ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.1, end: 0),
+                          const SizedBox(height: 40),
+                          _buildGlassRegisterCard(context, isDark),
+                          const SizedBox(height: 32),
+                          _LoginFooter().animate(delay: 600.ms).fadeIn(),
+                          const SizedBox(height: 40),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-}
 
-class _ZinkoBranding extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.1),
-        border: Border.all(color: Colors.white.withOpacity(0.2), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(51),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-        ],
-      ),
-      child: const Icon(
-        Icons.hotel_class_outlined,
-        color: Colors.white,
-        size: 40,
-      ),
-    );
-  }
-}
-
-class _GlassRegisterCard extends StatelessWidget {
-  final GlobalKey<FormState> formKey;
-  final TextEditingController nameController;
-  final TextEditingController emailController;
-  final TextEditingController passwordController;
-  final TextEditingController confirmPasswordController;
-  final VoidCallback onRegister;
-  final bool isDark;
-
-  const _GlassRegisterCard({
-    required this.formKey,
-    required this.nameController,
-    required this.emailController,
-    required this.passwordController,
-    required this.confirmPasswordController,
-    required this.onRegister,
-    required this.isDark,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<RegisterBloc, RegisterState>(
+  Widget _buildGlassRegisterCard(BuildContext context, bool isDark) {
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         return ClipRRect(
           borderRadius: BorderRadius.circular(32),
@@ -262,19 +195,18 @@ class _GlassRegisterCard extends StatelessWidget {
                 ),
               ),
               child: Form(
-                key: formKey,
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldLabel('Full Name'),
                     const SizedBox(height: 10),
                     _ModernTextField(
-                      controller: nameController,
+                      controller: _userNameController,
                       hint: 'Enter your name',
                       icon: Icons.person_outline_rounded,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
-                          return 'Name is required';
+                        if (value == null || value.isEmpty) return 'Name is required';
                         return null;
                       },
                     ),
@@ -282,15 +214,26 @@ class _GlassRegisterCard extends StatelessWidget {
                     _buildFieldLabel('Email'),
                     const SizedBox(height: 10),
                     _ModernTextField(
-                      controller: emailController,
+                      controller: _emailController,
                       hint: 'Enter your email',
                       icon: Icons.alternate_email_rounded,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (value == null || value.isEmpty)
-                          return 'Email is required';
-                        if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
-                            .hasMatch(value)) return 'Enter valid email';
+                        if (value == null || value.isEmpty) return 'Email is required';
+                        if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) return 'Enter valid email';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 18),
+                    _buildFieldLabel('Phone Number'),
+                    const SizedBox(height: 10),
+                    _ModernTextField(
+                      controller: _phoneController,
+                      hint: 'Enter mobile number',
+                      icon: Icons.phone_android_rounded,
+                      keyboardType: TextInputType.phone,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Phone number is required';
                         return null;
                       },
                     ),
@@ -298,25 +241,20 @@ class _GlassRegisterCard extends StatelessWidget {
                     _buildFieldLabel('Password'),
                     const SizedBox(height: 10),
                     _ModernTextField(
-                      controller: passwordController,
+                      controller: _passwordController,
                       hint: 'Enter your password',
                       icon: Icons.lock_outline_rounded,
-                      obscureText: state.obscurePassword,
+                      obscureText: _obscurePassword,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          state.obscurePassword
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded,
+                          _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                           color: Colors.white70,
                           size: 20,
                         ),
-                        onPressed: () => context
-                            .read<RegisterBloc>()
-                            .add(ToggleRegisterPasswordVisibility()),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty)
-                          return 'Password is required';
+                        if (value == null || value.isEmpty) return 'Password is required';
                         if (value.length < 6) return 'Mini 6 characters';
                         return null;
                       },
@@ -325,35 +263,29 @@ class _GlassRegisterCard extends StatelessWidget {
                     _buildFieldLabel('Confirm Password'),
                     const SizedBox(height: 10),
                     _ModernTextField(
-                      controller: confirmPasswordController,
+                      controller: _confirmPasswordController,
                       hint: 'Repeat your password',
                       icon: Icons.lock_reset_rounded,
-                      obscureText: state.obscureConfirmPassword,
+                      obscureText: _obscureConfirmPassword,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          state.obscureConfirmPassword
-                              ? Icons.visibility_off_rounded
-                              : Icons.visibility_rounded,
+                          _obscureConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                           color: Colors.white70,
                           size: 20,
                         ),
-                        onPressed: () => context
-                            .read<RegisterBloc>()
-                            .add(ToggleConfirmPasswordVisibility()),
+                        onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty)
-                          return 'Confirm your password';
-                        if (value != passwordController.text)
-                          return 'Passwords do not match';
+                        if (value == null || value.isEmpty) return 'Confirm your password';
+                        if (value != _passwordController.text) return 'Passwords do not match';
                         return null;
                       },
                     ),
                     const SizedBox(height: 28),
                     _PremiumButton(
                       text: 'Create Account',
-                      onPressed: onRegister,
-                      isLoading: state.status == RegisterStatus.loading,
+                      onPressed: () => _handleRegister(context),
+                      isLoading: state is AuthLoading,
                     ),
                   ],
                 ),
@@ -362,7 +294,7 @@ class _GlassRegisterCard extends StatelessWidget {
           ),
         );
       },
-    );
+    ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.1, end: 0);
   }
 
   Widget _buildFieldLabel(String label) {
@@ -404,8 +336,7 @@ class _ModernTextField extends StatelessWidget {
       obscureText: obscureText,
       keyboardType: keyboardType,
       validator: validator,
-      style: const TextStyle(
-          color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
+      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white.withOpacity(0.08),
@@ -425,8 +356,7 @@ class _ModernTextField extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: Colors.white, width: 1),
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       ),
     );
   }
@@ -453,23 +383,18 @@ class _PremiumButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           elevation: 0,
         ),
         child: isLoading
             ? const SizedBox(
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator(
-                    color: Colors.black, strokeWidth: 2.5),
+                child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2.5),
               )
             : Text(
                 text,
-                style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.5),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 0.5),
               ),
       ),
     ).animate(target: isLoading ? 0.9 : 1.0).scale(duration: 200.ms);
@@ -484,8 +409,7 @@ class _LoginFooter extends StatelessWidget {
       children: [
         const Text(
           "Already have an account? ",
-          style: TextStyle(
-              color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
         ),
         GestureDetector(
           onTap: () => Navigator.pop(context),

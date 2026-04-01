@@ -1,4 +1,7 @@
 import 'package:get_it/get_it.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'core/network/dio_client.dart';
 import 'core/bloc/navigation/navigation_bloc.dart';
 import 'features/booking/presentation/bloc/map/map_bloc.dart';
 import '../features/user/data/datasources/user_remote_data_source.dart';
@@ -47,38 +50,53 @@ import '../features/chat/data/repositories/chat_repository_impl.dart';
 import '../features/chat/data/datasources/chat_remote_data_source.dart';
 import '../features/chat/domain/usecases/chat_usecases.dart';
 import '../features/chat/presentation/bloc/chat_bloc.dart';
-import '../features/auth/presentation/bloc/login/login_bloc.dart';
-import '../features/auth/presentation/bloc/register/register_bloc.dart';
-import '../features/auth/domain/usecases/login.dart';
-import '../features/auth/domain/usecases/register.dart';
-import '../features/auth/domain/repositories/auth_repository.dart';
-import '../features/auth/data/repositories/auth_repository_impl.dart';
-import '../features/auth/data/datasources/auth_remote_data_source.dart';
+
+// Auth imports (Updated)
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/domain/usecases/login_usecase.dart';
+import 'features/auth/domain/usecases/register_usecase.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/data/repositories/auth_repository_impl.dart';
+import 'features/auth/data/datasources/auth_remote_data_source.dart';
+import 'features/auth/data/datasources/auth_local_data_source.dart';
 
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  //! Features - Auth
+  //! External
+  final sharedPreferences = await SharedPreferences.getInstance();
+  sl.registerLazySingleton(() => sharedPreferences);
+  sl.registerLazySingleton(() => Dio());
+  sl.registerLazySingleton(() => DioClient(sl()));
+
+  //! Features - Auth (Clean Architecture)
+  // BLoC
   sl.registerFactory(
-    () => LoginBloc(
-      login: sl(),
-    ),
-  );
-  sl.registerFactory(
-    () => RegisterBloc(
-      register: sl(),
+    () => AuthBloc(
+      loginUseCase: sl(),
+      registerUseCase: sl(),
+      repository: sl(),
     ),
   );
 
-  sl.registerLazySingleton(() => Login(sl()));
-  sl.registerLazySingleton(() => Register(sl()));
+  // Use cases
+  sl.registerLazySingleton(() => LoginUseCase(sl()));
+  sl.registerLazySingleton(() => RegisterUseCase(sl()));
 
+  // Repository
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: sl()),
+    () => AuthRepositoryImpl(
+      remoteDataSource: sl(),
+      localDataSource: sl(),
+    ),
   );
 
+  // Data sources
   sl.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(),
+    () => AuthRemoteDataSourceImpl(client: sl()),
+  );
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sharedPreferences: sl()),
   );
 
   //! Features - User
@@ -234,3 +252,4 @@ Future<void> init() async {
   sl.registerFactory(() => NavigationBloc());
   sl.registerFactory(() => MapBloc(getWorkspaces: sl(), getPeople: sl()));
 }
+

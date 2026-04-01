@@ -1,66 +1,41 @@
-import 'package:dartz/dartz.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/dio_client.dart';
+import '../models/auth_requests.dart';
+import '../models/auth_responses.dart';
 
 abstract class AuthRemoteDataSource {
-  /// Since the backend isn't wired yet, this returns a mocked result.
-  Future<Unit> login({
-    required String email,
-    required String password,
-  });
-
-  Future<Unit> register({
-    required String name,
-    required String email,
-    required String password,
-  });
+  Future<AuthResponse<UserData>> login(LoginRequest request);
+  Future<AuthResponse<dynamic>> signup(RegisterRequest request);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
+  final DioClient client;
+
+  AuthRemoteDataSourceImpl({required this.client});
+
   @override
-  Future<Unit> login({
-    required String email,
-    required String password,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 650));
+  Future<AuthResponse<UserData>> login(LoginRequest request) async {
+    final response = await client.post(
+      ApiEndpoints.login,
+      data: request.toJson(),
+    );
 
-    final normalizedEmail = email.trim().toLowerCase();
-
-    final emailOk = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalizedEmail);
-    final passwordOk = password.trim().length >= 6;
-
-    if (!emailOk) {
-      throw Exception('Please enter a valid email address.');
-    }
-    if (!passwordOk) {
-      throw Exception('Password must be at least 6 characters.');
-    }
-
-    return unit;
+    return AuthResponse<UserData>.fromJson(
+      response.data,
+      (data) => UserData.fromJson(data),
+    );
   }
 
   @override
-  Future<Unit> register({
-    required String name,
-    required String email,
-    required String password,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 800));
+  Future<AuthResponse<dynamic>> signup(RegisterRequest request) async {
+    final response = await client.post(
+      ApiEndpoints.signup,
+      data: request.toJson(),
+    );
 
-    if (name.trim().isEmpty) {
-      throw Exception('Name is required.');
-    }
-
-    final normalizedEmail = email.trim().toLowerCase();
-    final emailOk = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(normalizedEmail);
-    final passwordOk = password.trim().length >= 6;
-
-    if (!emailOk) {
-      throw Exception('Please enter a valid email address.');
-    }
-    if (!passwordOk) {
-      throw Exception('Password must be at least 6 characters.');
-    }
-
-    return unit;
+    return AuthResponse<dynamic>.fromJson(
+      response.data,
+      (data) => data,
+    );
   }
 }
-

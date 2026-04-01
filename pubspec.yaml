@@ -49,6 +49,9 @@ dependencies:
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
   connectivity_plus: ^7.0.0
+  dio: ^5.9.2
+  shared_preferences: ^2.5.5
+  logger: ^2.7.0
 
 dev_dependencies:
   flutter_test:
