@@ -1,9 +1,10 @@
-import 'package:zinko_app/features/user/data/models/transaction_model.dart';
-
+import 'package:zinko_app/core/network/api_endpoints.dart';
+import 'package:zinko_app/core/network/dio_client.dart';
 import '../models/user_model.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUserProfile();
+
   Future<UserModel> updateUserProfile({
     required String name,
     required String email,
@@ -14,44 +15,43 @@ abstract class UserRemoteDataSource {
     String? membership,
     bool? isEmailVerified,
     bool? isPhoneVerified,
+    String? city,
+    String? state,
+    String? gender,
+    String? birthdate,
+    String? companyName,
   });
+
   Future<UserModel> addMoney(double amount);
+
   Future<UserModel> redeemReferral(String code);
+
+  Future<bool> updateVisibility(bool visibility);
+
+  Future<bool> sendEmailOtp(String email);
+
+  Future<bool> verifyEmailOtp({
+    required String userCode,
+    required String otp,
+  });
+
+  Future<bool> deleteUser(int userCode);
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  // Since we don't have a real API yet, we'll implement a mock version
-  // that returns the same structure as the existing UserProvider.
+  final DioClient client;
 
-  UserModel _mockUser = UserModel(
-    name: 'Alex',
-    email: 'alex@example.com',
-    phone: '+91 9023256218',
-    profileImage: 'https://i.pravatar.cc/300',
-    role: 'Freelancer',
-    bio: 'Freelance Developer | Coffee Lover',
-    membership: 'Free',
-    balance: 2500.0,
-    transactions: [
-      TransactionModel(
-          title: 'Initial Deposit',
-          date: 'Jan 23, 01:12 PM',
-          amount: 3000.0,
-          isCredit: true),
-      TransactionModel(
-          title: 'Urban Hive Booking',
-          date: 'Feb 17, 01:12 PM',
-          amount: 500.0,
-          isCredit: false),
-    ],
-    isEmailVerified: false,
-    isPhoneVerified: false,
-  );
+  UserRemoteDataSourceImpl({required this.client});
 
   @override
   Future<UserModel> getUserProfile() async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    return _mockUser;
+    final response = await client.get(
+      ApiEndpoints.userProfile,
+    );
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data['data']);
+    }
+    throw Exception('Failed to load user profile');
   }
 
   @override
@@ -65,83 +65,92 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     String? membership,
     bool? isEmailVerified,
     bool? isPhoneVerified,
+    String? city,
+    String? state,
+    String? gender,
+    String? birthdate,
+    String? companyName,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    _mockUser = UserModel(
-      name: name,
-      email: email,
-      phone: phone,
-      profileImage: profileImage ?? _mockUser.profileImage,
-      role: role,
-      bio: bio,
-      membership: membership ?? _mockUser.membership,
-      balance: _mockUser.balance,
-      transactions: _mockUser.transactions as List<TransactionModel>,
-      isEmailVerified: isEmailVerified ?? _mockUser.isEmailVerified,
-      isPhoneVerified: isPhoneVerified ?? _mockUser.isPhoneVerified,
-    );
-    return _mockUser;
+    final user = await getUserProfile();
+    final response = await client.post('user/profile/update', data: {
+      'user_code': user.userCode,
+      'city': city ?? user.city,
+      'state': state ?? user.state,
+      'gender': gender ?? user.gender,
+      'birthdate': birthdate ?? user.birthdate,
+      'profession': role,
+      'company_name': companyName ?? user.companyName,
+      'profile_bio': bio,
+      'full_name': name,
+    });
+    if (response.statusCode == 200) {
+      return await getUserProfile();
+    }
+    return user;
   }
 
   @override
   Future<UserModel> addMoney(double amount) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    final newTransactions = List<TransactionModel>.from(_mockUser.transactions)
-      ..insert(
-        0,
-        TransactionModel(
-          title: 'Wallet Top-up',
-          date: 'Feb 22, 01:38 PM',
-          amount: amount,
-          isCredit: true,
-        ),
-      );
-    _mockUser = UserModel(
-      name: _mockUser.name,
-      email: _mockUser.email,
-      phone: _mockUser.phone,
-      profileImage: _mockUser.profileImage,
-      role: _mockUser.role,
-      bio: _mockUser.bio,
-      membership: _mockUser.membership,
-      balance: _mockUser.balance + amount,
-      transactions: newTransactions,
-      isEmailVerified: _mockUser.isEmailVerified,
-      isPhoneVerified: _mockUser.isPhoneVerified,
-    );
-    return _mockUser;
+    final response =
+        await client.post('/api/user/wallet/add', data: {'amount': amount});
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data['data']);
+    }
+    return await getUserProfile();
   }
 
   @override
   Future<UserModel> redeemReferral(String code) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    if (code.toLowerCase() == 'smit') {
-      final newTransactions =
-          List<TransactionModel>.from(_mockUser.transactions)
-            ..insert(
-              0,
-              TransactionModel(
-                title: 'Referral Reward',
-                date: 'Feb 22, 01:40 PM',
-                amount: 50.0,
-                isCredit: true,
-              ),
-            );
-      _mockUser = UserModel(
-        name: _mockUser.name,
-        email: _mockUser.email,
-        phone: _mockUser.phone,
-        profileImage: _mockUser.profileImage,
-        role: _mockUser.role,
-        bio: _mockUser.bio,
-        membership: _mockUser.membership,
-        balance: _mockUser.balance + 50.0,
-        transactions: newTransactions,
-        isEmailVerified: _mockUser.isEmailVerified,
-        isPhoneVerified: _mockUser.isPhoneVerified,
-      );
-      return _mockUser;
+    final response =
+        await client.post('/api/user/redeem-referral', data: {'code': code});
+    if (response.statusCode == 200) {
+      return UserModel.fromJson(response.data['data']);
     }
     throw Exception('Invalid referral code');
+  }
+
+  @override
+  Future<bool> updateVisibility(bool visibility) async {
+    final response = await client.post(
+      ApiEndpoints.userVisibility,
+    );
+    if (response.statusCode == 200) {
+      return response.data['data']['user_visibility'] as bool;
+    }
+    throw Exception('Failed to update visibility');
+  }
+
+  @override
+  Future<bool> sendEmailOtp(String email) async {
+    final response = await client.get(
+      '${ApiEndpoints.sendEmailOtp}?email=$email',
+    );
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw Exception(response.data['message'] ?? 'Failed to send OTP');
+  }
+
+  @override
+  Future<bool> verifyEmailOtp({
+    required String userCode,
+    required String otp,
+  }) async {
+    final response = await client.get(
+      '${ApiEndpoints.verifyEmailOtp}?user_code=$userCode&otp=$otp',
+    );
+    if (response.statusCode == 200) {
+      return true;
+    }
+    throw Exception(response.data['message'] ?? 'Failed to verify OTP');
+  }
+
+  @override
+  Future<bool> deleteUser(int userCode) async {
+    final response = await client.post(
+      ApiEndpoints.deleteUser,
+      data: {'user_code': userCode},
+    );
+    return response.statusCode == 200;
   }
 }

@@ -11,7 +11,8 @@ class LoginUseCase implements UseCase<AuthResponse<UserData>, LoginRequest> {
   LoginUseCase(this.repository);
 
   @override
-  Future<Either<Failure, AuthResponse<UserData>>> call(LoginRequest params) async {
+  Future<Either<Failure, AuthResponse<UserData>>> call(
+      LoginRequest params) async {
     return await repository.login(params);
   }
 }

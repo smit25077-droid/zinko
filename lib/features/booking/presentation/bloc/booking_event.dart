@@ -9,9 +9,9 @@ class AddBookingEvent extends BookingEvent {
   AddBookingEvent(this.booking);
 }
 
-class RemoveBookingEvent extends BookingEvent {
-  final String id;
-  RemoveBookingEvent(this.id);
+class CancelBookingEvent extends BookingEvent {
+  final String bookingCode;
+  CancelBookingEvent(this.bookingCode);
 }
 
 class CompleteBookingEvent extends BookingEvent {
@@ -22,4 +22,10 @@ class CompleteBookingEvent extends BookingEvent {
 class FilterBookingsByTabEvent extends BookingEvent {
   final int tabIndex;
   FilterBookingsByTabEvent(this.tabIndex);
+}
+
+class UserCheckInEvent extends BookingEvent {
+  final String bookingCode;
+  final String otp;
+  UserCheckInEvent({required this.bookingCode, required this.otp});
 }

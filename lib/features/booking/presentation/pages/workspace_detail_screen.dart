@@ -2,6 +2,9 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'dart:io' show Platform;
 
 import '../../domain/entities/workspace_entity.dart';
 import '../bloc/workspace_bloc.dart';
@@ -10,8 +13,11 @@ import '../bloc/workspace_state.dart';
 import 'booking_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_network_image.dart';
+import '../../../../widgets/zinko_glass_box.dart';
+import '../bloc/workspace_detail_bloc.dart';
 
-class WorkspaceDetailScreen extends StatefulWidget {
+class WorkspaceDetailScreen extends StatelessWidget {
   static const String routeName = '/workspace-detail';
   final WorkspaceEntity? workspace;
 
@@ -21,172 +27,175 @@ class WorkspaceDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<WorkspaceDetailScreen> createState() => _WorkspaceDetailScreenState();
+  Widget build(BuildContext context) {
+    if (workspace == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+      });
+      return const SizedBox.shrink();
+    }
+
+    return BlocProvider(
+      create: (context) => WorkspaceDetailBloc(),
+      child: _DetailContent(workspace: workspace!),
+    );
+  }
 }
 
-class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
-  late WorkspaceEntity _workspace;
+class _DetailContent extends StatefulWidget {
+  final WorkspaceEntity workspace;
+  const _DetailContent({required this.workspace});
+
+  @override
+  State<_DetailContent> createState() => _DetailContentState();
+}
+
+class _DetailContentState extends State<_DetailContent>
+    with WidgetsBindingObserver {
+  late PageController _pageController;
 
   @override
   void initState() {
     super.initState();
-    if (widget.workspace == null) {
-      Navigator.pop(context);
-    } else {
-      _workspace = widget.workspace!;
-    }
+    WidgetsBinding.instance.addObserver(this);
+    _pageController = PageController();
   }
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<WorkspaceBloc, WorkspaceState>(
-      builder: (context, state) {
-        if (state is WorkspaceLoaded) {
-          final updated = state.workspaces.firstWhere(
-              (w) => w.id == _workspace.id,
-              orElse: () => _workspace);
-          _workspace = updated;
-        }
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pageController.dispose();
+    super.dispose();
+  }
 
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          body: ZinkoBackground(
-            child: Stack(
-              children: [
-                CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  _buildSliverAppBar(context),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 16, 20, 140),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildGlassHeader(),
-                          const SizedBox(height: 12),
-                          _buildGlassStatsRow(),
-                          const SizedBox(height: 12),
-                          _buildGlassDescription(),
-                          const SizedBox(height: 12),
-                          _buildGlassPerks(),
-                          const SizedBox(height: 12),
-                          _buildGlassAmenities(),
-                          const SizedBox(height: 12),
-                          _buildGlassReviews(),
-                        ],
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {}
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<WorkspaceDetailBloc, WorkspaceDetailState>(
+      listenWhen: (prev, curr) => prev.currentPage != curr.currentPage,
+      listener: (context, state) {
+        if (_pageController.hasClients) {
+          final currentPage = _pageController.page?.round() ?? 0;
+          if (currentPage != state.currentPage) {
+            _pageController.animateToPage(
+              state.currentPage,
+              duration: const Duration(milliseconds: 800),
+              curve: Curves.easeInOutCubic,
+            );
+          }
+        }
+      },
+      child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
+        builder: (context, state) {
+          final workspace = widget.workspace;
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            body: ZinkoBackground(
+              child: Stack(
+                children: [
+                  CustomScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    slivers: [
+                      _buildSliverAppBar(context),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 140),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildGlassHeader(),
+                              if (workspace.description.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _buildGlassDescription(),
+                              ],
+                              if (workspace.perkTags.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _buildGlassPerks(),
+                              ],
+                              if (workspace.amenities.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _buildGlassAmenities(),
+                              ],
+                              if (workspace.phone.isNotEmpty ||
+                                  workspace.email.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _buildGlassContactInfo(),
+                              ],
+                              if (workspace.lat != 0) ...[
+                                const SizedBox(height: 12),
+                                _buildGlassMap(),
+                              ],
+                              if (workspace.reviews.isNotEmpty) ...[
+                                const SizedBox(height: 12),
+                                _buildGlassReviews(),
+                              ],
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: _buildActionFAB(context),
                   ),
                 ],
               ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _buildActionFAB(context),
-              ),
-              ],
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildGlassHeader() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-            boxShadow: [GlassTheme.glassShadow(context)],
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _workspace.name,
-                      style: TextStyle(
-                        fontSize: 22,
-                        color: GlassTheme.textColor(context),
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -0.5,
-                      ),
-                    ).animate().fadeIn().slideX(begin: -0.1),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.location_on_rounded, size: 14, color: GlassTheme.secondaryTextColor(context)),
-                        const SizedBox(width: 4),
-                        Text(
-                          '${_workspace.location} • ${_workspace.distance}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: GlassTheme.secondaryTextColor(context),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              _buildCompactRatingBadge(_workspace.rating),
-            ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildGlassStatsRow() {
-    return Row(
-      children: [
-        _buildStatCard('AVAL. TABLES', '${_workspace.tablesLeft}', Icons.chair_alt_rounded),
-        const SizedBox(width: 12),
-        _buildStatCard('TOTAL SLOTS', '${_workspace.totalSlots}', Icons.people_rounded),
-      ],
-    );
-  }
-
-  Widget _buildStatCard(String label, String value, IconData icon) {
-    return Expanded(
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-            ),
-            child: Row(
+  Widget _buildGlassHeader() {
+    final workspace = widget.workspace;
+    return ZinkoGlassBox.thick(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(icon, size: 18, color: GlassTheme.secondaryTextColor(context)),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Text(
+                  workspace.name,
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: GlassTheme.textColor(context),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5,
+                  ),
+                ).animate().fadeIn(),
+                const SizedBox(height: 4),
+                Row(
                   children: [
-                    Text(value, style: TextStyle(color: GlassTheme.textColor(context), fontSize: 16, fontWeight: FontWeight.w900)),
-                    Text(label, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+                    Icon(Icons.location_on_rounded,
+                        size: 14,
+                        color: GlassTheme.secondaryTextColor(context)),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        '${workspace.location}${workspace.distance.isNotEmpty ? ' • ${workspace.distance}' : ''}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: GlassTheme.secondaryTextColor(context),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
           ),
-        ),
+          if (workspace.rating > 0) _buildCompactRatingBadge(workspace.rating),
+        ],
       ),
     );
   }
@@ -195,11 +204,11 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
     return _buildSectionCard(
       title: 'ABOUT',
       child: Text(
-        _workspace.description,
+        widget.workspace.description,
         style: TextStyle(
           fontSize: 13,
           height: 1.5,
-          color: GlassTheme.textColor(context).withOpacity(0.7),
+          color: GlassTheme.textColor(context),
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -207,32 +216,43 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
   }
 
   Widget _buildGlassPerks() {
+    final workspace = widget.workspace;
     return _buildSectionCard(
       title: 'SPECIAL PERKS',
       child: Wrap(
         spacing: 8,
         runSpacing: 8,
-        children: _workspace.perkTags.map((perk) => Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: Colors.orange.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.orange.withOpacity(0.3)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.flash_on_rounded, size: 12, color: Colors.orange),
-              const SizedBox(width: 4),
-              Text(perk, style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w800, fontSize: 10)),
-            ],
-          ),
-        )).toList(),
+        children: workspace.perkTags
+            .map((perk) => Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border:
+                        Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.flash_on_rounded,
+                          size: 12, color: Colors.orange),
+                      const SizedBox(width: 4),
+                      Text(perk,
+                          style: const TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 10)),
+                    ],
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
 
   Widget _buildGlassAmenities() {
+    final workspace = widget.workspace;
     return _buildSectionCard(
       title: 'AMENITIES',
       child: GridView.builder(
@@ -245,21 +265,28 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
           crossAxisSpacing: 10,
           mainAxisSpacing: 10,
         ),
-        itemCount: _workspace.amenities.length,
+        itemCount: workspace.amenities.length,
         itemBuilder: (context, index) {
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: GlassTheme.textColor(context).withOpacity(0.04),
+              color: GlassTheme.textColor(context).withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: GlassTheme.glassBorder(context)),
             ),
             child: Row(
               children: [
-                Icon(_workspace.amenities[index], size: 14, color: GlassTheme.secondaryTextColor(context)),
+                Icon(workspace.amenities[index],
+                    size: 14, color: GlassTheme.secondaryTextColor(context)),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(_workspace.amenityNames[index], style: TextStyle(fontSize: 11, color: GlassTheme.textColor(context).withOpacity(0.9), fontWeight: FontWeight.w600), overflow: TextOverflow.ellipsis),
+                  child: Text(workspace.amenityNames[index],
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: GlassTheme.textColor(context)
+                              .withValues(alpha: 0.9),
+                          fontWeight: FontWeight.w600),
+                      overflow: TextOverflow.ellipsis),
                 ),
               ],
             ),
@@ -269,82 +296,182 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
     );
   }
 
+  Widget _buildGlassMap() {
+    final workspace = widget.workspace;
+    final position = LatLng(workspace.lat, workspace.lng);
+    return _buildSectionCard(
+      title: 'LOCATION',
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SizedBox(
+              height: 200,
+              width: double.infinity,
+              child: Stack(
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: position,
+                      zoom: 15,
+                    ),
+                    markers: {
+                      Marker(
+                        markerId: const MarkerId('workspace_pos'),
+                        position: position,
+                      ),
+                    },
+                    zoomControlsEnabled: false,
+                    myLocationButtonEnabled: false,
+                    scrollGesturesEnabled: false,
+                    zoomGesturesEnabled: false,
+                    rotateGesturesEnabled: false,
+                    tiltGesturesEnabled: false,
+                    mapToolbarEnabled: false,
+                  ),
+                  Positioned.fill(
+                    child: GestureDetector(
+                      onTap: () async {
+                        final encodedName =
+                            Uri.encodeComponent(workspace.name);
+                        final googleUrl =
+                            'https://www.google.com/maps/search/?api=1&query=${workspace.lat},${workspace.lng}&query_place_id=$encodedName';
+                        final appleUrl =
+                            'https://maps.apple.com/?q=$encodedName&ll=${workspace.lat},${workspace.lng}';
+
+                        if (Platform.isIOS) {
+                          if (await canLaunchUrl(Uri.parse(appleUrl))) {
+                            await launchUrl(Uri.parse(appleUrl));
+                          }
+                        } else {
+                          if (await canLaunchUrl(Uri.parse(googleUrl))) {
+                            await launchUrl(Uri.parse(googleUrl));
+                          }
+                        }
+                      },
+                      child: Container(color: Colors.transparent),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(Icons.directions_rounded,
+                  size: 16, color: GlassTheme.secondaryTextColor(context)),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Tap to get directions in your map app',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: GlassTheme.secondaryTextColor(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildGlassReviews() {
-    if (_workspace.reviews.isEmpty) return const SizedBox.shrink();
+    final workspace = widget.workspace;
+    if (workspace.reviews.isEmpty) return const SizedBox.shrink();
     return _buildSectionCard(
       title: 'REVIEWS',
       child: Column(
-        children: _workspace.reviews.map((r) => Container(
-          margin: const EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: GlassTheme.textColor(context).withOpacity(0.03),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  CircleAvatar(radius: 14, backgroundImage: NetworkImage(r.avatarUrl)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(r.userName, style: TextStyle(color: GlassTheme.textColor(context), fontSize: 13, fontWeight: FontWeight.w800)),
-                        Text(r.timeAgo, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w600)),
-                      ],
-                    ),
+        children: workspace.reviews
+            .map((r) => Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: GlassTheme.textColor(context).withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: GlassTheme.glassBorder(context)),
                   ),
-                  _buildCompactRatingBadge(r.rating, isSmall: true),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(r.comment, style: TextStyle(color: GlassTheme.textColor(context).withOpacity(0.8), fontSize: 12, height: 1.4, fontWeight: FontWeight.w500)),
-            ],
-          ),
-        )).toList(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                              radius: 14,
+                              backgroundImage: NetworkImage(r.avatarUrl)),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(r.userName,
+                                    style: TextStyle(
+                                        color: GlassTheme.textColor(context),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w800)),
+                                Text(r.timeAgo,
+                                    style: TextStyle(
+                                        color: GlassTheme.tertiaryTextColor(
+                                            context),
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          ),
+                          _buildCompactRatingBadge(r.rating, isSmall: true),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Text(r.comment,
+                          style: TextStyle(
+                              color: GlassTheme.textColor(context)
+                                  .withValues(alpha: 0.8),
+                              fontSize: 12,
+                              height: 1.4,
+                              fontWeight: FontWeight.w500)),
+                    ],
+                  ),
+                ))
+            .toList(),
       ),
     );
   }
 
   Widget _buildSectionCard({required String title, required Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(22),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(18),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
-              const SizedBox(height: 10),
-              child,
-            ],
-          ),
-        ),
+    return ZinkoGlassBox.light(
+      padding: const EdgeInsets.all(18),
+      borderRadius: 22,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  color: GlassTheme.textColor(context),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2)),
+          const SizedBox(height: 8),
+          child,
+        ],
       ),
     );
   }
 
   Widget _buildSliverAppBar(BuildContext context) {
+    final workspace = widget.workspace;
     return SliverAppBar(
-      expandedHeight: 260,
-      backgroundColor: Colors.transparent,
+      expandedHeight: 280,
+      backgroundColor: Colors.black,
+      foregroundColor: Colors.white,
       elevation: 0,
       pinned: true,
+      stretch: true,
       leading: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: _GlassAppBarButton(
+        child: _GlassHeaderButton(
           icon: Icons.arrow_back_ios_new_rounded,
           onTap: () => Navigator.pop(context),
         ),
@@ -352,11 +479,15 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
       actions: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: _GlassAppBarButton(
-            icon: _workspace.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            color: _workspace.isFavorite ? Colors.redAccent : null,
+          child: _GlassHeaderButton(
+            icon: workspace.isFavorite
+                ? Icons.favorite_rounded
+                : Icons.favorite_border_rounded,
+            iconColor: workspace.isFavorite ? Colors.redAccent : Colors.white,
             onTap: () {
-              context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(_workspace.id));
+              context
+                  .read<WorkspaceBloc>()
+                  .add(ToggleFavoriteWorkspaceEvent(workspace.id));
             },
           ),
         ),
@@ -366,20 +497,69 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(_workspace.imageUrl, fit: BoxFit.cover),
+            PageView.builder(
+              controller: _pageController,
+              onPageChanged: (index) => context
+                  .read<WorkspaceDetailBloc>()
+                  .add(UpdatePageIndex(index)),
+              itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
+              itemBuilder: (context, index) {
+                return ZinkoNetworkImage(
+                  imageUrl: workspace.images.isEmpty
+                      ? workspace.imageUrl
+                      : workspace.images[index],
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
+                  stops: const [0.0, 0.4, 1.0],
                   colors: [
-                    Colors.black.withOpacity(0.4),
+                    Colors.black.withValues(alpha: 0.6),
                     Colors.transparent,
-                    Colors.black.withOpacity(0.2)
-                  ]
-                )
-              )
+                    Colors.black.withValues(alpha: 0.8),
+                  ],
+                ),
+              ),
             ),
+            if (workspace.images.length > 1)
+              Positioned(
+                bottom: 20,
+                left: 0,
+                right: 0,
+                child: BlocBuilder<WorkspaceDetailBloc, WorkspaceDetailState>(
+                  builder: (context, state) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: workspace.images.asMap().entries.map((entry) {
+                        bool isSelected = state.currentPage == entry.key;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          width: isSelected ? 24 : 8,
+                          height: 4,
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.white : Colors.white24,
+                            borderRadius: BorderRadius.circular(2),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                        color:
+                                            Colors.white.withValues(alpha: 0.3),
+                                        blurRadius: 4)
+                                  ]
+                                : [],
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),
@@ -387,13 +567,10 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
   }
 
   Widget _buildCompactRatingBadge(double rating, {bool isSmall = false}) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: isSmall ? 6 : 8, vertical: isSmall ? 3 : 5),
-      decoration: BoxDecoration(
-        color: GlassTheme.glassColor(context),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: GlassTheme.glassBorder(context)),
-      ),
+    return ZinkoGlassBox.light(
+      borderRadius: 10,
+      padding: EdgeInsets.symmetric(
+          horizontal: isSmall ? 6 : 8, vertical: isSmall ? 3 : 5),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -401,7 +578,10 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
           const SizedBox(width: 4),
           Text(
             rating.toStringAsFixed(1),
-            style: TextStyle(color: GlassTheme.textColor(context), fontSize: isSmall ? 11 : 13, fontWeight: FontWeight.w900),
+            style: TextStyle(
+                color: GlassTheme.textColor(context),
+                fontSize: isSmall ? 11 : 13,
+                fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -409,74 +589,152 @@ class _WorkspaceDetailScreenState extends State<WorkspaceDetailScreen> {
   }
 
   Widget _buildActionFAB(BuildContext context) {
+    final workspace = widget.workspace;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
-          decoration: BoxDecoration(
-            color: GlassTheme.backgroundOverlay(context),
-            border: Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('STARTING FROM', style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 1.0)),
-                    const SizedBox(height: 2),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(text: _workspace.price, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context))),
-                          TextSpan(text: ' ${_workspace.priceUnit}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: GlassTheme.tertiaryTextColor(context))),
-                        ],
-                      ),
+    return ZinkoGlassBox.thick(
+      borderRadius: 0,
+      padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
+      border: Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
+      color: GlassTheme.backgroundOverlay(context),
+      child: Row(
+        children: [
+          if (workspace.price.isNotEmpty)
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('STARTING FROM',
+                      style: TextStyle(
+                          color: GlassTheme.secondaryTextColor(context),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 1.0)),
+                  const SizedBox(height: 2),
+                  RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            text: workspace.price,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w900,
+                                color: GlassTheme.textColor(context))),
+                        TextSpan(
+                            text: ' ${workspace.priceUnit}',
+                            style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: GlassTheme.tertiaryTextColor(context))),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            )
+          else
+            const Spacer(),
+          const SizedBox(width: 16),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, BookingScreen.routeName,
+                  arguments: {
+                    'workspaceId': workspace.id,
+                    'workspaceName': workspace.name,
+                    'workspace': workspace,
+                  });
+            },
+            child: Container(
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              decoration: BoxDecoration(
+                color: GlassTheme.textColor(context),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4))
+                ],
+              ),
+              child: Center(
+                child: Text('BOOK NOW',
+                    style: TextStyle(
+                        color: isDark ? Colors.black : Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.0)),
+              ),
+            ),
+          ).animate().scale(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGlassContactInfo() {
+    final workspace = widget.workspace;
+    return _buildSectionCard(
+      title: 'CONTACT INFO',
+      child: Column(
+        children: [
+          if (workspace.phone.isNotEmpty)
+            _buildContactRow(Icons.phone_rounded, workspace.phone, () {
+              launchUrl(Uri.parse('tel:${workspace.phone}'));
+            }),
+          if (workspace.phone.isNotEmpty && workspace.email.isNotEmpty)
+            const SizedBox(height: 12),
+          if (workspace.email.isNotEmpty)
+            _buildContactRow(Icons.email_rounded, workspace.email, () {
+              launchUrl(Uri.parse('mailto:${workspace.email}'));
+            }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactRow(IconData icon, String text, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: GlassTheme.textColor(context).withValues(alpha: 0.04),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: GlassTheme.glassBorder(context)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: GlassTheme.secondaryTextColor(context)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 13,
+                  color: GlassTheme.textColor(context),
+                  fontWeight: FontWeight.w600,
                 ),
               ),
-              const SizedBox(width: 16),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, BookingScreen.routeName, arguments: {'workspaceId': _workspace.id, 'workspaceName': _workspace.name});
-                },
-                child: Container(
-                  height: 50,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  decoration: BoxDecoration(
-                    color: GlassTheme.textColor(context),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, 4))],
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'BOOK NOW', 
-                    style: TextStyle(
-                      color: isDark ? Colors.black : Colors.white, 
-                      fontSize: 12, 
-                      fontWeight: FontWeight.w900, 
-                      letterSpacing: 1.0
-                    )
-                  ),
-                ),
-              ).animate().scale(),
-            ],
-          ),
+            ),
+            Icon(Icons.open_in_new_rounded,
+                size: 14,
+                color: GlassTheme.secondaryTextColor(context)
+                    .withValues(alpha: 0.5)),
+          ],
         ),
       ),
     );
   }
 }
 
-class _GlassAppBarButton extends StatelessWidget {
+class _GlassHeaderButton extends StatelessWidget {
   final IconData icon;
-  final Color? color;
+  final Color? iconColor;
   final VoidCallback onTap;
-  const _GlassAppBarButton({required this.icon, this.color, required this.onTap});
+
+  const _GlassHeaderButton(
+      {required this.icon, this.iconColor, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -487,14 +745,14 @@ class _GlassAppBarButton extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
           child: Container(
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context).withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
             ),
-            child: Icon(icon, color: color ?? GlassTheme.iconColor(context), size: 18),
+            child: Icon(icon, color: iconColor ?? Colors.white, size: 18),
           ),
         ),
       ),

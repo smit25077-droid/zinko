@@ -1,4 +1,3 @@
-
 abstract class UserEvent {}
 
 class GetUserProfileEvent extends UserEvent {}
@@ -11,6 +10,11 @@ class UpdateUserProfileEvent extends UserEvent {
   final String bio;
   final String? profileImage;
   final String? membership;
+  final String? city;
+  final String? state;
+  final String? gender;
+  final String? birthdate;
+  final String? companyName;
 
   UpdateUserProfileEvent({
     required this.name,
@@ -20,6 +24,11 @@ class UpdateUserProfileEvent extends UserEvent {
     required this.bio,
     this.profileImage,
     this.membership,
+    this.city,
+    this.state,
+    this.gender,
+    this.birthdate,
+    this.companyName,
   });
 }
 
@@ -38,6 +47,25 @@ class RedeemReferralEvent extends UserEvent {
   RedeemReferralEvent(this.code);
 }
 
-class VerifyEmailEvent extends UserEvent {}
+class SendEmailOtpEvent extends UserEvent {
+  final String email;
+  SendEmailOtpEvent(this.email);
+}
+
+class VerifyEmailOtpEvent extends UserEvent {
+  final String userCode;
+  final String otp;
+  VerifyEmailOtpEvent({required this.userCode, required this.otp});
+}
 
 class VerifyPhoneEvent extends UserEvent {}
+
+class DeleteUserEvent extends UserEvent {
+  final int userCode;
+  DeleteUserEvent(this.userCode);
+}
+
+class UpdateVisibilityEvent extends UserEvent {
+  final bool visibility;
+  UpdateVisibilityEvent(this.visibility);
+}

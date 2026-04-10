@@ -9,7 +9,6 @@ class AppTheme {
     brightness: Brightness.light,
     primaryColor: AppColors.primary,
     scaffoldBackgroundColor: AppColors.backgroundLight,
-    
     colorScheme: const ColorScheme.light(
       primary: AppColors.primary,
       secondary: AppColors.secondary,
@@ -20,14 +19,12 @@ class AppTheme {
       onSurface: AppColors.textPrimaryLight,
       onError: Colors.white,
     ),
-    
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.primary,
       foregroundColor: Colors.white,
       elevation: 0,
       centerTitle: true,
     ),
-    
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,
@@ -53,7 +50,6 @@ class AppTheme {
         color: AppColors.textSecondaryLight,
       ),
     ),
-    
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primary,
@@ -64,7 +60,6 @@ class AppTheme {
         ),
       ),
     ),
-    
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
@@ -72,17 +67,15 @@ class AppTheme {
       filled: true,
       fillColor: AppColors.surfaceLight,
     ),
-    
     dividerColor: AppColors.dividerLight,
   );
-  
+
   // Dark Theme
   static ThemeData darkTheme = ThemeData(
     useMaterial3: true,
     brightness: Brightness.dark,
     primaryColor: AppColors.primaryDark,
     scaffoldBackgroundColor: AppColors.backgroundDark,
-    
     colorScheme: const ColorScheme.dark(
       primary: AppColors.primaryDark,
       secondary: AppColors.secondary,
@@ -93,14 +86,12 @@ class AppTheme {
       onSurface: AppColors.textPrimaryDark,
       onError: Colors.black,
     ),
-    
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.surfaceDark,
       foregroundColor: AppColors.textPrimaryDark,
       elevation: 0,
       centerTitle: true,
     ),
-    
     textTheme: const TextTheme(
       displayLarge: TextStyle(
         fontSize: 32,
@@ -126,7 +117,6 @@ class AppTheme {
         color: AppColors.textSecondaryDark,
       ),
     ),
-    
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryDark,
@@ -137,7 +127,6 @@ class AppTheme {
         ),
       ),
     ),
-    
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
@@ -145,7 +134,6 @@ class AppTheme {
       filled: true,
       fillColor: AppColors.surfaceDark,
     ),
-    
     dividerColor: AppColors.dividerDark,
   );
 }

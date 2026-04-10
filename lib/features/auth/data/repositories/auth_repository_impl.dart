@@ -17,31 +17,38 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<Failure, AuthResponse<UserData>>> login(LoginRequest params) async {
+  Future<Either<Failure, AuthResponse<UserData>>> login(
+      LoginRequest params) async {
     try {
       final response = await remoteDataSource.login(params);
-      if (response.statusCode == 200 && response.data != null) {
+      if ((response.statusCode == 200 || response.statusCode == 201) &&
+          response.data != null) {
         await localDataSource.cacheUserData(response.data!);
         return Right(response);
       }
       return Left(ServerFailure(response.message));
     } on DioException catch (e) {
-      return Left(ServerFailure(e.message ?? 'Unknown error occurred'));
+      final message =
+          e.response?.data?['message'] ?? e.message ?? 'Unknown error occurred';
+      return Left(ServerFailure(message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, AuthResponse<dynamic>>> register(RegisterRequest params) async {
+  Future<Either<Failure, AuthResponse<dynamic>>> register(
+      RegisterRequest params) async {
     try {
       final response = await remoteDataSource.signup(params);
-      if (response.statusCode == 200) {
+      if (response.statusCode == 200 || response.statusCode == 201) {
         return Right(response);
       }
       return Left(ServerFailure(response.message));
     } on DioException catch (e) {
-      return Left(ServerFailure(e.message ?? 'Unknown error occurred'));
+      final message =
+          e.response?.data?['message'] ?? e.message ?? 'Unknown error occurred';
+      return Left(ServerFailure(message));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

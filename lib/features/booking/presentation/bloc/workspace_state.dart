@@ -17,16 +17,17 @@ class WorkspaceLoaded extends WorkspaceState {
   final String selectedCategory;
   final String searchQuery;
   final int timestamp;
-  
+
   WorkspaceLoaded(
     this.workspaces, {
-    this.selectedCategory = 'All', 
+    this.selectedCategory = 'All',
     this.searchQuery = '',
     int? timestamp,
-  }) : this.timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+  }) : timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
   @override
-  List<Object> get props => [workspaces, selectedCategory, searchQuery, timestamp];
+  List<Object> get props =>
+      [workspaces, selectedCategory, searchQuery, timestamp];
 
   WorkspaceLoaded copyWith({
     List<WorkspaceEntity>? workspaces,

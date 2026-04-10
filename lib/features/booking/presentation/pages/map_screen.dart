@@ -346,7 +346,7 @@ class _SearchBar extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-              color: AppColors.black.withOpacity(isDark ? 0.3 : 0.12),
+              color: AppColors.black.withValues(alpha: isDark ? 0.3 : 0.12),
               blurRadius: 30,
               offset: const Offset(0, 10))
         ],
@@ -359,13 +359,13 @@ class _SearchBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             decoration: BoxDecoration(
               color: isDark
-                  ? AppColors.white.withOpacity(0.1)
-                  : AppColors.white.withOpacity(0.82),
+                  ? AppColors.white.withValues(alpha: 0.1)
+                  : AppColors.white.withValues(alpha: 0.82),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
                   color: isDark
-                      ? AppColors.white.withOpacity(0.12)
-                      : AppColors.black.withOpacity(0.08),
+                      ? AppColors.white.withValues(alpha: 0.12)
+                      : AppColors.black.withValues(alpha: 0.08),
                   width: 1.2),
             ),
             child: Row(
@@ -383,7 +383,7 @@ class _SearchBar extends StatelessWidget {
                       hintText: 'Where are you headed?',
                       hintStyle: TextStyle(
                           fontSize: 14,
-                          color: GlassTheme.textColor(context).withOpacity(0.4),
+                          color: GlassTheme.textColor(context).withValues(alpha: 0.4),
                           fontWeight: FontWeight.w500),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
@@ -393,7 +393,7 @@ class _SearchBar extends StatelessWidget {
                 Container(
                   width: 1,
                   height: 24,
-                  color: GlassTheme.textColor(context).withOpacity(0.12),
+                  color: GlassTheme.textColor(context).withValues(alpha: 0.12),
                   margin: const EdgeInsets.symmetric(horizontal: 12),
                 ),
                 _GlassCircularButton(
@@ -438,14 +438,14 @@ class _FilterList extends StatelessWidget {
                 color: isSelected
                     ? (isDark ? AppColors.white : AppColors.black)
                     : isDark
-                        ? AppColors.white.withOpacity(0.08)
-                        : AppColors.white.withOpacity(0.75),
+                        ? AppColors.white.withValues(alpha: 0.08)
+                        : AppColors.white.withValues(alpha: 0.75),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: isSelected
                     ? [
                         BoxShadow(
                             color: (isDark ? AppColors.white : AppColors.black)
-                                .withOpacity(0.15),
+                                .withValues(alpha: 0.15),
                             blurRadius: 12,
                             offset: const Offset(0, 4))
                       ]
@@ -454,8 +454,8 @@ class _FilterList extends StatelessWidget {
                     color: isSelected
                         ? (isDark ? AppColors.white : AppColors.black)
                         : isDark
-                            ? AppColors.white.withOpacity(0.12)
-                            : AppColors.black.withOpacity(0.1),
+                            ? AppColors.white.withValues(alpha: 0.12)
+                            : AppColors.black.withValues(alpha: 0.1),
                     width: 1.2),
               ),
               alignment: Alignment.center,
@@ -464,7 +464,7 @@ class _FilterList extends StatelessWidget {
                 style: TextStyle(
                   color: isSelected
                       ? (isDark ? AppColors.black : AppColors.white)
-                      : GlassTheme.textColor(context).withOpacity(0.7),
+                      : GlassTheme.textColor(context).withValues(alpha: 0.7),
                   fontWeight: FontWeight.w900,
                   fontSize: 10,
                   letterSpacing: 1.2,
@@ -501,7 +501,7 @@ class _MyLocationButton extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-                color: AppColors.black.withOpacity(isDark ? 0.3 : 0.15),
+                color: AppColors.black.withValues(alpha: isDark ? 0.3 : 0.15),
                 blurRadius: 20,
                 offset: const Offset(0, 8))
           ],
@@ -513,12 +513,12 @@ class _MyLocationButton extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: isDark
-                    ? AppColors.white.withOpacity(0.12)
-                    : AppColors.white.withOpacity(0.9),
+                    ? AppColors.white.withValues(alpha: 0.12)
+                    : AppColors.white.withValues(alpha: 0.9),
                 border: Border.all(
                     color: isDark
-                        ? AppColors.white.withOpacity(0.15)
-                        : AppColors.black.withOpacity(0.08),
+                        ? AppColors.white.withValues(alpha: 0.15)
+                        : AppColors.black.withValues(alpha: 0.08),
                     width: 1.5),
               ),
               child: const Icon(Icons.my_location_rounded,
@@ -543,13 +543,13 @@ class _PlaceDetailsSheet extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.backgroundDark.withOpacity(0.92)
-              : AppColors.white.withOpacity(0.94),
+              ? AppColors.backgroundDark.withValues(alpha: 0.92)
+              : AppColors.white.withValues(alpha: 0.94),
           borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
           border: Border.all(
               color: isDark
-                  ? AppColors.white.withOpacity(0.1)
-                  : AppColors.black.withOpacity(0.07),
+                  ? AppColors.white.withValues(alpha: 0.1)
+                  : AppColors.black.withValues(alpha: 0.07),
               width: 1.5),
         ),
         padding: EdgeInsets.fromLTRB(
@@ -563,7 +563,7 @@ class _PlaceDetailsSheet extends StatelessWidget {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                      color: GlassTheme.textColor(context).withOpacity(0.1),
+                      color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(2))),
             ),
             const SizedBox(height: 28),
@@ -615,10 +615,10 @@ class _PlaceDetailsSheet extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
-                                color: AppColors.gold.withOpacity(0.1),
+                                color: AppColors.gold.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: AppColors.gold.withOpacity(0.2)),
+                                    color: AppColors.gold.withValues(alpha: 0.2)),
                               ),
                               child: Row(
                                 children: [
@@ -646,7 +646,7 @@ class _PlaceDetailsSheet extends StatelessWidget {
                   ),
                 ],
               ),
-            ).animate().fadeIn().slideY(begin: 0.1),
+            ).animate().fadeIn(),
             const SizedBox(height: 32),
             GestureDetector(
               onTap: () {
@@ -660,8 +660,8 @@ class _PlaceDetailsSheet extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: Theme.of(context).brightness == Brightness.dark
-                        ? [AppColors.white, AppColors.white.withOpacity(0.9)]
-                        : [AppColors.black, AppColors.black.withOpacity(0.9)],
+                        ? [AppColors.white, AppColors.white.withValues(alpha: 0.9)]
+                        : [AppColors.black, AppColors.black.withValues(alpha: 0.9)],
                   ),
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
@@ -669,7 +669,7 @@ class _PlaceDetailsSheet extends StatelessWidget {
                         color: (Theme.of(context).brightness == Brightness.dark
                                 ? AppColors.white
                                 : AppColors.black)
-                            .withOpacity(0.25),
+                            .withValues(alpha: 0.25),
                         blurRadius: 20,
                         offset: const Offset(0, 10))
                   ],
@@ -686,7 +686,7 @@ class _PlaceDetailsSheet extends StatelessWidget {
                       letterSpacing: 2.0),
                 ),
               ),
-            ).animate(delay: 100.ms).fadeIn().slideY(begin: 0.2),
+            ).animate(delay: 100.ms).fadeIn(),
           ],
         ),
       ),
@@ -707,7 +707,7 @@ class _PersonDetailsSheet extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
         child: Container(
           decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context).withOpacity(0.92),
+            color: GlassTheme.glassColor(context).withValues(alpha: 0.92),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             border: Border.all(color: GlassTheme.glassBorder(context)),
           ),
@@ -720,7 +720,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                   width: 40,
                   height: 4,
                   decoration: BoxDecoration(
-                      color: GlassTheme.textColor(context).withOpacity(0.1),
+                      color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 24),
               const Icon(Icons.workspace_premium_rounded,
@@ -762,14 +762,14 @@ class _PersonDetailsSheet extends StatelessWidget {
             return Container(
               decoration: BoxDecoration(
                 color: isDark
-                    ? AppColors.backgroundDark.withOpacity(0.92)
-                    : AppColors.white.withOpacity(0.94),
+                    ? AppColors.backgroundDark.withValues(alpha: 0.92)
+                    : AppColors.white.withValues(alpha: 0.94),
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(40)),
                 border: Border.all(
                     color: isDark
-                        ? AppColors.white.withOpacity(0.1)
-                        : AppColors.black.withOpacity(0.07),
+                        ? AppColors.white.withValues(alpha: 0.1)
+                        : AppColors.black.withValues(alpha: 0.07),
                     width: 1.5),
               ),
               padding: EdgeInsets.fromLTRB(
@@ -781,7 +781,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                       width: 36,
                       height: 4,
                       decoration: BoxDecoration(
-                          color: GlassTheme.textColor(context).withOpacity(0.1),
+                          color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(2))),
                   const SizedBox(height: 28),
                   RepaintBoundary(
@@ -792,7 +792,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             border: Border.all(
-                                color: AppColors.primary.withOpacity(0.3),
+                                color: AppColors.primary.withValues(alpha: 0.3),
                                 width: 2),
                           ),
                           child: CircleAvatar(
@@ -844,7 +844,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ).animate().fadeIn().slideY(begin: 0.1),
+                  ).animate().fadeIn(),
                   const SizedBox(height: 36),
                   RepaintBoundary(
                     child: Row(
@@ -888,7 +888,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                             height: 56,
                             decoration: BoxDecoration(
                               color: GlassTheme.glassColor(context)
-                                  .withOpacity(0.1),
+                                  .withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(18),
                               border: Border.all(
                                   color: GlassTheme.glassBorder(context)),
@@ -899,7 +899,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ).animate(delay: 100.ms).fadeIn().slideY(begin: 0.2),
+                  ).animate(delay: 100.ms).fadeIn(),
                   const SizedBox(height: 12),
                   _ActionElevatedButton(
                     label: 'VIEW FULL PROFILE',
@@ -909,7 +909,7 @@ class _PersonDetailsSheet extends StatelessWidget {
                           context, PersonProfileScreen.routeName,
                           arguments: currentPerson);
                     },
-                  ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.2),
+                  ).animate(delay: 200.ms).fadeIn(),
                 ],
               ),
             );
@@ -941,12 +941,12 @@ class _GlassCircularButton extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: isDark
-                  ? AppColors.white.withOpacity(0.1)
-                  : AppColors.white.withOpacity(0.8),
+                  ? AppColors.white.withValues(alpha: 0.1)
+                  : AppColors.white.withValues(alpha: 0.8),
               border: Border.all(
                   color: isDark
-                      ? AppColors.white.withOpacity(0.15)
-                      : AppColors.black.withOpacity(0.1)),
+                      ? AppColors.white.withValues(alpha: 0.15)
+                      : AppColors.black.withValues(alpha: 0.1)),
             ),
             child: Icon(icon,
                 color: GlassTheme.iconColor(context), size: size * 0.5),
@@ -969,7 +969,7 @@ class _GlassActionButton extends StatelessWidget {
       child: Container(
         height: 56,
         decoration: BoxDecoration(
-          color: GlassTheme.glassColor(context).withOpacity(0.1),
+          color: GlassTheme.glassColor(context).withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: GlassTheme.glassBorder(context)),
         ),
@@ -1012,3 +1012,4 @@ class _ActionElevatedButton extends StatelessWidget {
     );
   }
 }
+

@@ -33,7 +33,7 @@ class UserProvider with ChangeNotifier {
   String _name = 'Alex';
   String _email = 'alex@example.com';
   String _phone = '+91 9023256218';
-  String _profileImage = 'https://i.pravatar.cc/300';
+  final String _profileImage = 'https://i.pravatar.cc/300';
   String _role = 'Freelancer';
   String _bio = 'Freelance Developer | Coffee Lover';
 

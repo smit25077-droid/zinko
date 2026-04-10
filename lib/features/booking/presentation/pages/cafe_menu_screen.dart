@@ -40,7 +40,8 @@ class _CafeMenuContent extends StatelessWidget {
             title: 'CHECKED IN!',
             subtitle: 'Order placed. Enjoy your workspace!',
             onFinish: () {
-              Navigator.pushNamedAndRemoveUntil(context, BookingsScreen.routeName, (route) => false);
+              Navigator.pushNamedAndRemoveUntil(
+                  context, BookingsScreen.routeName, (route) => false);
             },
           );
         }
@@ -52,12 +53,17 @@ class _CafeMenuContent extends StatelessWidget {
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white, size: 20),
+              icon: const Icon(Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white, size: 20),
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
               'CAFE MENU',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5),
             ),
             centerTitle: true,
           ),
@@ -67,12 +73,16 @@ class _CafeMenuContent extends StatelessWidget {
                 children: [
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
                     color: GlassTheme.glassColor(context),
                     child: const Text(
                       'Select items to order with your check-in:',
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: OptimizedColors.white70),
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: OptimizedColors.white70),
                     ),
                   ),
                   Expanded(
@@ -95,7 +105,8 @@ class _CafeMenuContent extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItemCard(BuildContext context, Map<String, dynamic> item, int index) {
+  Widget _buildMenuItemCard(
+      BuildContext context, Map<String, dynamic> item, int index) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(20),
       child: BackdropFilter(
@@ -112,34 +123,51 @@ class _CafeMenuContent extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(14),
-                child: Image.network(item['image'], width: 70, height: 70, fit: BoxFit.cover),
+                child: Image.network(item['image'],
+                    width: 70, height: 70, fit: BoxFit.cover),
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item['name'], style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5)),
+                    Text(item['name'],
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: -0.5)),
                     const SizedBox(height: 2),
-                    Text('£${item['price']}', style: const TextStyle(fontSize: 14, color: OptimizedColors.white60, fontWeight: FontWeight.w700)),
+                    Text('£${item['price']}',
+                        style: const TextStyle(
+                            fontSize: 14,
+                            color: OptimizedColors.white60,
+                            fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
               Row(
                 children: [
                   _buildQtyBtn(context, Icons.remove_rounded, () {
-                    context.read<CafeMenuBloc>().add(UpdateQuantityEvent(index, -1));
+                    context
+                        .read<CafeMenuBloc>()
+                        .add(UpdateQuantityEvent(index, -1));
                   }),
                   SizedBox(
                     width: 32,
                     child: Text(
                       '${item['quantity']}',
                       textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w900, color: Colors.white),
+                      style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white),
                     ),
                   ),
                   _buildQtyBtn(context, Icons.add_rounded, () {
-                    context.read<CafeMenuBloc>().add(UpdateQuantityEvent(index, 1));
+                    context
+                        .read<CafeMenuBloc>()
+                        .add(UpdateQuantityEvent(index, 1));
                   }),
                 ],
               ),
@@ -147,14 +175,15 @@ class _CafeMenuContent extends StatelessWidget {
           ),
         ),
       ),
-    ).animate().fadeIn(delay: (index * 80).ms).slideX(begin: 0.05);
+    ).animate().fadeIn(delay: (index * 80).ms);
   }
 
   Widget _buildQtyBtn(BuildContext context, IconData icon, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 28, height: 28,
+        width: 28,
+        height: 28,
         decoration: BoxDecoration(
           color: GlassTheme.glassColor(context),
           shape: BoxShape.circle,
@@ -173,7 +202,8 @@ class _CafeMenuContent extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 20, 24, 40),
           decoration: BoxDecoration(
             color: GlassTheme.backgroundOverlay(context),
-            border: Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
+            border:
+                Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
           ),
           child: Row(
             children: [
@@ -181,9 +211,19 @@ class _CafeMenuContent extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('TOTAL ORDER', style: const TextStyle(fontSize: 9, color: OptimizedColors.white60, fontWeight: FontWeight.w900, letterSpacing: 1.0)),
+                  Text('TOTAL ORDER',
+                      style: const TextStyle(
+                          fontSize: 9,
+                          color: OptimizedColors.white60,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0)),
                   const SizedBox(height: 2),
-                  Text('£${total.toStringAsFixed(0)}', style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -0.5)),
+                  Text('£${total.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                          letterSpacing: -0.5)),
                 ],
               ),
               const SizedBox(width: 24),
@@ -192,19 +232,27 @@ class _CafeMenuContent extends StatelessWidget {
                   height: 52,
                   child: ElevatedButton(
                     onPressed: () {
-                      final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+                      final args = ModalRoute.of(context)?.settings.arguments
+                          as Map<String, dynamic>?;
                       final bookingId = args?['bookingId'] as String?;
                       if (bookingId != null) {
-                        context.read<CafeMenuBloc>().add(ConfirmCheckInEvent(bookingId));
+                        context
+                            .read<CafeMenuBloc>()
+                            .add(ConfirmCheckInEvent(bookingId));
                       }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16)),
                       elevation: 0,
                     ),
-                    child: const Text('CONFIRM & CHECK IN', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                    child: const Text('CONFIRM & CHECK IN',
+                        style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 0.5)),
                   ),
                 ),
               ),
@@ -215,3 +263,4 @@ class _CafeMenuContent extends StatelessWidget {
     );
   }
 }
+

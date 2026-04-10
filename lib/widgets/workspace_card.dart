@@ -36,7 +36,7 @@ class WorkspaceCard extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: theme.dividerColor.withOpacity(0.1),
+            color: theme.dividerColor.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -61,7 +61,9 @@ class WorkspaceCard extends StatelessWidget {
                   ),
                   IconButton(
                     icon: Icon(
-                      isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                      isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
                       color: isFavorite ? Colors.redAccent : null,
                     ),
                     onPressed: onFavoriteTap,
@@ -74,7 +76,7 @@ class WorkspaceCard extends StatelessWidget {
                   Icon(
                     Icons.location_on_rounded,
                     size: 16,
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
@@ -83,7 +85,7 @@ class WorkspaceCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.onSurface.withOpacity(0.5),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -93,11 +95,13 @@ class WorkspaceCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  const Icon(Icons.star_rounded, size: 18, color: Colors.amberAccent),
+                  const Icon(Icons.star_rounded,
+                      size: 18, color: Colors.amberAccent),
                   const SizedBox(width: 4),
                   Text(
                     rating.toStringAsFixed(1),
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w800, fontSize: 14),
                   ),
                 ],
               ),
@@ -107,11 +111,13 @@ class WorkspaceCard extends StatelessWidget {
                 runSpacing: 8,
                 children: amenities.take(3).map((amenity) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
-                      color: theme.primaryColor.withOpacity(0.08),
+                      color: theme.primaryColor.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: theme.primaryColor.withOpacity(0.15)),
+                      border: Border.all(
+                          color: theme.primaryColor.withValues(alpha: 0.15)),
                     ),
                     child: Text(
                       amenity,
@@ -145,9 +151,11 @@ class WorkspaceCard extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 12),
                     ),
-                    child: const Text('Book Space', style: TextStyle(fontWeight: FontWeight.w800)),
+                    child: const Text('Book Space',
+                        style: TextStyle(fontWeight: FontWeight.w800)),
                   ),
                 ],
               ),
@@ -155,6 +163,6 @@ class WorkspaceCard extends StatelessWidget {
           ),
         ),
       ),
-    ).animate().fadeIn(duration: 400.ms).slideX(begin: 0.1, end: 0);
+    ).animate().fadeIn(duration: 400.ms);
   }
 }

@@ -6,14 +6,16 @@ import '../booking_event.dart';
 
 class CafeMenuBloc extends Bloc<CafeMenuEvent, CafeMenuState> {
   final BookingBloc bookingBloc;
-  
+
   CafeMenuBloc({required this.bookingBloc}) : super(CafeMenuState.initial()) {
     on<UpdateQuantityEvent>(_onUpdateQuantity);
     on<ConfirmCheckInEvent>(_onConfirmCheckIn);
   }
 
-  void _onUpdateQuantity(UpdateQuantityEvent event, Emitter<CafeMenuState> emit) {
-    final newList = List<Map<String, dynamic>>.from(state.menuItems.map((m) => Map<String, dynamic>.from(m)));
+  void _onUpdateQuantity(
+      UpdateQuantityEvent event, Emitter<CafeMenuState> emit) {
+    final newList = List<Map<String, dynamic>>.from(
+        state.menuItems.map((m) => Map<String, dynamic>.from(m)));
     final item = newList[event.index];
     int newQty = item['quantity'] + event.delta;
     if (newQty >= 0) {
@@ -22,7 +24,8 @@ class CafeMenuBloc extends Bloc<CafeMenuEvent, CafeMenuState> {
     }
   }
 
-  Future<void> _onConfirmCheckIn(ConfirmCheckInEvent event, Emitter<CafeMenuState> emit) async {
+  Future<void> _onConfirmCheckIn(
+      ConfirmCheckInEvent event, Emitter<CafeMenuState> emit) async {
     bookingBloc.add(CompleteBookingEvent(event.bookingId));
     emit(state.copyWith(isSuccess: true));
   }

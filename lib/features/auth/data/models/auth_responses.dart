@@ -22,7 +22,9 @@ class AuthResponse<T> extends Equatable {
     return AuthResponse<T>(
       statusCode: json['statusCode'] ?? 0,
       message: json['message'] ?? '',
-      data: fromJsonT != null && json['data'] != null ? fromJsonT(json['data']) : null,
+      data: fromJsonT != null && json['data'] != null
+          ? fromJsonT(json['data'])
+          : null,
       requestId: json['requestId'] ?? '',
       timestamp: json['timestamp'] ?? '',
     );
@@ -50,10 +52,10 @@ class UserData extends Equatable {
   factory UserData.fromJson(Map<String, dynamic> json) {
     return UserData(
       token: json['token'] ?? '',
-      userName: json['userName'] ?? '',
-      userType: json['userType'] ?? '',
-      userCode: json['userCode'] ?? 0,
-      mobileNo: json['mobileNo'] ?? '',
+      userName: json['userName'] ?? (json['user_name'] ?? ''),
+      userType: json['userType'] ?? (json['user_type'] ?? ''),
+      userCode: json['userCode'] ?? (json['user_code'] ?? 0),
+      mobileNo: json['mobileNo'] ?? (json['mobile_no'] ?? ''),
     );
   }
 

@@ -1,4 +1,3 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -9,10 +8,32 @@ import '../bloc/workspace_state.dart';
 import 'workspace_detail_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_glass_box.dart';
 
-class AllWorkspacesScreen extends StatelessWidget {
+class AllWorkspacesScreen extends StatefulWidget {
   static const String routeName = '/all-workspaces';
   const AllWorkspacesScreen({super.key});
+
+  @override
+  State<AllWorkspacesScreen> createState() => _AllWorkspacesScreenState();
+}
+
+class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,126 +41,245 @@ class AllWorkspacesScreen extends StatelessWidget {
       extendBodyBehindAppBar: true,
       body: ZinkoBackground(
         child: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: [
-                      _GlassHeaderButton(
-                        icon: Icons.arrow_back_ios_new_rounded,
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'ALL WORKSPACES',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: GlassTheme.textColor(context),
-                            fontWeight: FontWeight.w900,
-                            fontSize: 16,
-                            letterSpacing: 2.0,
-                          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  children: [
+                    _GlassHeaderButton(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      onTap: () => Navigator.pop(context),
+                    ),
+                    Expanded(
+                      child: Text(
+                        'ALL WORKSPACES',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: GlassTheme.textColor(context),
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                          letterSpacing: 2.0,
                         ),
                       ),
-                      const SizedBox(width: 44),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 44),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(18),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        height: 52,
-                        decoration: BoxDecoration(
-                          color: GlassTheme.glassColor(context),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(
-                              color: GlassTheme.glassBorder(context)),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                child: ZinkoGlassBox(
+                  blur: 15,
+                  borderRadius: 18,
+                  child: SizedBox(
+                    height: 52,
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (val) => context.read<WorkspaceBloc>().add(SearchWorkspacesEvent(val)),
+                      style: TextStyle(
+                          color: GlassTheme.textColor(context),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600),
+                      decoration: InputDecoration(
+                        hintText: 'Search office, cafe, location...',
+                        hintStyle: TextStyle(
+                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
+                            fontSize: 13),
+                        prefixIcon: Icon(Icons.search_rounded,
+                            color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
+                            size: 20),
+                        suffixIcon: ValueListenableBuilder(
+                          valueListenable: _searchController,
+                          builder: (context, value, _) {
+                            return value.text.isNotEmpty
+                                ? IconButton(
+                                    icon: Icon(Icons.clear_rounded,
+                                        color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
+                                        size: 18),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
+                                    },
+                                  )
+                                : const SizedBox.shrink();
+                          },
                         ),
-                        child: TextField(
-                          onChanged: (val) => context
-                              .read<WorkspaceBloc>()
-                              .add(SearchWorkspacesEvent(val)),
-                          style: TextStyle(
-                              color: GlassTheme.textColor(context),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600),
-                          decoration: InputDecoration(
-                            hintText: 'Search office, cafe, location...',
-                            hintStyle: TextStyle(
-                                color: GlassTheme.secondaryTextColor(context)
-                                    .withOpacity(0.3),
-                                fontSize: 13),
-                            prefixIcon: Icon(Icons.search_rounded,
-                                color: GlassTheme.iconColor(context)
-                                    .withOpacity(0.4),
-                                size: 20),
-                            border: InputBorder.none,
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 14),
-                          ),
-                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
                   ),
                 ),
-                Expanded(
-                  child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
-                    builder: (context, state) {
-                      if (state is WorkspaceLoading) {
-                        return Center(
-                            child: CircularProgressIndicator(
-                                color: GlassTheme.textColor(context)));
-                      } else if (state is WorkspaceLoaded) {
-                        final query = state.searchQuery.toLowerCase();
-                        final filtered = state.workspaces
-                            .where((p) =>
-                                p.name.toLowerCase().contains(query) ||
-                                p.location.toLowerCase().contains(query))
-                            .toList();
+              ),
+              Expanded(
+                child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
+                  builder: (context, state) {
+                    if (state is WorkspaceLoading) {
+                      return const _WorkspaceShimmer();
+                    } else if (state is WorkspaceLoaded) {
+                      final query = state.searchQuery.toLowerCase();
+                      final bool useLocalFiltering = query.isNotEmpty && query.length < 3;
 
-                        if (filtered.isEmpty) {
-                          return Center(
-                            child: Text('No workspaces found',
-                                style: TextStyle(
-                                    color:
-                                        GlassTheme.secondaryTextColor(context)
-                                            .withOpacity(0.5))),
-                          );
-                        }
+                      final filtered = useLocalFiltering
+                          ? state.workspaces
+                              .where((p) =>
+                                  p.name.toLowerCase().contains(query) ||
+                                  p.location.toLowerCase().contains(query))
+                              .toList()
+                          : state.workspaces;
 
-                        return ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 8),
-                          physics: const BouncingScrollPhysics(),
-                          itemCount: filtered.length,
-                          itemBuilder: (ctx, i) {
-                            final workspace = filtered[i];
-                            return _WorkspaceCard(
-                              workspace: workspace,
-                              onFavTap: () => context.read<WorkspaceBloc>().add(
-                                  ToggleFavoriteWorkspaceEvent(workspace.id)),
-                            );
+                      if (filtered.isEmpty) {
+                        return _EmptyState(
+                          query: query,
+                          onClear: () {
+                            _searchController.clear();
+                            context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
                           },
                         );
-                      } else if (state is WorkspaceError) {
-                        return Center(
-                            child: Text(state.message,
-                                style: TextStyle(
-                                    color: GlassTheme.textColor(context))));
                       }
-                      return const SizedBox();
-                    },
-                  ),
+
+                      return ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: filtered.length,
+                        itemBuilder: (ctx, i) {
+                          final workspace = filtered[i];
+                          return _WorkspaceCard(
+                            workspace: workspace,
+                            onFavTap: () => context
+                                .read<WorkspaceBloc>()
+                                .add(ToggleFavoriteWorkspaceEvent(workspace.id)),
+                          );
+                        },
+                      );
+                    } else if (state is WorkspaceError) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(state.message,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(color: GlassTheme.textColor(context))),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: () => context
+                                  .read<WorkspaceBloc>()
+                                  .add(const SearchWorkspacesEvent('')),
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox();
+                  },
                 ),
-              ],
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _WorkspaceShimmer extends StatelessWidget {
+  const _WorkspaceShimmer();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: 5,
+      itemBuilder: (context, index) => const _ShimmerCard(),
+    );
+  }
+}
+
+class _ShimmerCard extends StatelessWidget {
+  const _ShimmerCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ZinkoGlassBox.light(
+        useBlur: false, // Performance optimization for shimmer lists
+        child: SizedBox(
+          height: 300,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                height: 160,
+                decoration: BoxDecoration(
+                  color: GlassTheme.textColor(context).withValues(alpha: 0.1),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                ),
+              ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                  duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 20,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: GlassTheme.textColor(context).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                        duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 14,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: GlassTheme.textColor(context).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                        duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                    const SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: List.generate(
+                              3,
+                              (index) => Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    width: 30,
+                                    height: 30,
+                                    decoration: BoxDecoration(
+                                      color: GlassTheme.textColor(context).withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                                      duration: 1200.ms,
+                                      color: Colors.white.withValues(alpha: 0.3))),
+                        ),
+                        Container(
+                          height: 20,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: GlassTheme.textColor(context).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ).animate(onPlay: (controller) => controller.repeat()).shimmer(
+                            duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -154,123 +294,108 @@ class _WorkspaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName,
-          arguments: workspace),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-              boxShadow: [GlassTheme.glassShadow(context)],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  height: 160,
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(24)),
-                        child: Image.network(
-                          workspace.imageUrl,
-                          width: double.infinity,
-                          height: 160,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Container(
-                              color: GlassTheme.glassColor(context),
-                              height: 160),
-                        ),
+      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: workspace),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: ZinkoGlassBox.light(
+          useBlur: false, // PERFORMANCE: Disable blur in long lists
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 160,
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                      child: Image.network(
+                        workspace.imageUrl,
+                        width: double.infinity,
+                        height: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            Container(color: GlassTheme.glassColor(context), height: 160),
                       ),
-                      Positioned(
-                        top: 12,
-                        right: 12,
-                        child: _GlassFavButton(
-                            isFavorite: workspace.isFavorite, onTap: onFavTap),
-                      ),
-                    ],
-                  ),
+                    ),
+                    Positioned(
+                      top: 12,
+                      right: 12,
+                      child: _GlassFavButton(isFavorite: workspace.isFavorite, onTap: onFavTap),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                              child: Text(workspace.name,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color: GlassTheme.textColor(context),
-                                      letterSpacing: -0.5))),
-                          _RatingBadge(rating: workspace.rating),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on_outlined,
-                              size: 14,
-                              color: GlassTheme.secondaryTextColor(context)
-                                  .withOpacity(0.4)),
-                          const SizedBox(width: 4),
-                          Text('${workspace.location} • ${workspace.distance}',
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: Text(workspace.name,
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w900,
+                                    color: GlassTheme.textColor(context),
+                                    letterSpacing: -0.5))),
+                        _RatingBadge(rating: workspace.rating),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_outlined,
+                            size: 14,
+                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4)),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text('${workspace.location} • ${workspace.distance}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                   fontSize: 12,
-                                  color: GlassTheme.secondaryTextColor(context)
-                                      .withOpacity(0.4),
+                                  color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4),
                                   fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: workspace.amenities
-                                .take(3)
-                                .map((icon) => Container(
-                                      margin: const EdgeInsets.only(right: 8),
-                                      padding: const EdgeInsets.all(6),
-                                      decoration: BoxDecoration(
-                                          color: GlassTheme.textColor(context)
-                                              .withOpacity(0.05),
-                                          borderRadius:
-                                              BorderRadius.circular(8)),
-                                      child: Icon(icon,
-                                          size: 14,
-                                          color: GlassTheme.iconColor(context)
-                                              .withOpacity(0.7)),
-                                    ))
-                                .toList(),
-                          ),
-                          Text(
-                            '${workspace.price}${workspace.priceUnit}',
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w900,
-                                color: GlassTheme.textColor(context)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: workspace.amenities
+                              .take(3)
+                              .map((icon) => Container(
+                                    margin: const EdgeInsets.only(right: 8),
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                        color: GlassTheme.textColor(context).withValues(alpha: 0.05),
+                                        borderRadius: BorderRadius.circular(8)),
+                                    child: Icon(icon,
+                                        size: 14, color: GlassTheme.iconColor(context).withValues(alpha: 0.7)),
+                                  ))
+                              .toList(),
+                        ),
+                        Text(
+                          '${workspace.price}${workspace.priceUnit}',
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: GlassTheme.textColor(context)),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1);
+      ).animate().fadeIn(duration: 400.ms),
+    );
   }
 }
 
@@ -283,27 +408,18 @@ class _GlassFavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context).withOpacity(0.5),
-              shape: BoxShape.circle,
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-            ),
-            child: Icon(
-              isFavorite
-                  ? Icons.favorite_rounded
-                  : Icons.favorite_border_rounded,
-              color:
-                  isFavorite ? Colors.redAccent : GlassTheme.iconColor(context),
-              size: 18,
-            ),
-          ),
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.black45, // Solid dark for better visibility and performance
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white10),
+        ),
+        child: Icon(
+          isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          color: isFavorite ? Colors.redAccent : Colors.white,
+          size: 18,
         ),
       ),
     );
@@ -331,9 +447,7 @@ class _RatingBadge extends StatelessWidget {
           Text(
             rating.toStringAsFixed(1),
             style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w800,
-                color: GlassTheme.textColor(context)),
+                fontSize: 12, fontWeight: FontWeight.w800, color: GlassTheme.textColor(context)),
           ),
         ],
       ),
@@ -350,20 +464,109 @@ class _GlassHeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
+      child: ZinkoGlassBox.light(
+        borderRadius: 12,
+        padding: EdgeInsets.zero,
+        child: SizedBox(
+          width: 40,
+          height: 40,
+          child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  final String query;
+  final VoidCallback onClear;
+
+  const _EmptyState({required this.query, required this.onClear});
+
+  @override
+  Widget build(BuildContext context) {
+    final isSearch = query.isNotEmpty;
+
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const SizedBox(height: 100),
+            // Animated Icon with Glow
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 140,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: GlassTheme.textColor(context).withValues(alpha: 0.05),
+                        blurRadius: 40,
+                        spreadRadius: 10,
+                      )
+                    ],
+                  ),
+                ),
+                Icon(
+                  isSearch ? Icons.search_off_rounded : Icons.home_work_outlined,
+                  size: 100,
+                  color: GlassTheme.textColor(context).withValues(alpha: 0.15),
+                ).animate(onPlay: (c) => c.repeat(reverse: true))
+                 .scale(duration: 2.seconds, begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05)),
+              ],
             ),
-            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
-          ),
+            const SizedBox(height: 32),
+            Text(
+              isSearch ? 'NO MATCHES FOUND' : 'NO WORKSPACES',
+              style: TextStyle(
+                color: GlassTheme.textColor(context),
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 2,
+              ),
+            ).animate().fadeIn(delay: 200.ms),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 48),
+              child: Text(
+                isSearch
+                    ? 'We couldn\'t find anything matching "$query". Try something else!'
+                    : 'Currently, there are no workspaces available. Check back soon!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.6),
+                  fontSize: 14,
+                  height: 1.5,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ).animate(delay: 400.ms).fadeIn(),
+            const SizedBox(height: 48),
+            if (isSearch)
+              TextButton.icon(
+                onPressed: onClear,
+                style: TextButton.styleFrom(
+                  backgroundColor: GlassTheme.textColor(context).withValues(alpha: 0.08),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                icon: Icon(Icons.refresh_rounded, color: GlassTheme.textColor(context), size: 18),
+                label: Text(
+                  'RESET SEARCH',
+                  style: TextStyle(
+                    color: GlassTheme.textColor(context),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1,
+                    fontSize: 12,
+                  ),
+                ),
+              ).animate(delay: 600.ms).fadeIn().scale(),
+          ],
         ),
       ),
     );

@@ -33,7 +33,8 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  Future<void> _onGetMessages(GetMessagesEvent event, Emitter<ChatState> emit) async {
+  Future<void> _onGetMessages(
+      GetMessagesEvent event, Emitter<ChatState> emit) async {
     emit(MessagesLoading());
     final result = await getMessages(event.chatId);
     result.fold(
@@ -42,14 +43,17 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     );
   }
 
-  Future<void> _onSendMessage(SendChatMessageEvent event, Emitter<ChatState> emit) async {
-    final result = await sendChatMessage(SendMessageParams(chatId: event.chatId, text: event.text));
+  Future<void> _onSendMessage(
+      SendChatMessageEvent event, Emitter<ChatState> emit) async {
+    final result = await sendChatMessage(
+        SendMessageParams(chatId: event.chatId, text: event.text));
     result.fold(
       (failure) => emit(ChatError(failure.message)),
       (message) {
         if (state is MessagesLoaded) {
           final currentState = state as MessagesLoaded;
-          final updatedMessages = List<MessageEntity>.from(currentState.messages)..add(message);
+          final updatedMessages =
+              List<MessageEntity>.from(currentState.messages)..add(message);
           emit(MessagesLoaded(updatedMessages, chats: _chats));
         }
       },

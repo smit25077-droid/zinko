@@ -1,4 +1,3 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 
 import '../../../event/presentation/pages/events_screen.dart';
@@ -8,7 +7,7 @@ import 'map_screen.dart';
 import '../../../community/presentation/pages/community_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/optimized_colors.dart';
+import '../../../../widgets/zinko_glass_box.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/bloc/navigation/navigation_bloc.dart';
@@ -34,18 +33,37 @@ class HomeScreen extends StatelessWidget {
       create: (_) => di.sl<NavigationBloc>(),
       child: BlocBuilder<NavigationBloc, NavigationState>(
         builder: (context, state) {
-          return Scaffold(
-            backgroundColor: AppColors.transparent, // Uses global background
-            extendBody: true,
-            body: IndexedStack(
-              index: state.index,
-              children: _screens,
-            ),
-            bottomNavigationBar: _iOSGlassBottomNav(
-              currentIndex: state.index,
-              onTap: (index) => context
-                  .read<NavigationBloc>()
-                  .add(NavigationTabChanged(index)),
+          return PopScope(
+            canPop: state.index == 0,
+            onPopInvokedWithResult: (didPop, result) {
+              if (didPop) return;
+              if (state.index != 0) {
+                context
+                    .read<NavigationBloc>()
+                    .add(const NavigationTabChanged(0));
+              }
+            },
+            child: Scaffold(
+              backgroundColor: AppColors.transparent,
+              body: Stack(
+                children: [
+                  IndexedStack(
+                    index: state.index,
+                    children: _screens,
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: _FloatingGlassDock(
+                      currentIndex: state.index,
+                      onTap: (index) => context
+                          .read<NavigationBloc>()
+                          .add(NavigationTabChanged(index)),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -54,45 +72,68 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _iOSGlassBottomNav extends StatelessWidget {
+class _FloatingGlassDock extends StatelessWidget {
   final int currentIndex;
   final void Function(int) onTap;
 
-  const _iOSGlassBottomNav({required this.currentIndex, required this.onTap});
+  const _FloatingGlassDock({required this.currentIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          height: 64 + bottomPadding,
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            border: Border(
-                top: BorderSide(
-                    color: GlassTheme.glassBorder(context), width: 0.5)),
-            boxShadow: [
-              BoxShadow(
-                  color: OptimizedColors.black05,
-                  blurRadius: 30,
-                  offset: const Offset(0, -10))
-            ],
-          ),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 10),
+      child: ZinkoGlassBox.thick(
+        blur: 25,
+        borderRadius: 30,
+        color: GlassTheme.glassColor(context).withValues(alpha: isDark ? 0.2 : 0.4),
+        border: Border.all(color: GlassTheme.glassBorder(context), width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 30,
+            offset: const Offset(0, 10),
+          )
+        ],
+        child: SizedBox(
+          height: 60,
           child: Padding(
-            padding: EdgeInsets.only(bottom: bottomPadding),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildNavItem(context, 0, Icons.explore_rounded, 'EXPLORE'),
-                _buildNavItem(context, 1, Icons.map_rounded, 'MAP'),
-                _buildNavItem(
-                    context, 2, Icons.calendar_today_rounded, 'EVENTS'),
-                _buildNavItem(
-                    context, 3, Icons.people_alt_rounded, 'COMMUNITY'),
-                _buildNavItem(context, 4, Icons.person_rounded, 'PROFILE'),
+                _ExpandingNavItem(
+                    index: 0,
+                    current: currentIndex,
+                    icon: Icons.grid_view_rounded,
+                    label: 'HOME',
+                    onTap: onTap),
+                _ExpandingNavItem(
+                    index: 1,
+                    current: currentIndex,
+                    icon: Icons.map_rounded,
+                    label: 'MAP',
+                    onTap: onTap),
+                _ExpandingNavItem(
+                    index: 2,
+                    current: currentIndex,
+                    icon: Icons.star_rounded,
+                    label: 'EVENTS',
+                    onTap: onTap),
+                _ExpandingNavItem(
+                    index: 3,
+                    current: currentIndex,
+                    icon: Icons.chat_bubble_rounded,
+                    label: 'COMMUNITY',
+                    onTap: onTap),
+                _ExpandingNavItem(
+                    index: 4,
+                    current: currentIndex,
+                    icon: Icons.person_rounded,
+                    label: 'ME',
+                    onTap: onTap),
               ],
             ),
           ),
@@ -100,56 +141,75 @@ class _iOSGlassBottomNav extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildNavItem(
-      BuildContext context, int index, IconData icon, String label) {
-    final isSelected = currentIndex == index;
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+class _ExpandingNavItem extends StatelessWidget {
+  final int index;
+  final int current;
+  final IconData icon;
+  final String label;
+  final void Function(int) onTap;
 
-    final activeColor = isDarkMode ? AppColors.white : AppColors.black;
+  const _ExpandingNavItem({
+    required this.index,
+    required this.current,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => onTap(index),
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          color: AppColors.transparent,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                transform: isSelected 
-                    ? (Matrix4.identity()..scale(1.1, 1.1))
-                    : (Matrix4.identity()..scale(1.0, 1.0)),
-                child: Icon(
-                  icon,
-                  color: isSelected ? activeColor : GlassTheme.iconColor(context, isSelected: false),
-                  size: 24,
-                ),
-              ),
-              const SizedBox(height: 4),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                curve: Curves.easeOut,
-                height: isSelected ? 10 : 0,
-                child: Opacity(
-                  opacity: isSelected ? 1.0 : 0.0,
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      color: activeColor,
-                      fontSize: 8,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.8,
-                    ),
-                  ),
-                ),
-              ),
-              if (!isSelected) const SizedBox(height: 10),
-            ],
+  @override
+  Widget build(BuildContext context) {
+    final isSelected = index == current;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeColor = isDark ? Colors.white : Colors.black;
+
+    return GestureDetector(
+      onTap: () => onTap(index),
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color:
+              isSelected ? activeColor.withValues(alpha: 0.12) : Colors.transparent,
+          borderRadius: BorderRadius.circular(50),
+          border: Border.all(
+            color:
+                isSelected ? activeColor.withValues(alpha: 0.08) : Colors.transparent,
+            width: 1,
           ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected
+                  ? activeColor
+                  : GlassTheme.iconColor(context, isSelected: false),
+              size: 22,
+            ),
+            AnimatedSize(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: isSelected
+                  ? Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: activeColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ],
         ),
       ),
     );

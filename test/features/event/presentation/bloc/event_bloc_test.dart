@@ -12,7 +12,9 @@ import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
 import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
 
 class MockGetEvents extends Mock implements GetEvents {}
+
 class MockToggleFavoriteEvent extends Mock implements ToggleFavoriteEvent {}
+
 class MockRegisterEvent extends Mock implements RegisterEvent {}
 
 void main() {
@@ -70,8 +72,7 @@ void main() {
       act: (bloc) => bloc.add(GetEventsEvent()),
       expect: () => [
         isA<EventLoading>(),
-        isA<EventLoaded>()
-            .having((s) => s.events, 'events', tEventList),
+        isA<EventLoaded>().having((s) => s.events, 'events', tEventList),
       ],
     );
 

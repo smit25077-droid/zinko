@@ -2,12 +2,13 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'dart:io';
 
 import '../../../booking/presentation/pages/bookings_screen.dart';
 import '../../../booking/presentation/pages/wishlist_screen.dart';
 import '../../../onboarding/presentation/pages/splash_screen.dart';
 import '../../../settings/presentation/pages/settings_screen.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_event.dart';
 import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
@@ -18,79 +19,119 @@ import 'wallet_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 
-class ProfileScreen extends StatelessWidget {
+import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_network_image.dart';
+
+class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
 
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final state = context.read<UserBloc>().state;
+    if (state is UserInitial || state is UserError) {
+      context.read<UserBloc>().add(GetUserProfileEvent());
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.transparent,
-      extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: BlocBuilder<UserBloc, UserState>(
-          builder: (context, state) {
-            if (state is UserInitial) {
-              context.read<UserBloc>().add(GetUserProfileEvent());
-            }
-            if (state is UserLoading) {
-              return Center(
-                  child: CircularProgressIndicator(
-                      color: GlassTheme.textColor(context)));
-            }
-            if (state is UserLoaded) {
-              final user = state.user;
+    return ZinkoBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: SafeArea(
+          child: BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              final user = state is UserLoaded ? state.user : null;
+              final isLoading = state is UserLoading;
+              final isError = state is UserError;
+
               return CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
-                  _buildHeader(context, user),
+                  _buildHeader(context, user, isLoading),
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
                         children: [
-                          const SizedBox(height: 20),
+                          if (isError) ...[
+                            const SizedBox(height: 12),
+                            _buildErrorBanner(context, (state).message),
+                          ],
+                          const SizedBox(height: 12),
                           _buildMembershipCard(context, user),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 12),
                           _buildSectionTitle(context, 'MY ACCOUNT'),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
                           _buildAccountCard(context, user),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 20),
                           _buildSectionTitle(context, 'RECENT ACTIVITY'),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 10),
                           _buildMenuGrid(context),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 20),
                           _buildSectionTitle(context, 'PREFERENCES & SETTINGS'),
-                          const SizedBox(height: 12),
-                          _buildGeneralList(context),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 10),
+                          _buildGeneralList(context, user),
+                          const SizedBox(height: 24),
                           _buildLogoutBtn(context),
-                          const SizedBox(height: 120),
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
                   ),
                 ],
               );
-            }
-            if (state is UserError) {
-              return Center(
-                  child: Text(state.message,
-                      style: TextStyle(color: GlassTheme.textColor(context))));
-            }
-            return Center(
-                child: CircularProgressIndicator(
-                    color: GlassTheme.textColor(context)));
-          },
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(BuildContext context, dynamic user) {
+  Widget _buildErrorBanner(BuildContext context, String message) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline_rounded, color: AppColors.error),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                  color: AppColors.error,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          TextButton(
+            onPressed: () =>
+                context.read<UserBloc>().add(GetUserProfileEvent()),
+            child: const Text('RETRY',
+                style: TextStyle(
+                    color: AppColors.error, fontWeight: FontWeight.w900)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, dynamic user, bool isLoading) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 170,
       backgroundColor: AppColors.transparent,
       elevation: 0,
       shadowColor: AppColors.transparent,
@@ -99,18 +140,8 @@ class ProfileScreen extends StatelessWidget {
       pinned: true,
       stretch: true,
       centerTitle: true,
+      leading: const SizedBox(),
       flexibleSpace: FlexibleSpaceBar(
-        // collapseMode: CollapseMode.parallax,
-        // centerTitle: true,
-        // title: Text(
-        //   'PROFILE',
-        //   style: TextStyle(
-        //     color: GlassTheme.textColor(context),
-        //     fontWeight: FontWeight.w900,
-        //     fontSize: 14,
-        //     letterSpacing: 2.0,
-        //   ),
-        // ).animate().fadeIn(delay: 400.ms),
         background: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,39 +149,46 @@ class ProfileScreen extends StatelessWidget {
             Hero(
               tag: 'profile_pic',
               child: Container(
-                width: 110,
-                height: 110,
+                width: 90,
+                height: 90,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: GlassTheme.glassBorder(context), width: 4),
+                      color: GlassTheme.glassBorder(context), width: 3.5),
                   boxShadow: [
                     BoxShadow(
-                        color: AppColors.black.withOpacity(0.3),
-                        blurRadius: 25,
-                        spreadRadius: 2)
+                        color: AppColors.black.withValues(alpha: 0.3),
+                        blurRadius: 20,
+                        spreadRadius: 1)
                   ],
-                  image: DecorationImage(
-                      image: user.profileImage.startsWith('http')
-                          ? NetworkImage(user.profileImage) as ImageProvider
-                          : FileImage(File(
-                              user.profileImage.replaceFirst('file://', ''))),
-                      fit: BoxFit.cover),
+                ),
+                child: ClipOval(
+                  child: isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(
+                              color: GlassTheme.textColor(context),
+                              strokeWidth: 2))
+                      : ZinkoNetworkImage(
+                          imageUrl: user?.profileImage ?? '',
+                          width: 90,
+                          height: 90,
+                          fit: BoxFit.cover,
+                        ),
                 ),
               ),
             )
                 .animate()
                 .scale(curve: Curves.elasticOut, duration: 1000.ms)
                 .rotate(begin: -0.05, end: 0),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
-              user.name.toUpperCase(),
+              user?.name.toUpperCase() ?? (isLoading ? 'LOADING...' : 'ME'),
               style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: FontWeight.w900,
                   color: GlassTheme.textColor(context),
                   letterSpacing: -0.5),
-            ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.2, end: 0),
+            ).animate(delay: 200.ms).fadeIn(),
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -206,38 +244,40 @@ class ProfileScreen extends StatelessWidget {
           child: Column(
             children: [
               _buildAccountTile(
-                  context, 'Email', user.email, Icons.email_outlined),
+                  context, 'Email', user?.email ?? '--', Icons.email_outlined),
               Divider(
                   height: 1,
-                  color: GlassTheme.glassBorder(context).withOpacity(0.1)),
-              _buildAccountTile(
-                  context, 'Phone', user.phone, Icons.phone_android_rounded),
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.1)),
+              _buildAccountTile(context, 'Phone', user?.phone ?? '--',
+                  Icons.phone_android_rounded),
               Divider(
                   height: 1,
-                  color: GlassTheme.glassBorder(context).withOpacity(0.1)),
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.1)),
               _buildAccountTile(
                   context,
                   'Bio',
-                  user.bio.isEmpty ? 'Not specified' : user.bio,
+                  (user?.bio ?? '').isEmpty ? 'Not specified' : user!.bio,
                   Icons.info_outline_rounded),
             ],
           ),
         ),
       ),
-    ).animate().fadeIn(delay: 450.ms).slideY(begin: 0.1);
+    ).animate().fadeIn(delay: 450.ms);
   }
 
   Widget _buildAccountTile(
       BuildContext context, String label, String value, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: GlassTheme.textColor(context).withOpacity(0.08), shape: BoxShape.circle),
-            child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 18),
+                color: GlassTheme.textColor(context).withValues(alpha: 0.08),
+                shape: BoxShape.circle),
+            child: Icon(icon,
+                color: GlassTheme.secondaryTextColor(context), size: 18),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -273,7 +313,7 @@ class ProfileScreen extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: GlassTheme.glassColor(context),
               borderRadius: BorderRadius.circular(24),
@@ -287,11 +327,11 @@ class ProfileScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      AppColors.gold.withOpacity(0.2),
-                      AppColors.gold.withOpacity(0.05)
+                      AppColors.gold.withValues(alpha: 0.2),
+                      AppColors.gold.withValues(alpha: 0.05)
                     ]),
                     shape: BoxShape.circle,
-                    border: Border.all(color: AppColors.gold.withOpacity(0.3)),
+                    border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
                   ),
                   child: const Icon(Icons.stars_rounded,
                       color: AppColors.gold, size: 28),
@@ -302,7 +342,7 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '${user.membership.toUpperCase()} MEMBER',
+                        '${user?.membership.toUpperCase() ?? 'FREE'} MEMBER',
                         style: TextStyle(
                             color: GlassTheme.textColor(context),
                             fontSize: 18,
@@ -313,15 +353,20 @@ class ProfileScreen extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Premium Benefits Active',
+                            user != null
+                                ? 'Premium Benefits Active'
+                                : 'Join our premium club',
                             style: TextStyle(
-                                color: AppColors.success,
+                                color: user != null
+                                    ? AppColors.success
+                                    : GlassTheme.secondaryTextColor(context),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w700),
                           ),
                           const SizedBox(width: 4),
-                          const Icon(Icons.check_circle,
-                              color: AppColors.success, size: 12),
+                          if (user != null)
+                            const Icon(Icons.check_circle,
+                                color: AppColors.success, size: 12),
                         ],
                       ),
                     ],
@@ -334,7 +379,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ),
-    ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1);
+    ).animate().fadeIn(delay: 300.ms);
   }
 
   Widget _buildMenuGrid(BuildContext context) {
@@ -343,9 +388,9 @@ class ProfileScreen extends StatelessWidget {
       padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
+      mainAxisSpacing: 10,
+      crossAxisSpacing: 10,
+      childAspectRatio: 1.8,
       children: [
         _buildMenuCard(context, 'BOOKINGS', Icons.calendar_today_rounded,
             BookingsScreen.routeName),
@@ -394,7 +439,7 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildGeneralList(BuildContext context) {
+  Widget _buildGeneralList(BuildContext context, dynamic user) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
@@ -407,26 +452,36 @@ class ProfileScreen extends StatelessWidget {
           ),
           child: Column(
             children: [
+              _buildToggleTile(
+                  context,
+                  'Public Visibility',
+                  Icons.visibility_rounded,
+                  user?.userVisibility ?? false, (val) {
+                context.read<UserBloc>().add(UpdateVisibilityEvent(val));
+              }),
+              Divider(
+                  height: 1,
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.05)),
               _buildListTile(context, 'Edit Profile', Icons.person_rounded,
                   EditProfileScreen.routeName),
               Divider(
                   height: 1,
-                  color: GlassTheme.glassBorder(context).withOpacity(0.05)),
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.05)),
               _buildListTile(context, 'Account Settings',
                   Icons.settings_rounded, SettingsScreen.routeName),
               Divider(
                   height: 1,
-                  color: GlassTheme.glassBorder(context).withOpacity(0.05)),
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.05)),
               _buildListTile(
                   context, 'Security & Privacy', Icons.shield_rounded, ''),
               Divider(
                   height: 1,
-                  color: GlassTheme.glassBorder(context).withOpacity(0.05)),
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.05)),
               _buildListTile(
                   context, 'Help & Support', Icons.help_center_rounded, ''),
               Divider(
                   height: 1,
-                  color: GlassTheme.glassBorder(context).withOpacity(0.05)),
+                  color: GlassTheme.glassBorder(context).withValues(alpha: 0.05)),
               _buildListTile(
                   context, 'App Feedback', Icons.feedback_rounded, ''),
             ],
@@ -434,6 +489,34 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     ).animate(delay: 600.ms).fadeIn();
+  }
+
+  Widget _buildToggleTile(BuildContext context, String title, IconData icon,
+      bool value, Function(bool) onChanged) {
+    return ListTile(
+      dense: true,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      leading: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            color: GlassTheme.textColor(context).withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, color: GlassTheme.textColor(context), size: 18),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: GlassTheme.textColor(context)),
+      ),
+      trailing: Switch.adaptive(
+        value: value,
+        onChanged: onChanged,
+        activeColor: GlassTheme.textColor(context),
+        activeTrackColor: GlassTheme.textColor(context).withValues(alpha: 0.3),
+      ),
+    );
   }
 
   Widget _buildListTile(
@@ -446,17 +529,95 @@ class ProfileScreen extends StatelessWidget {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: GlassTheme.textColor(context).withOpacity(0.08),
+            color: GlassTheme.textColor(context).withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(10)),
-        child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 20),
+        child:
+            Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 20),
       ),
       title: Text(
         title,
         style: TextStyle(
-            fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context)),
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            color: GlassTheme.textColor(context)),
       ),
       trailing: Icon(Icons.chevron_right_rounded,
-          color: GlassTheme.tertiaryTextColor(context).withOpacity(0.3), size: 18),
+          color: GlassTheme.tertiaryTextColor(context).withValues(alpha: 0.3),
+          size: 18),
+    );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withValues(alpha: 0.8),
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: AlertDialog(
+          backgroundColor: GlassTheme.glassColor(context),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+              side: BorderSide(color: GlassTheme.glassBorder(context))),
+          title: Text(
+            'Confirm Logout',
+            style: TextStyle(
+                color: GlassTheme.textColor(context),
+                fontWeight: FontWeight.w900,
+                fontSize: 22),
+          ),
+          content: Text(
+            'Are you sure you want to sign out from Zinko? All session data will be cleared.',
+            style: TextStyle(
+                color: GlassTheme.secondaryTextColor(context),
+                fontSize: 16,
+                fontWeight: FontWeight.w500),
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'CANCEL',
+                style: TextStyle(
+                    color: GlassTheme.tertiaryTextColor(context),
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.2),
+              ),
+            ),
+            Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                      color: AppColors.error.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      spreadRadius: -5)
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(LogoutRequested());
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, SplashScreen.routeName, (route) => false);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'LOGOUT',
+                  style:
+                      TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -467,16 +628,15 @@ class ProfileScreen extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           width: double.infinity,
-          height: 60,
+          height: 54,
           decoration: BoxDecoration(
-            color: AppColors.error.withOpacity(0.08),
+            color: AppColors.error.withValues(alpha: 0.08),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-                color: AppColors.error.withOpacity(0.25), width: 1.5),
+                color: AppColors.error.withValues(alpha: 0.25), width: 1.5),
           ),
           child: TextButton(
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context, SplashScreen.routeName, (route) => false),
+            onPressed: () => _showLogoutConfirmation(context),
             style: TextButton.styleFrom(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(24)),
@@ -502,3 +662,4 @@ class ProfileScreen extends StatelessWidget {
     ).animate(delay: 700.ms).fadeIn();
   }
 }
+

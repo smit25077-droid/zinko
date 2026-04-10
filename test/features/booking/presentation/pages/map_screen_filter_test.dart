@@ -1,61 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/core/bloc/category_bloc.dart';
 
 /// A minimal widget that replicates the MapScreen's filter chip logic
-/// so we can test it independently without needing GoogleMaps.
-class _FilterTestWidget extends StatefulWidget {
+/// using Bloc to match the new architecture.
+class _FilterTestWidget extends StatelessWidget {
   const _FilterTestWidget();
 
   @override
-  State<_FilterTestWidget> createState() => _FilterTestWidgetState();
-}
-
-class _FilterTestWidgetState extends State<_FilterTestWidget> {
-  final List<String> _filters = ['All', 'Cafes', 'Workspaces', 'People'];
-  String _selectedFilter = 'All';
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          // Filter chips
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              key: const Key('filter_list'),
-              scrollDirection: Axis.horizontal,
-              itemCount: _filters.length,
-              itemBuilder: (context, index) {
-                final filter = _filters[index];
-                final isSelected = _selectedFilter == filter;
-                return GestureDetector(
-                  key: Key('filter_chip_$filter'),
-                  onTap: () => setState(() => _selectedFilter = filter),
-                  child: Container(
-                    margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: isSelected ? Colors.blue : Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      filter,
-                      key: Key('filter_label_$filter'),
-                      style: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+    final filters = ['All', 'Cafes', 'Workspaces', 'People'];
+    return BlocProvider(
+      create: (context) => CategoryBloc(initialCategory: 'All'),
+      child: Scaffold(
+        body: BlocBuilder<CategoryBloc, CategoryState>(
+          builder: (context, state) {
+            return Column(
+              children: [
+                // Filter chips
+                SizedBox(
+                  height: 40,
+                  child: ListView.builder(
+                    key: const Key('filter_list'),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: filters.length,
+                    itemBuilder: (context, index) {
+                      final filter = filters[index];
+                      final isSelected = state.selectedCategory == filter;
+                      return GestureDetector(
+                        key: Key('filter_chip_$filter'),
+                        onTap: () => context
+                            .read<CategoryBloc>()
+                            .add(SelectCategory(filter)),
+                        child: Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.blue : Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            filter,
+                            key: Key('filter_label_$filter'),
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                );
-              },
-            ),
-          ),
-          // Display area showing what's filtered
-          Text('Active filter: $_selectedFilter', key: const Key('active_filter_display')),
-        ],
+                ),
+                // Display area showing what's filtered
+                Text('Active filter: ${state.selectedCategory}',
+                    key: const Key('active_filter_display')),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -182,8 +187,8 @@ void main() {
       await tester.pump();
 
       expect(
-        find.byWidgetPredicate((widget) =>
-            widget is Text && widget.data == 'Active filter: All'),
+        find.byWidgetPredicate(
+            (widget) => widget is Text && widget.data == 'Active filter: All'),
         findsOneWidget,
       );
     });

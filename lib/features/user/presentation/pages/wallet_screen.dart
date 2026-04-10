@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/core/routes/app_router.dart';
 import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
@@ -24,8 +25,8 @@ class WalletScreen extends StatelessWidget {
         child: BlocListener<UserBloc, UserState>(
           listener: (context, state) {
             if (state is UserLoaded) {
-               // We could check for a flag in state, but assuming a load after redeem is success
-               // _showStatusPopup(context, 'Success!', isSuccess: true);
+              // We could check for a flag in state, but assuming a load after redeem is success
+              // _showStatusPopup(context, 'Success!', isSuccess: true);
             }
             if (state is UserError) {
               _showStatusPopup(context, state.message, isSuccess: false);
@@ -34,7 +35,9 @@ class WalletScreen extends StatelessWidget {
           child: BlocBuilder<UserBloc, UserState>(
             builder: (context, state) {
               if (state is UserLoading) {
-                return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+                return Center(
+                    child: CircularProgressIndicator(
+                        color: GlassTheme.textColor(context)));
               }
               if (state is UserError) {
                 context.read<UserBloc>().add(GetUserProfileEvent());
@@ -67,7 +70,6 @@ class WalletScreen extends StatelessWidget {
                             const SizedBox(height: 20),
                             _buildWalletCard(context, user.balance),
                             const SizedBox(height: 24),
-                            
                             Row(
                               children: [
                                 Expanded(
@@ -89,17 +91,19 @@ class WalletScreen extends StatelessWidget {
                                   ),
                                 ),
                               ],
-                            ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.1),
+                            )
+                                .animate(delay: 400.ms)
+                                .fadeIn()
+                                ,
                             const SizedBox(height: 32),
-                            
                             Text(
                               'RECENT TRANSACTIONS',
                               style: TextStyle(
-                                fontSize: 10, 
-                                fontWeight: FontWeight.w900, 
-                                color: GlassTheme.secondaryTextColor(context).withOpacity(0.5), 
-                                letterSpacing: 1.5
-                              ),
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900,
+                                  color: GlassTheme.secondaryTextColor(context)
+                                      .withValues(alpha: 0.5),
+                                  letterSpacing: 1.5),
                             ).animate(delay: 500.ms).fadeIn(),
                             const SizedBox(height: 16),
                           ],
@@ -115,7 +119,7 @@ class WalletScreen extends StatelessWidget {
                             return _buildTransactionItem(context, tx)
                                 .animate()
                                 .fadeIn(delay: (index * 100 + 600).ms)
-                                .slideX(begin: 0.05);
+                                ;
                           },
                           childCount: user.transactions.length,
                         ),
@@ -125,7 +129,9 @@ class WalletScreen extends StatelessWidget {
                   ],
                 );
               }
-              return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
+              return Center(
+                  child: Text('Data error',
+                      style: TextStyle(color: GlassTheme.textColor(context))));
             },
           ),
         ),
@@ -144,7 +150,7 @@ class WalletScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: _GlassHeaderButton(
           icon: Icons.arrow_back_ios_new_rounded,
-          onTap: () => Navigator.pop(context),
+          onTap: () => AppRouter.safetyPop(context),
         ),
       ),
       title: Text(
@@ -180,23 +186,53 @@ class WalletScreen extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('ZINKO UK', style: TextStyle(color: GlassTheme.textColor(context), fontSize: 20, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
-                  Icon(Icons.contactless_rounded, color: GlassTheme.secondaryTextColor(context).withOpacity(0.4), size: 24),
+                  Text('ZINKO UK',
+                      style: TextStyle(
+                          color: GlassTheme.textColor(context),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.5)),
+                  Icon(Icons.contactless_rounded,
+                      color: GlassTheme.secondaryTextColor(context)
+                          .withValues(alpha: 0.4),
+                      size: 24),
                 ],
               ),
               const SizedBox(height: 24),
-              Text('AVAILABLE BALANCE', style: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.5), fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+              Text('AVAILABLE BALANCE',
+                  style: TextStyle(
+                      color: GlassTheme.secondaryTextColor(context)
+                          .withValues(alpha: 0.5),
+                      fontSize: 9,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2)),
               const SizedBox(height: 4),
               Text(
                 '£${balance.toStringAsFixed(2)}',
-                style: TextStyle(color: GlassTheme.textColor(context), fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5),
+                style: TextStyle(
+                    color: GlassTheme.textColor(context),
+                    fontSize: 32,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: -0.5),
               ),
               const SizedBox(height: 24),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('****  ****  ****  8888', style: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.6), fontSize: 13, letterSpacing: 1.5, fontWeight: FontWeight.w600)),
-                  Text('EXP 12/28', style: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.4), fontSize: 9, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+                  Text('****  ****  ****  8888',
+                      style: TextStyle(
+                          color: GlassTheme.secondaryTextColor(context)
+                              .withValues(alpha: 0.6),
+                          fontSize: 13,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.w600)),
+                  Text('EXP 12/28',
+                      style: TextStyle(
+                          color: GlassTheme.secondaryTextColor(context)
+                              .withValues(alpha: 0.4),
+                          fontSize: 9,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: 0.5)),
                 ],
               ),
             ],
@@ -206,7 +242,9 @@ class WalletScreen extends StatelessWidget {
     ).animate().scale(duration: 600.ms, curve: Curves.easeOutCubic).fadeIn();
   }
 
-  Widget _buildActionButton(BuildContext context, IconData icon, String label, VoidCallback onTap, {bool highlight = false}) {
+  Widget _buildActionButton(
+      BuildContext context, IconData icon, String label, VoidCallback onTap,
+      {bool highlight = false}) {
     return RepaintBoundary(
       child: GestureDetector(
         onTap: onTap,
@@ -215,16 +253,27 @@ class WalletScreen extends StatelessWidget {
           decoration: BoxDecoration(
             color: highlight ? Colors.white : OptimizedColors.white12,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: highlight ? Colors.white : GlassTheme.glassBorder(context)),
+            border: Border.all(
+                color:
+                    highlight ? Colors.white : GlassTheme.glassBorder(context)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 18, color: highlight ? Colors.black : GlassTheme.textColor(context)),
+              Icon(icon,
+                  size: 18,
+                  color:
+                      highlight ? Colors.black : GlassTheme.textColor(context)),
               const SizedBox(width: 8),
               Text(
                 label,
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 12, color: highlight ? Colors.black : GlassTheme.textColor(context), letterSpacing: 0.5),
+                style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                    color: highlight
+                        ? Colors.black
+                        : GlassTheme.textColor(context),
+                    letterSpacing: 0.5),
               ),
             ],
           ),
@@ -249,7 +298,9 @@ class WalletScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isCredit ? Colors.green.withOpacity(0.12) : Colors.red.withOpacity(0.12),
+                color: isCredit
+                    ? Colors.green.withValues(alpha: 0.12)
+                    : Colors.red.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -263,15 +314,29 @@ class WalletScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(tx.title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context))),
+                  Text(tx.title,
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: GlassTheme.textColor(context))),
                   const SizedBox(height: 2),
-                  Text(tx.date, style: TextStyle(fontSize: 11, color: GlassTheme.secondaryTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w600)),
+                  Text(tx.date,
+                      style: TextStyle(
+                          fontSize: 11,
+                          color: GlassTheme.secondaryTextColor(context)
+                              .withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w600)),
                 ],
               ),
             ),
             Text(
               '${isCredit ? '+' : '-'} £${tx.amount.toInt()}',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: isCredit ? Colors.greenAccent : GlassTheme.textColor(context)),
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: isCredit
+                      ? Colors.greenAccent
+                      : GlassTheme.textColor(context)),
             ),
           ],
         ),
@@ -308,10 +373,11 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  void _showStatusPopup(BuildContext context, String message, {bool isSuccess = true}) {
+  void _showStatusPopup(BuildContext context, String message,
+      {bool isSuccess = true}) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.2),
+      barrierColor: Colors.black.withValues(alpha: 0.2),
       builder: (ctx) {
         Future.delayed(const Duration(seconds: 1), () {
           if (ctx.mounted) Navigator.pop(ctx);
@@ -322,16 +388,26 @@ class WalletScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: const Color(0xFF0B1220),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: isSuccess ? Colors.greenAccent.withOpacity(0.3) : Colors.redAccent.withOpacity(0.3)),
+              border: Border.all(
+                  color: isSuccess
+                      ? Colors.greenAccent.withValues(alpha: 0.3)
+                      : Colors.redAccent.withValues(alpha: 0.3)),
               boxShadow: [
-                BoxShadow(color: (isSuccess ? Colors.greenAccent : Colors.redAccent).withOpacity(0.1), blurRadius: 40)
+                BoxShadow(
+                    color: (isSuccess ? Colors.greenAccent : Colors.redAccent)
+                        .withValues(alpha: 0.1),
+                    blurRadius: 40)
               ],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(isSuccess ? Icons.check_circle_outline_rounded : Icons.error_outline_rounded,
-                    color: isSuccess ? Colors.greenAccent : Colors.redAccent, size: 24),
+                Icon(
+                    isSuccess
+                        ? Icons.check_circle_outline_rounded
+                        : Icons.error_outline_rounded,
+                    color: isSuccess ? Colors.greenAccent : Colors.redAccent,
+                    size: 24),
                 const SizedBox(width: 12),
                 Text(
                   message.toUpperCase(),
@@ -360,7 +436,7 @@ class WalletScreen extends StatelessWidget {
     required Function(String) onConfirm,
   }) {
     final controller = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (ctx) => BackdropFilter(
@@ -379,22 +455,36 @@ class WalletScreen extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(title, style: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w900, fontSize: 16, letterSpacing: 1.0)),
+                Text(title,
+                    style: TextStyle(
+                        color: GlassTheme.textColor(context),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                        letterSpacing: 1.0)),
                 const SizedBox(height: 20),
                 TextField(
                   controller: controller,
                   keyboardType: keyboard,
                   autofocus: true,
-                  style: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w800, fontSize: 18),
+                  style: TextStyle(
+                      color: GlassTheme.textColor(context),
+                      fontWeight: FontWeight.w800,
+                      fontSize: 18),
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     hintText: hint,
-                    hintStyle: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.3)),
+                    hintStyle: TextStyle(
+                        color: GlassTheme.secondaryTextColor(context)
+                            .withValues(alpha: 0.3)),
                     prefixText: prefix,
-                    prefixStyle: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w800),
+                    prefixStyle: TextStyle(
+                        color: GlassTheme.textColor(context),
+                        fontWeight: FontWeight.w800),
                     filled: true,
-                    fillColor: GlassTheme.textColor(context).withOpacity(0.05),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                    fillColor: GlassTheme.textColor(context).withValues(alpha: 0.05),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -403,7 +493,11 @@ class WalletScreen extends StatelessWidget {
                     Expanded(
                       child: TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: Text('CANCEL', style: TextStyle(color: GlassTheme.secondaryTextColor(context).withOpacity(0.5), fontWeight: FontWeight.w900)),
+                        child: Text('CANCEL',
+                            style: TextStyle(
+                                color: GlassTheme.secondaryTextColor(context)
+                                    .withValues(alpha: 0.5),
+                                fontWeight: FontWeight.w900)),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -416,11 +510,13 @@ class WalletScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16)),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           elevation: 0,
                         ),
-                        child: const Text('CONFIRM', style: TextStyle(fontWeight: FontWeight.w900)),
+                        child: const Text('CONFIRM',
+                            style: TextStyle(fontWeight: FontWeight.w900)),
                       ),
                     ),
                   ],
@@ -462,3 +558,4 @@ class _GlassHeaderButton extends StatelessWidget {
     );
   }
 }
+

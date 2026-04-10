@@ -43,50 +43,53 @@ class WishlistScreen extends StatelessWidget {
       ),
       body: ZinkoBackground(
         child: SafeArea(
-            child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
-              builder: (context, state) {
-                if (state is WorkspaceLoading)
-                  return Center(
-                      child: CircularProgressIndicator(
-                          color: GlassTheme.textColor(context)));
-                if (state is WorkspaceLoaded) {
-                  final favorites =
-                      state.workspaces.where((w) => w.isFavorite).toList();
-                  if (favorites.isEmpty) return _buildEmptyState(context);
-                  return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                    physics: const BouncingScrollPhysics(),
-                    itemCount: favorites.length,
-                    itemBuilder: (context, index) {
-                      final workspace = favorites[index];
-                      return GestureDetector(
-                        onTap: () => Navigator.pushNamed(
-                            context, WorkspaceDetailScreen.routeName,
-                            arguments: workspace),
-                        child: _WishlistCard(
-                          workspace: workspace,
-                          onRemove: () {
-                            context.read<WorkspaceBloc>().add(
-                                ToggleFavoriteWorkspaceEvent(workspace.id));
-                          },
-                        )
-                            .animate()
-                            .fadeIn(delay: (index * 80).ms)
-                            .slideX(begin: 0.1),
-                      );
-                    },
-                  );
-                }
-                if (state is WorkspaceError)
-                  return Center(
-                      child: Text(state.message,
-                          style:
-                              TextStyle(color: GlassTheme.textColor(context))));
-                return const SizedBox.shrink();
-              },
-            ),
+          child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
+            builder: (context, state) {
+              if (state is WorkspaceLoading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                        color: GlassTheme.textColor(context)));
+              }
+              if (state is WorkspaceLoaded) {
+                final favorites =
+                    state.workspaces.where((w) => w.isFavorite).toList();
+                if (favorites.isEmpty) return _buildEmptyState(context);
+                return ListView.builder(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: favorites.length,
+                  itemBuilder: (context, index) {
+                    final workspace = favorites[index];
+                    return GestureDetector(
+                      onTap: () => Navigator.pushNamed(
+                          context, WorkspaceDetailScreen.routeName,
+                          arguments: workspace),
+                      child: _WishlistCard(
+                        workspace: workspace,
+                        onRemove: () {
+                          context
+                              .read<WorkspaceBloc>()
+                              .add(ToggleFavoriteWorkspaceEvent(workspace.id));
+                        },
+                      )
+                          .animate()
+                          .fadeIn(delay: (index * 80).ms)
+                          ,
+                    );
+                  },
+                );
+              }
+              if (state is WorkspaceError) {
+                return Center(
+                    child: Text(state.message,
+                        style:
+                            TextStyle(color: GlassTheme.textColor(context))));
+              }
+              return const SizedBox.shrink();
+            },
           ),
         ),
+      ),
     );
   }
 
@@ -97,14 +100,14 @@ class WishlistScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.favorite_rounded,
-              size: 56, color: GlassTheme.textColor(context).withOpacity(0.05)),
+              size: 56, color: GlassTheme.textColor(context).withValues(alpha: 0.05)),
           const SizedBox(height: 12),
           Text(
             'EMPTY WISHLIST',
             style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                color: GlassTheme.textColor(context).withOpacity(0.6),
+                color: GlassTheme.textColor(context).withValues(alpha: 0.6),
                 letterSpacing: 1.5),
           ),
           const SizedBox(height: 6),
@@ -113,7 +116,7 @@ class WishlistScreen extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 13,
-                color: GlassTheme.secondaryTextColor(context).withOpacity(0.4),
+                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4),
                 fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 24),
@@ -196,7 +199,7 @@ class _WishlistCard extends StatelessWidget {
                             children: [
                               Icon(Icons.location_on_rounded,
                                   color: GlassTheme.secondaryTextColor(context)
-                                      .withOpacity(0.4),
+                                      .withValues(alpha: 0.4),
                                   size: 10),
                               const SizedBox(width: 4),
                               Expanded(
@@ -204,7 +207,7 @@ class _WishlistCard extends StatelessWidget {
                                       style: TextStyle(
                                           color: GlassTheme.secondaryTextColor(
                                                   context)
-                                              .withOpacity(0.5),
+                                              .withValues(alpha: 0.5),
                                           fontSize: 11,
                                           fontWeight: FontWeight.w600),
                                       overflow: TextOverflow.ellipsis)),
@@ -287,3 +290,4 @@ class _GlassHeaderButton extends StatelessWidget {
     );
   }
 }
+

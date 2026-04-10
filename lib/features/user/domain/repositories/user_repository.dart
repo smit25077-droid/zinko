@@ -14,7 +14,17 @@ abstract class UserRepository {
     String? membership,
     bool? isEmailVerified,
     bool? isPhoneVerified,
+    String? city,
+    String? state,
+    String? gender,
+    String? birthdate,
+    String? companyName,
   });
   Future<Either<Failure, UserEntity>> addMoney(double amount);
   Future<Either<Failure, UserEntity>> redeemReferral(String code);
+  Future<Either<Failure, bool>> updateVisibility(bool visibility);
+  Future<Either<Failure, bool>> sendEmailOtp(String email);
+  Future<Either<Failure, bool>> verifyEmailOtp(
+      {required String userCode, required String otp});
+  Future<Either<Failure, bool>> deleteUser(int userCode);
 }

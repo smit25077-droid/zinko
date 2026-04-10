@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zinko_app/widgets/common_appbar.dart';
 import '../../../../widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -14,6 +15,7 @@ import '../../../../core/theme/optimized_colors.dart';
 
 class EventsScreen extends StatefulWidget {
   static const String routeName = '/events';
+
   const EventsScreen({super.key});
 
   @override
@@ -29,82 +31,56 @@ class _EventsScreenState extends State<EventsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: AppColors.transparent,
-      body: ZinkoBackground(
-        child: BlocBuilder<EventBloc, EventState>(
-          builder: (context, state) {
-            if (state is EventLoading) {
-              return Center(
-                  child: CircularProgressIndicator(
-                      color: GlassTheme.textColor(context)));
-            }
-            if (state is EventLoaded) {
-              final events = state.events;
-              return CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  _buildSliverAppBar(context),
-                  const SliverToBoxAdapter(child: SizedBox(height: 10)),
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
+    return ZinkoBackground(
+      child: Scaffold(
+        backgroundColor: AppColors.transparent,
+        appBar: CommonAppBar(
+          title: 'EVENTS',
+          isBackEnable: false,
+        ),
+        body: Column(
+          children: [
+            // SizedBox(height: 80),
+            // Scrollable Event List
+            Expanded(
+              child: BlocBuilder<EventBloc, EventState>(
+                builder: (context, state) {
+                  if (state is EventLoading) {
+                    return Center(
+                        child: CircularProgressIndicator(
+                            color: GlassTheme.textColor(context)));
+                  }
+                  if (state is EventLoaded) {
+                    final events = state.events;
+                    return Padding(
+                      padding: EdgeInsets.only(top: 10),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        physics: const BouncingScrollPhysics(),
+                        itemCount: events.length,
+                        itemBuilder: (context, index) {
                           final event = events[index];
                           return _EventCard(event: event)
                               .animate()
-                              .fadeIn(duration: 400.ms)
-                              .slideY(begin: 0.05);
+                              .fadeIn(duration: 400.ms, delay: 100.ms)
+                              ;
                         },
-                        childCount: events.length,
                       ),
-                    ),
-                  ),
-                  const SliverToBoxAdapter(child: SizedBox(height: 120)),
-                ],
-              );
-            }
-            if (state is EventError) {
-              return Center(
-                  child: Text(state.message,
-                      style: TextStyle(color: GlassTheme.textColor(context))));
-            }
-            return const SizedBox.shrink();
-          },
-        ),
-      ),
-    );
-  }
-
-  SliverAppBar _buildSliverAppBar(BuildContext context) {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      pinned: true,
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: true,
-        title: Text(
-          'EVENTS',
-          style: TextStyle(
-            color: GlassTheme.textColor(context),
-            fontWeight: FontWeight.w900,
-            fontSize: 25,
-            letterSpacing: 3.0,
-          ),
-        ),
-        background: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                OptimizedColors.black40,
-                Colors.transparent,
-              ],
+                    );
+                  }
+                  if (state is EventError) {
+                    return Center(
+                        child: Text(state.message,
+                            style: TextStyle(
+                                color: GlassTheme.textColor(context))));
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
-          ),
+            // Bottom padding for the navigation bar
+            // const SizedBox(height: 100),
+          ],
         ),
       ),
     );
@@ -113,6 +89,7 @@ class _EventsScreenState extends State<EventsScreen> {
 
 class _EventCard extends StatelessWidget {
   final EventEntity event;
+
   const _EventCard({required this.event});
 
   @override
@@ -140,7 +117,7 @@ class _EventCard extends StatelessWidget {
                     child: ZinkoNetworkImage(
                       imageUrl: event.imageUrl,
                       width: double.infinity,
-                      height: 150,
+                      height: 110,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -170,7 +147,8 @@ class _EventCard extends StatelessWidget {
                         ),
                         const Spacer(),
                         Icon(Icons.access_time_rounded,
-                            size: 12, color: GlassTheme.tertiaryTextColor(context)),
+                            size: 12,
+                            color: GlassTheme.tertiaryTextColor(context)),
                         const SizedBox(width: 4),
                         Text(
                           '${event.date} ${event.month}',
@@ -185,30 +163,38 @@ class _EventCard extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text(
                       event.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: GlassTheme.textColor(context),
-                        fontSize: 20,
+                        fontSize: 16,
                         fontWeight: FontWeight.w900,
                         height: 1.1,
-                        letterSpacing: -0.5,
+                        letterSpacing: -0.2,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.location_on_rounded,
-                            size: 14, color: GlassTheme.textColor(context)),
-                        const SizedBox(width: 6),
+                            size: 12,
+                            color:
+                                GlassTheme.textColor(context).withValues(alpha: 0.6)),
+                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             event.location,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: GlassTheme.textColor(context),
-                              fontSize: 13,
+                              color: GlassTheme.textColor(context)
+                                  .withValues(alpha: 0.6),
+                              fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
+                        const SizedBox(width: 10),
                         _HostAvatar(hostName: event.hostName),
                       ],
                     ),
@@ -225,6 +211,7 @@ class _EventCard extends StatelessWidget {
 
 class _PriceBadge extends StatelessWidget {
   final String price;
+
   const _PriceBadge({required this.price});
 
   @override
@@ -251,6 +238,7 @@ class _PriceBadge extends StatelessWidget {
 
 class _HostAvatar extends StatelessWidget {
   final String hostName;
+
   const _HostAvatar({required this.hostName});
 
   @override
@@ -258,7 +246,7 @@ class _HostAvatar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: GlassTheme.textColor(context).withOpacity(0.08),
+        color: GlassTheme.textColor(context).withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -291,58 +279,3 @@ class _HostAvatar extends StatelessWidget {
   }
 }
 
-class _CategorySelector extends StatefulWidget {
-  @override
-  State<_CategorySelector> createState() => _CategorySelectorState();
-}
-
-class _CategorySelectorState extends State<_CategorySelector> {
-  String selected = 'ALL';
-  final categories = ['ALL', 'PARTIES', 'MUSIC', 'ART', 'TECH', 'SPORTS'];
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 44,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final cat = categories[index];
-          final isSelected = selected == cat;
-          return GestureDetector(
-            onTap: () => setState(() => selected = cat),
-            child: Container(
-              margin: const EdgeInsets.only(right: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? AppColors.primary
-                    : GlassTheme.glassColor(context),
-                borderRadius: BorderRadius.circular(15),
-                border: Border.all(
-                    color: isSelected
-                        ? AppColors.primary
-                        : GlassTheme.glassBorder(context)),
-              ),
-              child: Text(
-                cat,
-                style: TextStyle(
-                  color: isSelected ? Colors.white : GlassTheme.secondaryTextColor(context),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.0,
-                ),
-              ),
-            ).animate(target: isSelected ? 1 : 0).scale(
-                begin: const Offset(1, 1),
-                end: const Offset(1.05, 1.05),
-                duration: 200.ms),
-          );
-        },
-      ),
-    );
-  }
-}

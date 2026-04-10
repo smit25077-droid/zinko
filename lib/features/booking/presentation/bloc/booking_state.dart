@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/booking_entity.dart';
+import '../../domain/entities/user_booking_entity.dart';
 
 abstract class BookingState extends Equatable {
   const BookingState();
@@ -12,7 +12,7 @@ class BookingInitial extends BookingState {}
 class BookingLoading extends BookingState {}
 
 class BookingsLoaded extends BookingState {
-  final List<BookingEntity> bookings;
+  final List<UserBookingEntity> bookings;
   final int tabIndex;
 
   const BookingsLoaded(this.bookings, {this.tabIndex = 0});
@@ -21,7 +21,7 @@ class BookingsLoaded extends BookingState {
   List<Object?> get props => [bookings, tabIndex];
 
   BookingsLoaded copyWith({
-    List<BookingEntity>? bookings,
+    List<UserBookingEntity>? bookings,
     int? tabIndex,
   }) {
     return BookingsLoaded(
@@ -34,6 +34,18 @@ class BookingsLoaded extends BookingState {
 class BookingError extends BookingState {
   final String message;
   const BookingError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+
+class BookingCheckInLoading extends BookingState {}
+
+class CheckInSuccess extends BookingState {}
+
+class CheckInError extends BookingState {
+  final String message;
+  const CheckInError(this.message);
 
   @override
   List<Object?> get props => [message];

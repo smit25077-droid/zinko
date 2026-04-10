@@ -25,7 +25,7 @@ class CommunityDataLoaded extends CommunityState {
     this.people = const [],
     this.tabIndex = 0,
     int? timestamp,
-  }) : this.timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+  }) : timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
   @override
   List<Object?> get props => [posts, groups, people, tabIndex, timestamp];

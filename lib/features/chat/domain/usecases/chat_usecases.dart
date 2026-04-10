@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:zinko_app/core/error/failures.dart';
-import'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
 import '../entities/chat_entity.dart';
 import '../repositories/chat_repository.dart';
 

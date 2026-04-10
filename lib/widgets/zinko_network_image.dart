@@ -57,30 +57,38 @@ class ZinkoNetworkImage extends StatelessWidget {
                 );
           },
           errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: width,
-              height: height,
-              color: isDark
-                  ? Colors.white.withAlpha(10)
-                  : Colors.black.withAlpha(5),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline_rounded,
-                    color: isDark ? Colors.white24 : Colors.black12,
-                    size: 24,
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.asset(
+                  'assets/images/cafe_hotel_bg.png',
+                  width: width,
+                  height: height,
+                  fit: fit,
+                ),
+                Container(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        color: Colors.white70,
+                        size: 24,
+                      ),
+                      const SizedBox(height: 4),
+                      const Text(
+                        'Tap to retry',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.white70,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Tap to retry',
-                    style: TextStyle(
-                      fontSize: 10,
-                      color: isDark ? Colors.white24 : Colors.black12,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),

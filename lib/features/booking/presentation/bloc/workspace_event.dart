@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-
 abstract class WorkspaceEvent extends Equatable {
   const WorkspaceEvent();
 

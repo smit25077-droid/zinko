@@ -26,7 +26,8 @@ class ZinkoSuccessOverlay extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
               child: Container(
-                color: Color.lerp(AppColors.black.withOpacity(0.85), AppColors.primary.withOpacity(0.1), 0.1),
+                color: Color.lerp(AppColors.black.withValues(alpha: 0.85),
+                    AppColors.primary.withValues(alpha: 0.1), 0.1),
               ),
             ),
           ),
@@ -45,7 +46,7 @@ class ZinkoSuccessOverlay extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.success.withOpacity(0.4),
+                          color: AppColors.success.withValues(alpha: 0.4),
                           blurRadius: 50,
                           spreadRadius: 10,
                         )
@@ -60,53 +61,57 @@ class ZinkoSuccessOverlay extends StatelessWidget {
                           height: 160,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.success.withOpacity(0.2), width: 1.5),
+                            border: Border.all(
+                                color: AppColors.success.withValues(alpha: 0.2),
+                                width: 1.5),
                           ),
-                        ).animate(onPlay: (controller) => controller.repeat())
-                         .scale(duration: 2.seconds, begin: const Offset(1, 1), end: const Offset(1.1, 1.1))
-                         .fadeOut(duration: 2.seconds),
+                        )
+                            .animate(
+                                onPlay: (controller) => controller.repeat())
+                            .scale(
+                                duration: 2.seconds,
+                                begin: const Offset(1, 1),
+                                end: const Offset(1.1, 1.1))
+                            .fadeOut(duration: 2.seconds),
 
                         // Main Vessel
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(80),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                        Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            color: AppColors.white.withValues(alpha: 0.08),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: AppColors.white.withValues(alpha: 0.1),
+                                width: 2),
+                          ),
+                          child: Center(
                             child: Container(
-                              width: 140,
-                              height: 140,
+                              width: 90,
+                              height: 90,
                               decoration: BoxDecoration(
-                                color: AppColors.white.withOpacity(0.08),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: AppColors.white.withOpacity(0.1), width: 2),
-                              ),
-                              child: Center(
-                                child: Container(
-                                  width: 90,
-                                  height: 90,
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        AppColors.success,
-                                        AppColors.success.withOpacity(0.8),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.success.withOpacity(0.5),
-                                        blurRadius: 20,
-                                        offset: const Offset(0, 8),
-                                      )
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.check_rounded,
-                                    color: AppColors.white,
-                                    size: 56,
-                                  ),
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.success,
+                                    AppColors.success.withValues(alpha: 0.8),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
                                 ),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        AppColors.success.withValues(alpha: 0.5),
+                                    blurRadius: 20,
+                                    offset: const Offset(0, 8),
+                                  )
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.check_rounded,
+                                color: AppColors.white,
+                                size: 56,
                               ),
                             ),
                           ),
@@ -114,10 +119,15 @@ class ZinkoSuccessOverlay extends StatelessWidget {
                       ],
                     ),
                   )
-                  .animate()
-                  .scale(duration: 800.ms, begin: const Offset(0.4, 0.4), curve: Curves.elasticOut)
-                  .then()
-                  .shimmer(duration: 2.seconds, color: AppColors.white.withOpacity(0.3)),
+                      .animate()
+                      .scale(
+                          duration: 800.ms,
+                          begin: const Offset(0.4, 0.4),
+                          curve: Curves.elasticOut)
+                      .then()
+                      .shimmer(
+                          duration: 2.seconds,
+                          color: AppColors.white.withValues(alpha: 0.3)),
                 ),
 
                 const SizedBox(height: 56),
@@ -133,10 +143,13 @@ class ZinkoSuccessOverlay extends StatelessWidget {
                     letterSpacing: 4,
                     height: 1.1,
                     shadows: [
-                      Shadow(color: AppColors.black.withOpacity(0.5), blurRadius: 20, offset: const Offset(0, 10))
+                      Shadow(
+                          color: AppColors.black.withValues(alpha: 0.5),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10))
                     ],
                   ),
-                ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.2),
+                ).animate(delay: 300.ms).fadeIn(),
 
                 const SizedBox(height: 20),
 
@@ -147,14 +160,14 @@ class ZinkoSuccessOverlay extends StatelessWidget {
                     subtitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: AppColors.white.withOpacity(0.5),
+                      color: AppColors.white.withValues(alpha: 0.5),
                       fontSize: 17,
                       height: 1.5,
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.2,
                     ),
                   ),
-                ).animate(delay: 500.ms).fadeIn().slideY(begin: 0.1),
+                ).animate(delay: 500.ms).fadeIn(),
 
                 const SizedBox(height: 60),
 
@@ -166,9 +179,13 @@ class ZinkoSuccessOverlay extends StatelessWidget {
                     color: AppColors.success,
                     shape: BoxShape.circle,
                   ),
-                ).animate(onPlay: (controller) => controller.repeat())
-                 .scale(duration: 1.5.seconds, begin: const Offset(1, 1), end: const Offset(30, 30))
-                 .fadeOut(duration: 1.5.seconds),
+                )
+                    .animate(onPlay: (controller) => controller.repeat())
+                    .scale(
+                        duration: 1.5.seconds,
+                        begin: const Offset(1, 1),
+                        end: const Offset(30, 30))
+                    .fadeOut(duration: 1.5.seconds),
               ],
             ),
           ),
@@ -177,7 +194,11 @@ class ZinkoSuccessOverlay extends StatelessWidget {
     );
   }
 
-  static void show(BuildContext context, {required String title, required String subtitle, Duration duration = const Duration(seconds: 3), VoidCallback? onFinish}) {
+  static void show(BuildContext context,
+      {required String title,
+      required String subtitle,
+      Duration duration = const Duration(seconds: 3),
+      VoidCallback? onFinish}) {
     showDialog(
       context: context,
       barrierDismissible: false,

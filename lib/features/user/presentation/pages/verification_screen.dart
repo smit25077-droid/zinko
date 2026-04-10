@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/core/routes/app_router.dart';
 import '../bloc/user_bloc.dart';
 import '../bloc/user_state.dart';
 import '../../../auth/presentation/pages/otp_screen.dart';
@@ -23,7 +24,7 @@ class VerificationScreen extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: _GlassHeaderButton(
             icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => Navigator.pop(context),
+            onTap: () => AppRouter.safetyPop(context),
           ),
         ),
         title: Text(
@@ -39,85 +40,100 @@ class VerificationScreen extends StatelessWidget {
       ),
       body: ZinkoBackground(
         child: SafeArea(
-            child: BlocBuilder<UserBloc, UserState>(
-              builder: (context, state) {
-                if (state is UserLoading) {
-                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
-                }
-                if (state is UserError) {
-                  return Center(child: Text(state.message, style: TextStyle(color: GlassTheme.textColor(context))));
-                }
-                if (state is UserLoaded) {
-                  final user = state.user;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        Text(
-                          'SECURE YOUR ACCOUNT',
-                          style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                              color: GlassTheme.secondaryTextColor(context).withOpacity(0.5),
-                              letterSpacing: 1.5),
-                        ).animate().fadeIn().slideX(begin: -0.1),
-                        const SizedBox(height: 8),
-                        Text(
-                          'TRUST & SAFETY',
-                          style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              color: GlassTheme.textColor(context),
-                              letterSpacing: -1),
-                        ).animate(delay: 100.ms).fadeIn().slideX(begin: -0.1),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Verify your credentials to unlock all platform features and premium bookings.',
-                          style: TextStyle(
-                              fontSize: 13,
-                              color: GlassTheme.secondaryTextColor(context).withOpacity(0.6),
-                              fontWeight: FontWeight.w600,
-                              height: 1.5),
-                        ).animate(delay: 200.ms).fadeIn(),
-                        const SizedBox(height: 32),
-                        _buildVerificationCard(
+          child: BlocBuilder<UserBloc, UserState>(
+            builder: (context, state) {
+              if (state is UserLoading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                        color: GlassTheme.textColor(context)));
+              }
+              if (state is UserError) {
+                return Center(
+                    child: Text(state.message,
+                        style:
+                            TextStyle(color: GlassTheme.textColor(context))));
+              }
+              if (state is UserLoaded) {
+                final user = state.user;
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Text(
+                        'SECURE YOUR ACCOUNT',
+                        style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            color: GlassTheme.secondaryTextColor(context)
+                                .withValues(alpha: 0.5),
+                            letterSpacing: 1.5),
+                      ).animate().fadeIn(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'TRUST & SAFETY',
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: GlassTheme.textColor(context),
+                            letterSpacing: -1),
+                      ).animate(delay: 100.ms).fadeIn(),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Verify your credentials to unlock all platform features and premium bookings.',
+                        style: TextStyle(
+                            fontSize: 13,
+                            color: GlassTheme.secondaryTextColor(context)
+                                .withValues(alpha: 0.6),
+                            fontWeight: FontWeight.w600,
+                            height: 1.5),
+                      ).animate(delay: 200.ms).fadeIn(),
+                      const SizedBox(height: 32),
+                      _buildVerificationCard(
+                        context,
+                        icon: Icons.email_rounded,
+                        title: 'EMAIL ADDRESS',
+                        subtitle: user.email,
+                        isVerified: user.isEmailVerified,
+                        onTap: () => Navigator.push(
                           context,
-                          icon: Icons.email_rounded,
-                          title: 'EMAIL ADDRESS',
-                          subtitle: user.email,
-                          isVerified: user.isEmailVerified,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OtpScreen(type: 'Email', target: user.email),
+                          MaterialPageRoute(
+                            builder: (context) => OtpScreen(
+                              type: 'Email',
+                              target: user.email,
+                              userCode: user.userCode.toString(),
                             ),
                           ),
-                        ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.1),
-                        const SizedBox(height: 16),
-                        _buildVerificationCard(
+                        ),
+                      ).animate(delay: 400.ms).fadeIn(),
+                      const SizedBox(height: 16),
+                      _buildVerificationCard(
+                        context,
+                        icon: Icons.phone_android_rounded,
+                        title: 'PHONE NUMBER',
+                        subtitle: user.phone,
+                        isVerified: user.isPhoneVerified,
+                        onTap: () => Navigator.push(
                           context,
-                          icon: Icons.phone_android_rounded,
-                          title: 'PHONE NUMBER',
-                          subtitle: user.phone,
-                          isVerified: user.isPhoneVerified,
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  OtpScreen(type: 'Phone', target: user.phone),
+                          MaterialPageRoute(
+                            builder: (context) => OtpScreen(
+                              type: 'Phone',
+                              target: user.phone,
+                              userCode: user.userCode.toString(),
                             ),
                           ),
-                        ).animate(delay: 600.ms).fadeIn().slideY(begin: 0.1),
-                      ],
-                    ),
-                  );
-                }
-                return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
-              },
-            ),
+                        ),
+                      ).animate(delay: 600.ms).fadeIn(),
+                    ],
+                  ),
+                );
+              }
+              return Center(
+                  child: Text('Data error',
+                      style: TextStyle(color: GlassTheme.textColor(context))));
+            },
+          ),
         ),
       ),
     );
@@ -149,11 +165,15 @@ class VerificationScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: isVerified
-                      ? Colors.green.withOpacity(0.12)
-                      : GlassTheme.textColor(context).withOpacity(0.05),
+                      ? Colors.green.withValues(alpha: 0.12)
+                      : GlassTheme.textColor(context).withValues(alpha: 0.05),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Icon(icon, color: isVerified ? Colors.greenAccent : GlassTheme.textColor(context).withOpacity(0.5), size: 20),
+                child: Icon(icon,
+                    color: isVerified
+                        ? Colors.greenAccent
+                        : GlassTheme.textColor(context).withValues(alpha: 0.5),
+                    size: 20),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -170,7 +190,8 @@ class VerificationScreen extends StatelessWidget {
                     Text(subtitle,
                         style: TextStyle(
                             fontSize: 11,
-                            color: GlassTheme.secondaryTextColor(context).withOpacity(0.5),
+                            color: GlassTheme.secondaryTextColor(context)
+                                .withValues(alpha: 0.5),
                             fontWeight: FontWeight.w600,
                             letterSpacing: 0.2)),
                   ],
@@ -179,7 +200,8 @@ class VerificationScreen extends StatelessWidget {
               if (isVerified)
                 const Row(
                   children: [
-                    Icon(Icons.verified_rounded, color: Colors.greenAccent, size: 16),
+                    Icon(Icons.verified_rounded,
+                        color: Colors.greenAccent, size: 16),
                     SizedBox(width: 6),
                     Text('SECURE',
                         style: TextStyle(
@@ -193,7 +215,8 @@ class VerificationScreen extends StatelessWidget {
                 GestureDetector(
                   onTap: onTap,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                     decoration: BoxDecoration(
                         color: isDark ? Colors.white : Colors.black,
                         borderRadius: BorderRadius.circular(10)),
@@ -241,3 +264,4 @@ class _GlassHeaderButton extends StatelessWidget {
     );
   }
 }
+

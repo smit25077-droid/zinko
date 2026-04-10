@@ -50,72 +50,72 @@ class SubscriptionPlansScreen extends StatelessWidget {
         ),
         body: ZinkoBackground(
           child: SafeArea(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 60),
-                child: Column(
-                  children: [
-                    Text(
-                      'CHOOSE YOUR JOURNEY',
-                      style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          color: GlassTheme.secondaryTextColor(context)
-                              .withOpacity(0.4),
-                          letterSpacing: 2.0),
-                    ).animate().fadeIn().slideX(begin: -0.1),
-                    const SizedBox(height: 8),
-                    Text(
-                      'UNLOCK PREMIUM',
-                      style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: GlassTheme.textColor(context),
-                          letterSpacing: -1),
-                    )
-                        .animate(delay: 100.ms)
-                        .fadeIn()
-                        .scale(begin: const Offset(0.9, 0.9)),
-                    const SizedBox(height: 32),
-                    _SubscriptionCard(
-                      title: 'PRO',
-                      price: '£499',
-                      period: '/ month',
-                      description:
-                          'Perfect for regular professionals needing a reliable hub.',
-                      features: [
-                        'Access to exclusive events',
-                        '5% Discount on all bookings',
-                        'Priority Support 24/7',
-                        'Premium Badge Profile',
-                      ],
-                      accentColor: AppColors.pro,
-                      onTap: () => _onPlanSelected(context, 'PRO'),
-                    ).animate().fadeIn(duration: 800.ms).slideY(begin: 0.1),
-                    const SizedBox(height: 24),
-                    _SubscriptionCard(
-                      title: 'ELITE',
-                      price: '£4,999',
-                      period: '/ year',
-                      description:
-                          'The ultimate Zinko experience for industry leaders.',
-                      features: [
-                        'All PRO Plan features',
-                        '10% Discount on all bookings',
-                        'Free 1-day pass every month',
-                        'VIP Lounge Access',
-                        'Personal Concierge',
-                      ],
-                      accentColor: AppColors.elite,
-                      isElite: true,
-                      onTap: () => _onPlanSelected(context, 'ELITE'),
-                    )
-                        .animate(delay: 200.ms)
-                        .fadeIn(duration: 800.ms)
-                        .slideY(begin: 0.1),
-                  ],
-                ),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 60),
+              child: Column(
+                children: [
+                  Text(
+                    'CHOOSE YOUR JOURNEY',
+                    style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w900,
+                        color: GlassTheme.secondaryTextColor(context)
+                            .withValues(alpha: 0.4),
+                        letterSpacing: 2.0),
+                  ).animate().fadeIn(),
+                  const SizedBox(height: 8),
+                  Text(
+                    'UNLOCK PREMIUM',
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: GlassTheme.textColor(context),
+                        letterSpacing: -1),
+                  )
+                      .animate(delay: 100.ms)
+                      .fadeIn()
+                      .scale(begin: const Offset(0.9, 0.9)),
+                  const SizedBox(height: 32),
+                  _SubscriptionCard(
+                    title: 'PRO',
+                    price: '£499',
+                    period: '/ month',
+                    description:
+                        'Perfect for regular professionals needing a reliable hub.',
+                    features: [
+                      'Access to exclusive events',
+                      '5% Discount on all bookings',
+                      'Priority Support 24/7',
+                      'Premium Badge Profile',
+                    ],
+                    accentColor: AppColors.pro,
+                    onTap: () => _onPlanSelected(context, 'PRO'),
+                  ).animate().fadeIn(duration: 800.ms),
+                  const SizedBox(height: 24),
+                  _SubscriptionCard(
+                    title: 'ELITE',
+                    price: '£4,999',
+                    period: '/ year',
+                    description:
+                        'The ultimate Zinko experience for industry leaders.',
+                    features: [
+                      'All PRO Plan features',
+                      '10% Discount on all bookings',
+                      'Free 1-day pass every month',
+                      'VIP Lounge Access',
+                      'Personal Concierge',
+                    ],
+                    accentColor: AppColors.elite,
+                    isElite: true,
+                    onTap: () => _onPlanSelected(context, 'ELITE'),
+                  )
+                      .animate(delay: 200.ms)
+                      .fadeIn(duration: 800.ms)
+                      ,
+                ],
               ),
+            ),
           ),
         ),
       ),
@@ -148,7 +148,7 @@ class _SuccessOverlay extends StatelessWidget {
       child: Container(
         width: double.infinity,
         height: double.infinity,
-        color: Colors.black.withOpacity(0.85),
+        color: Colors.black.withValues(alpha: 0.85),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Column(
@@ -184,9 +184,9 @@ class _SuccessOverlay extends StatelessWidget {
                     width: 140,
                     height: 140,
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
                     ),
                     child: const Center(
                       child: Icon(Icons.workspace_premium_rounded,
@@ -203,7 +203,7 @@ class _SuccessOverlay extends StatelessWidget {
                     fontSize: 32,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2),
-              ).animate().fadeIn().slideY(begin: 0.3),
+              ).animate().fadeIn(),
               const SizedBox(height: 12),
               Text(
                 'YOU ARE NOW AN $plan MEMBER!',
@@ -217,14 +217,14 @@ class _SuccessOverlay extends StatelessWidget {
               Text(
                 'Thanks for join with Zinko',
                 style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     fontStyle: FontStyle.italic),
               )
                   .animate(delay: 400.ms)
                   .fadeIn(duration: 1000.ms)
-                  .slideY(begin: 0.2),
+                  ,
             ],
           ),
         ),
@@ -269,16 +269,16 @@ class _SubscriptionCard extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
                 color: GlassTheme.glassColor(context)
-                    .withOpacity(isElite ? 0.3 : 0.15),
+                    .withValues(alpha: isElite ? 0.3 : 0.15),
                 borderRadius: BorderRadius.circular(30),
                 border: Border.all(
                     color: isElite
-                        ? accentColor.withOpacity(0.3)
+                        ? accentColor.withValues(alpha: 0.3)
                         : GlassTheme.glassBorder(context)),
                 boxShadow: [
                   if (isElite)
                     BoxShadow(
-                        color: accentColor.withOpacity(0.1),
+                        color: accentColor.withValues(alpha: 0.1),
                         blurRadius: 40,
                         spreadRadius: -10),
                 ],
@@ -293,10 +293,10 @@ class _SubscriptionCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 14, vertical: 6),
                         decoration: BoxDecoration(
-                          color: accentColor.withOpacity(0.2),
+                          color: accentColor.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                           border:
-                              Border.all(color: accentColor.withOpacity(0.4)),
+                              Border.all(color: accentColor.withValues(alpha: 0.4)),
                         ),
                         child: Text(
                           title,
@@ -337,7 +337,7 @@ class _SubscriptionCard extends StatelessWidget {
                           style: TextStyle(
                               fontSize: 14,
                               color: GlassTheme.secondaryTextColor(context)
-                                  .withOpacity(0.4),
+                                  .withValues(alpha: 0.4),
                               fontWeight: FontWeight.w600)),
                     ],
                   ),
@@ -346,7 +346,7 @@ class _SubscriptionCard extends StatelessWidget {
                       style: TextStyle(
                           fontSize: 13,
                           color: GlassTheme.secondaryTextColor(context)
-                              .withOpacity(0.6),
+                              .withValues(alpha: 0.6),
                           height: 1.4,
                           fontWeight: FontWeight.w500)),
                   const SizedBox(height: 24),
@@ -355,13 +355,13 @@ class _SubscriptionCard extends StatelessWidget {
                         child: Row(
                           children: [
                             Icon(Icons.check_circle_rounded,
-                                color: accentColor.withOpacity(0.7), size: 18),
+                                color: accentColor.withValues(alpha: 0.7), size: 18),
                             const SizedBox(width: 12),
                             Expanded(
                                 child: Text(f,
                                     style: TextStyle(
                                         color: GlassTheme.textColor(context)
-                                            .withOpacity(0.8),
+                                            .withValues(alpha: 0.8),
                                         fontSize: 13,
                                         fontWeight: FontWeight.w600))),
                           ],
@@ -383,7 +383,7 @@ class _SubscriptionCard extends StatelessWidget {
                               color: (isElite
                                       ? accentColor
                                       : (isDark ? Colors.white : Colors.black))
-                                  .withOpacity(0.3),
+                                  .withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 6)),
                         ],
@@ -439,3 +439,4 @@ class _GlassAppBarButton extends StatelessWidget {
     );
   }
 }
+

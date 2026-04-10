@@ -22,7 +22,16 @@ class ChatEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, name, lastMessage, time, avatar, unreadCount, isOnline, isPremiumLocked];
+  List<Object?> get props => [
+        id,
+        name,
+        lastMessage,
+        time,
+        avatar,
+        unreadCount,
+        isOnline,
+        isPremiumLocked
+      ];
 }
 
 class MessageEntity extends Equatable {

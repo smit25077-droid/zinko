@@ -94,8 +94,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 arguments: {'chat': widget.chat, 'isVideo': true}),
           ),
           IconButton(
-            icon:
-                Icon(Icons.phone_rounded, color: GlassTheme.textColor(context), size: 22),
+            icon: Icon(Icons.phone_rounded,
+                color: GlassTheme.textColor(context), size: 22),
             onPressed: () => Navigator.pushNamed(context, CallScreen.routeName,
                 arguments: {'chat': widget.chat, 'isVideo': false}),
           ),
@@ -104,39 +104,41 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       body: ZinkoBackground(
         child: SafeArea(
-            child: BlocBuilder<ChatBloc, ChatState>(
-              builder: (context, state) {
-                if (state is MessagesLoading) {
-                  return Center(
-                      child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
-                } else if (state is ChatError) {
-                  return Center(
-                      child: Text(state.message,
-                          style: TextStyle(color: GlassTheme.textColor(context))));
-                } else if (state is MessagesLoaded) {
-                  final messages = state.messages;
-                  return Column(
-                    children: [
-                      Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 20),
-                          itemCount: messages.length,
-                          itemBuilder: (context, index) {
-                            final msg = messages[index];
-                            return _buildMessage(
-                                context, msg.text, msg.time, msg.isMe);
-                          },
-                        ),
+          child: BlocBuilder<ChatBloc, ChatState>(
+            builder: (context, state) {
+              if (state is MessagesLoading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                        color: GlassTheme.textColor(context)));
+              } else if (state is ChatError) {
+                return Center(
+                    child: Text(state.message,
+                        style:
+                            TextStyle(color: GlassTheme.textColor(context))));
+              } else if (state is MessagesLoaded) {
+                final messages = state.messages;
+                return Column(
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 20),
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          final msg = messages[index];
+                          return _buildMessage(
+                              context, msg.text, msg.time, msg.isMe);
+                        },
                       ),
-                      _buildInputArea(context),
-                    ],
-                  );
-                }
-                return const SizedBox();
-              },
+                    ),
+                    _buildInputArea(context),
+                  ],
+                );
+              }
+              return const SizedBox();
+            },
+          ),
         ),
-      ),
       ),
     );
   }
@@ -160,8 +162,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     maxWidth: MediaQuery.of(context).size.width * 0.75),
                 decoration: BoxDecoration(
                   color: isMe
-                      ? GlassTheme.textColor(context).withOpacity(0.15)
-                      : GlassTheme.textColor(context).withOpacity(0.06),
+                      ? GlassTheme.textColor(context).withValues(alpha: 0.15)
+                      : GlassTheme.textColor(context).withValues(alpha: 0.06),
                   borderRadius: BorderRadius.only(
                     topLeft: const Radius.circular(20),
                     topRight: const Radius.circular(20),
@@ -188,7 +190,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   color: GlassTheme.tertiaryTextColor(context),
                   fontWeight: FontWeight.w700)),
         ],
-      ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.1, end: 0),
+      ).animate().fadeIn(duration: 300.ms),
     );
   }
 
@@ -210,17 +212,19 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: GlassTheme.textColor(context).withOpacity(0.08),
+                    color: GlassTheme.textColor(context).withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(24),
                     border: Border.all(color: GlassTheme.glassBorder(context)),
                   ),
                   child: TextField(
                     controller: _messageController,
-                    style: TextStyle(color: GlassTheme.textColor(context), fontSize: 14),
+                    style: TextStyle(
+                        color: GlassTheme.textColor(context), fontSize: 14),
                     decoration: InputDecoration(
                       hintText: 'Type a message...',
                       hintStyle: TextStyle(
-                          color: GlassTheme.secondaryTextColor(context), fontSize: 14),
+                          color: GlassTheme.secondaryTextColor(context),
+                          fontSize: 14),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -235,7 +239,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                      color: GlassTheme.textColor(context), shape: BoxShape.circle),
+                      color: GlassTheme.textColor(context),
+                      shape: BoxShape.circle),
                   child: const Icon(Icons.send_rounded,
                       color: Colors.black, size: 20),
                 ),
@@ -247,3 +252,4 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 }
+

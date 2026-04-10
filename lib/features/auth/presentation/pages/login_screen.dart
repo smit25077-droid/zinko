@@ -1,32 +1,43 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:another_flushbar/flushbar.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import '../../data/models/auth_requests.dart';
 import './register_screen.dart';
 import '../../../booking/presentation/pages/home_screen.dart';
+import './login_form_bloc.dart';
+import '../../data/models/auth_requests.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
 
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LoginFormBloc(),
+      child: const _LoginContent(),
+    );
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginContent extends StatefulWidget {
+  const _LoginContent();
+
+  @override
+  State<_LoginContent> createState() => _LoginContentState();
+}
+
+class _LoginContentState extends State<_LoginContent> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  bool _obscurePassword = true;
-  bool _rememberMe = false;
 
   @override
   void dispose() {
@@ -44,8 +55,8 @@ class _LoginScreenState extends State<LoginScreen> {
             LoginRequest(
               userName: _userNameController.text.trim(),
               password: _passwordController.text,
-              deviceId: "MOBILE_DEVICE", // Could be dynamic
-              deviceType: "MOBILE", // Could be dynamic
+              deviceId: "MOBILE_DEVICE",
+              deviceType: "MOBILE",
             ),
           ),
         );
@@ -53,21 +64,36 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          Navigator.pushReplacementNamed(context, HomeScreen.routeName);
+          Flushbar(
+            title: "Success",
+            message: "Login Successful",
+            duration: const Duration(seconds: 3),
+            flushbarPosition: FlushbarPosition.TOP,
+            backgroundColor: Colors.green.withValues(alpha: 0.9),
+            icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+            borderRadius: BorderRadius.circular(12),
+            margin: const EdgeInsets.all(12),
+          ).show(context);
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            HomeScreen.routeName,
+            (route) => false,
+          );
         }
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.redAccent,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          Flushbar(
+            title: "Error",
+            message: state.message,
+            duration: const Duration(seconds: 4),
+            flushbarPosition: FlushbarPosition.TOP,
+            backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+            icon: const Icon(Icons.error_outline, color: Colors.white),
+            borderRadius: BorderRadius.circular(12),
+            margin: const EdgeInsets.all(12),
+          ).show(context);
         }
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -76,23 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
           resizeToAvoidBottomInset: false,
           body: Stack(
             children: [
-              // Background Image
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/cafe_hotel_bg.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
               Positioned.fill(
                 child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.3),
-                        Colors.black.withOpacity(0.6),
-                      ],
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/cafe_hotel_bg.png'),
+                      fit: BoxFit.cover,
+                      opacity: 0.5,
                     ),
                   ),
                 ),
@@ -109,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 20),
                           Column(
                             children: [
-                              Text(
+                              const Text(
                                 'Welcome to Zinko',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -117,32 +134,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: -0.5,
                                   shadows: [
-                                    Shadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      offset: const Offset(0, 4),
-                                      blurRadius: 10,
-                                    ),
+                                    Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
                                   ],
                                 ),
-                              ),
+                              ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
                               const SizedBox(height: 8),
-                              Text(
-                                'Where every sip and stay feels like home.',
-                                textAlign: TextAlign.center,
+                              const Text(
+                                'Login to continue your journey',
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.85),
+                                  color: Colors.white70,
                                   fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  letterSpacing: 0.2,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ),
+                              ).animate(delay: 200.ms).fadeIn(),
                             ],
-                          ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.1, end: 0),
+                          ),
                           const SizedBox(height: 48),
-                          _buildGlassLoginCard(context, isDark),
+                          _buildGlassContainer(context),
                           const SizedBox(height: 32),
-                          _SignupFooter(isDark: isDark).animate(delay: 600.ms).fadeIn(),
-                          const SizedBox(height: 40),
+                          const _SignupFooter(),
+                          const SizedBox(height: 20),
                         ],
                       ),
                     ),
@@ -156,29 +167,30 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildGlassLoginCard(BuildContext context, bool isDark) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(28),
+  Widget _buildGlassContainer(BuildContext context) {
+    return BlocBuilder<LoginFormBloc, LoginFormState>(
+      builder: (context, formState) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            return Container(
+              padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.2,
-                ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 30,
+                    spreadRadius: -5,
+                  )
+                ],
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.15),
-                    Colors.white.withOpacity(0.05),
+                    Colors.white.withValues(alpha: 0.18),
+                    Colors.white.withValues(alpha: 0.08),
                   ],
                 ),
               ),
@@ -205,14 +217,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _passwordController,
                       hint: 'Enter your password',
                       icon: Icons.lock_outline_rounded,
-                      obscureText: _obscurePassword,
+                      obscureText: formState.obscurePassword,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          formState.obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                           color: Colors.white70,
                           size: 20,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => context.read<LoginFormBloc>().add(TogglePasswordVisibility()),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Password is required';
@@ -226,8 +238,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           height: 24,
                           width: 24,
                           child: Checkbox(
-                            value: _rememberMe,
-                            onChanged: (v) => setState(() => _rememberMe = v ?? false),
+                            value: formState.rememberMe,
+                            onChanged: (v) => context.read<LoginFormBloc>().add(SetRememberMe(v ?? false)),
                             side: const BorderSide(color: Colors.white70),
                             activeColor: AppColors.primary,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
@@ -257,11 +269,11 @@ class _LoginScreenState extends State<LoginScreen> {
                   ],
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
-    ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.1, end: 0);
+    ).animate(delay: 400.ms).fadeIn();
   }
 
   Widget _buildFieldLabel(String label) {
@@ -303,18 +315,18 @@ class _ModernTextField extends StatelessWidget {
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
+        fillColor: Colors.white.withValues(alpha: 0.08),
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white38, fontSize: 14),
         prefixIcon: Icon(icon, color: Colors.white60, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -366,8 +378,7 @@ class _PremiumButton extends StatelessWidget {
 }
 
 class _SignupFooter extends StatelessWidget {
-  final bool isDark;
-  const _SignupFooter({required this.isDark});
+  const _SignupFooter();
 
   @override
   Widget build(BuildContext context) {

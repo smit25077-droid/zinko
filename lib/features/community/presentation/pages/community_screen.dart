@@ -67,7 +67,7 @@ class _CommunityScreenState extends State<CommunityScreen>
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      barrierColor: Colors.black.withOpacity(0.55),
+      barrierColor: Colors.black.withValues(alpha: 0.55),
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
         child: Container(
@@ -101,7 +101,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                        color: AppColors.gold.withOpacity(0.4),
+                        color: AppColors.gold.withValues(alpha: 0.4),
                         blurRadius: 20,
                         offset: const Offset(0, 10))
                   ],
@@ -146,7 +146,8 @@ class _CommunityScreenState extends State<CommunityScreen>
                 onPressed: () => Navigator.pop(context),
                 child: Text('MAYBE LATER',
                     style: TextStyle(
-                        color: GlassTheme.secondaryTextColor(context).withOpacity(0.5),
+                        color: GlassTheme.secondaryTextColor(context)
+                            .withValues(alpha: 0.5),
                         fontSize: 11,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.2)),
@@ -207,7 +208,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.black.withOpacity(0.8),
+                              Colors.black.withValues(alpha: 0.8),
                               Colors.transparent,
                             ],
                           ),
@@ -237,7 +238,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             )
@@ -247,7 +248,9 @@ class _CommunityScreenState extends State<CommunityScreen>
                         indicatorSize: TabBarIndicatorSize.tab,
                         dividerColor: Colors.transparent,
                         labelColor: Colors.black,
-                        unselectedLabelColor: GlassTheme.secondaryTextColor(context).withOpacity(0.5),
+                        unselectedLabelColor:
+                            GlassTheme.secondaryTextColor(context)
+                                .withValues(alpha: 0.5),
                         labelPadding: EdgeInsets.zero,
                         labelStyle: const TextStyle(
                             fontWeight: FontWeight.w900,
@@ -302,8 +305,8 @@ class _CommunityScreenState extends State<CommunityScreen>
                 if (state is CommunityError) {
                   return Center(
                       child: Text(state.message,
-                          style: TextStyle(
-                              color: GlassTheme.textColor(context))));
+                          style:
+                              TextStyle(color: GlassTheme.textColor(context))));
                 }
                 return const SizedBox.shrink();
               },
@@ -361,7 +364,8 @@ class _FeedTab extends StatelessWidget {
                                     fontSize: 15)),
                             Text('${post.timeAgo} • ${post.userRole}',
                                 style: TextStyle(
-                                    color: GlassTheme.secondaryTextColor(context),
+                                    color:
+                                        GlassTheme.secondaryTextColor(context),
                                     fontSize: 11,
                                     fontWeight: FontWeight.w500)),
                           ],
@@ -372,7 +376,7 @@ class _FeedTab extends StatelessWidget {
                   const SizedBox(height: 12),
                   Text(post.content,
                       style: TextStyle(
-                          color: GlassTheme.textColor(context).withOpacity(0.8),
+                          color: GlassTheme.textColor(context).withValues(alpha: 0.8),
                           fontSize: 14,
                           height: 1.4,
                           fontWeight: FontWeight.w500)),
@@ -431,7 +435,9 @@ class _PostAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: iconColor ?? GlassTheme.secondaryTextColor(context)),
+        Icon(icon,
+            size: 18,
+            color: iconColor ?? GlassTheme.secondaryTextColor(context)),
         const SizedBox(width: 6),
         Text(label,
             style: TextStyle(
@@ -450,10 +456,11 @@ class _ChatTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
-        if (state is ChatsLoading)
+        if (state is ChatsLoading) {
           return Center(
               child: CircularProgressIndicator(
                   color: GlassTheme.textColor(context)));
+        }
 
         List<ChatEntity>? chats;
         if (state is ChatsLoaded) {
@@ -612,7 +619,7 @@ class _GroupsTab extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: GlassTheme.glassColor(context).withOpacity(0.15),
+                color: GlassTheme.glassColor(context).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: GlassTheme.glassBorder(context)),
               ),
@@ -680,7 +687,7 @@ class _ConnectTab extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: GlassTheme.glassColor(context).withOpacity(0.15),
+                color: GlassTheme.glassColor(context).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(color: GlassTheme.glassBorder(context)),
               ),
@@ -705,7 +712,7 @@ class _ConnectTab extends StatelessWidget {
                         Text(connect.role,
                             style: TextStyle(
                                 color: GlassTheme.secondaryTextColor(context)
-                                    .withOpacity(0.4),
+                                    .withValues(alpha: 0.4),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600)),
                       ],
@@ -756,14 +763,14 @@ class _GlassButton extends StatelessWidget {
           color: isPrimary
               ? (isDark ? AppColors.white : AppColors.black)
               : isSecondary
-                  ? AppColors.success.withOpacity(0.1)
-                  : GlassTheme.textColor(context).withOpacity(0.08),
+                  ? AppColors.success.withValues(alpha: 0.1)
+                  : GlassTheme.textColor(context).withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
           border: isPrimary
               ? null
               : Border.all(
                   color: isSecondary
-                      ? AppColors.success.withOpacity(0.3)
+                      ? AppColors.success.withValues(alpha: 0.3)
                       : GlassTheme.glassBorder(context)),
         ),
         child: Text(

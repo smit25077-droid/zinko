@@ -39,7 +39,8 @@ void main() {
 
       // Assert
       result.fold(
-        (failure) => fail('Expected success but got failure: ${failure.message}'),
+        (failure) =>
+            fail('Expected success but got failure: ${failure.message}'),
         (people) {
           expect(people.length, 1);
           expect(people.first.name, 'Alice Smith');

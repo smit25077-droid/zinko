@@ -19,7 +19,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     on<RegisterEventEvent>(_onRegisterEvent);
   }
 
-  Future<void> _onGetEvents(GetEventsEvent event, Emitter<EventState> emit) async {
+  Future<void> _onGetEvents(
+      GetEventsEvent event, Emitter<EventState> emit) async {
     emit(EventLoading());
     final result = await getEvents(NoParams());
     result.fold(
@@ -28,7 +29,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     );
   }
 
-  Future<void> _onToggleFavorite(ToggleFavoriteEventEvent event, Emitter<EventState> emit) async {
+  Future<void> _onToggleFavorite(
+      ToggleFavoriteEventEvent event, Emitter<EventState> emit) async {
     if (state is EventLoaded) {
       final currentState = state as EventLoaded;
       final result = await toggleFavoriteEvent(event.id);
@@ -44,7 +46,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     }
   }
 
-  Future<void> _onRegisterEvent(RegisterEventEvent event, Emitter<EventState> emit) async {
+  Future<void> _onRegisterEvent(
+      RegisterEventEvent event, Emitter<EventState> emit) async {
     if (state is EventLoaded) {
       final currentState = state as EventLoaded;
       final result = await registerEvent(event.id);
@@ -54,7 +57,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
           final updatedEvents = currentState.events.map((e) {
             return e.id == updatedEvent.id ? updatedEvent : e;
           }).toList();
-          emit(EventRegistrationSuccess(updatedEvent.title, events: updatedEvents));
+          emit(EventRegistrationSuccess(updatedEvent.title,
+              events: updatedEvents));
         },
       );
     }

@@ -43,69 +43,69 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: ZinkoBackground(
         child: SafeArea(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              physics: const BouncingScrollPhysics(),
-              children: [
-                const _NotificationGroup(
-                  title: 'TODAY',
-                  items: [
-                    _NotificationItem(
-                      title: 'Booking Confirmed',
-                      description: 'Your booking at Urban Hive is confirmed.',
-                      time: '2 hours ago',
-                      icon: Icons.check_circle_outline_rounded,
-                      iconColor: Colors.greenAccent,
-                      isNew: true,
-                    ),
-                    _NotificationItem(
-                      title: 'Community Alert',
-                      description: 'Startup Networking is happening near you.',
-                      time: '5 hours ago',
-                      icon: Icons.calendar_today_rounded,
-                      iconColor: Colors.purpleAccent,
-                      isNew: true,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const _NotificationGroup(
-                  title: 'YESTERDAY',
-                  items: [
-                    _NotificationItem(
-                      title: 'Payment Success',
-                      description: 'Subscription payment successful.',
-                      time: '1 day ago',
-                      icon: Icons.credit_card_rounded,
-                      iconColor: Colors.blueAccent,
-                    ),
-                    _NotificationItem(
-                      title: 'New Feature',
-                      description: 'Discover Premium Community features!',
-                      time: '2 days ago',
-                      icon: Icons.stars_rounded,
-                      iconColor: Colors.amberAccent,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const _NotificationGroup(
-                  title: 'EARLIER',
-                  items: [
-                    _NotificationItem(
-                      title: 'Friend Request',
-                      description: 'David Wilson sent a request.',
-                      time: '3 days ago',
-                      icon: Icons.person_add_outlined,
-                      iconColor: Colors.tealAccent,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 100),
-              ],
-            ),
+          child: ListView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            physics: const BouncingScrollPhysics(),
+            children: [
+              const _NotificationGroup(
+                title: 'TODAY',
+                items: [
+                  _NotificationItem(
+                    title: 'Booking Confirmed',
+                    description: 'Your booking at Urban Hive is confirmed.',
+                    time: '2 hours ago',
+                    icon: Icons.check_circle_outline_rounded,
+                    iconColor: Colors.greenAccent,
+                    isNew: true,
+                  ),
+                  _NotificationItem(
+                    title: 'Community Alert',
+                    description: 'Startup Networking is happening near you.',
+                    time: '5 hours ago',
+                    icon: Icons.calendar_today_rounded,
+                    iconColor: Colors.purpleAccent,
+                    isNew: true,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const _NotificationGroup(
+                title: 'YESTERDAY',
+                items: [
+                  _NotificationItem(
+                    title: 'Payment Success',
+                    description: 'Subscription payment successful.',
+                    time: '1 day ago',
+                    icon: Icons.credit_card_rounded,
+                    iconColor: Colors.blueAccent,
+                  ),
+                  _NotificationItem(
+                    title: 'New Feature',
+                    description: 'Discover Premium Community features!',
+                    time: '2 days ago',
+                    icon: Icons.stars_rounded,
+                    iconColor: Colors.amberAccent,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const _NotificationGroup(
+                title: 'EARLIER',
+                items: [
+                  _NotificationItem(
+                    title: 'Friend Request',
+                    description: 'David Wilson sent a request.',
+                    time: '3 days ago',
+                    icon: Icons.person_add_outlined,
+                    iconColor: Colors.tealAccent,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 100),
+            ],
           ),
         ),
+      ),
     );
   }
 }
@@ -128,7 +128,7 @@ class _NotificationGroup extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: GlassTheme.secondaryTextColor(context).withOpacity(0.5),
+              color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.5),
               letterSpacing: 1.5,
             ),
           ),
@@ -137,7 +137,7 @@ class _NotificationGroup extends StatelessWidget {
           return entry.$2
               .animate()
               .fadeIn(duration: 400.ms, delay: (entry.$1 * 80).ms)
-              .slideX(begin: 0.1);
+              ;
         }),
       ],
     );
@@ -171,9 +171,12 @@ class _NotificationItem extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context).withOpacity(isNew ? 0.12 : 0.08),
+            color:
+                GlassTheme.glassColor(context).withValues(alpha: isNew ? 0.12 : 0.08),
             borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: GlassTheme.glassBorder(context).withOpacity(isNew ? 0.3 : 0.15)),
+            border: Border.all(
+                color: GlassTheme.glassBorder(context)
+                    .withValues(alpha: isNew ? 0.3 : 0.15)),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,7 +184,7 @@ class _NotificationItem extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: iconColor.withOpacity(0.12),
+                  color: iconColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: iconColor, size: 20),
@@ -218,7 +221,8 @@ class _NotificationItem extends StatelessWidget {
                       description,
                       style: TextStyle(
                         fontSize: 12,
-                        color: GlassTheme.secondaryTextColor(context).withOpacity(0.5),
+                        color: GlassTheme.secondaryTextColor(context)
+                            .withValues(alpha: 0.5),
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
@@ -229,11 +233,12 @@ class _NotificationItem extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Text(
-                time.split(' ').first + 'h',
+                '${time.split(' ').first}h',
                 style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
-                  color: GlassTheme.secondaryTextColor(context).withOpacity(0.3),
+                  color:
+                      GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
                 ),
               ),
             ],
@@ -272,3 +277,4 @@ class _GlassHeaderButton extends StatelessWidget {
     );
   }
 }
+

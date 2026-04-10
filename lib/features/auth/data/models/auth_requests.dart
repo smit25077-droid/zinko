@@ -30,6 +30,7 @@ class RegisterRequest extends Equatable {
   final String mobileNo;
   final String emailId;
   final String password;
+  final String? referencesReferralCode;
 
   const RegisterRequest({
     this.userCode = 0,
@@ -37,6 +38,7 @@ class RegisterRequest extends Equatable {
     required this.mobileNo,
     required this.emailId,
     required this.password,
+    this.referencesReferralCode,
   });
 
   Map<String, dynamic> toJson() => {
@@ -45,8 +47,10 @@ class RegisterRequest extends Equatable {
         "mobile_no": mobileNo,
         "email_id": emailId,
         "password": password,
+        "references_referral_code": referencesReferralCode,
       };
 
   @override
-  List<Object?> get props => [userCode, userName, mobileNo, emailId, password];
+  List<Object?> get props =>
+      [userCode, userName, mobileNo, emailId, password, referencesReferralCode];
 }

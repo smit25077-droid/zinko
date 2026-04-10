@@ -21,6 +21,11 @@ class UpdateUserProfile implements UseCase<UserEntity, UpdateUserParams> {
       membership: params.membership,
       isEmailVerified: params.isEmailVerified,
       isPhoneVerified: params.isPhoneVerified,
+      city: params.city,
+      state: params.state,
+      gender: params.gender,
+      birthdate: params.birthdate,
+      companyName: params.companyName,
     );
   }
 }
@@ -35,6 +40,11 @@ class UpdateUserParams {
   final String? membership;
   final bool? isEmailVerified;
   final bool? isPhoneVerified;
+  final String? city;
+  final String? state;
+  final String? gender;
+  final String? birthdate;
+  final String? companyName;
 
   UpdateUserParams({
     required this.name,
@@ -46,5 +56,10 @@ class UpdateUserParams {
     this.membership,
     this.isEmailVerified,
     this.isPhoneVerified,
+    this.city,
+    this.state,
+    this.gender,
+    this.birthdate,
+    this.companyName,
   });
 }

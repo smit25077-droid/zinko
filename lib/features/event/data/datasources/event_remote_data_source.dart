@@ -8,23 +8,25 @@ abstract class EventRemoteDataSource {
 }
 
 class EventRemoteDataSourceImpl implements EventRemoteDataSource {
-  final List<EventModel> _mockEvents = kAllEvents.map((e) => EventModel(
-    id: e.id,
-    title: e.title,
-    category: e.category,
-    date: e.date,
-    month: e.month,
-    location: e.location,
-    price: e.price,
-    hostName: e.hostName,
-    hostImage: e.hostImage,
-    imageUrl: e.imageUrl,
-    description: e.description,
-    isPremiumOnly: e.isPremiumOnly,
-    attendees: e.attendees,
-    isFavorite: e.isFavorite,
-    isRegistered: e.isRegistered,
-  )).toList();
+  final List<EventModel> _mockEvents = kAllEvents
+      .map((e) => EventModel(
+            id: e.id,
+            title: e.title,
+            category: e.category,
+            date: e.date,
+            month: e.month,
+            location: e.location,
+            price: e.price,
+            hostName: e.hostName,
+            hostImage: e.hostImage,
+            imageUrl: e.imageUrl,
+            description: e.description,
+            isPremiumOnly: e.isPremiumOnly,
+            attendees: e.attendees,
+            isFavorite: e.isFavorite,
+            isRegistered: e.isRegistered,
+          ))
+      .toList();
 
   @override
   Future<List<EventModel>> getEvents() async {
@@ -37,7 +39,8 @@ class EventRemoteDataSourceImpl implements EventRemoteDataSource {
     await Future.delayed(const Duration(milliseconds: 300));
     final index = _mockEvents.indexWhere((e) => e.id == id);
     if (index != -1) {
-      final updated = _mockEvents[index].copyWith(isFavorite: !_mockEvents[index].isFavorite);
+      final updated = _mockEvents[index]
+          .copyWith(isFavorite: !_mockEvents[index].isFavorite);
       _mockEvents[index] = updated;
       return updated;
     }

@@ -1,24 +1,38 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:another_flushbar/flushbar.dart';
+import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../data/models/auth_requests.dart';
+import './register_form_bloc.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends StatelessWidget {
   static const String routeName = '/register';
 
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => RegisterFormBloc(),
+      child: const _RegisterContent(),
+    );
+  }
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterContent extends StatefulWidget {
+  const _RegisterContent();
+
+  @override
+  State<_RegisterContent> createState() => _RegisterContentState();
+}
+
+class _RegisterContentState extends State<_RegisterContent> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _userNameController = TextEditingController();
@@ -26,9 +40,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
-
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  final TextEditingController _referralController = TextEditingController();
 
   @override
   void dispose() {
@@ -37,6 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _referralController.dispose();
     super.dispose();
   }
 
@@ -51,6 +64,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
               password: _passwordController.text,
               mobileNo: _phoneController.text.trim(),
               emailId: _emailController.text.trim(),
+              referencesReferralCode: _referralController.text.trim().isNotEmpty
+                  ? _referralController.text.trim()
+                  : null,
             ),
           ),
         );
@@ -58,28 +74,41 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-          Navigator.pop(context);
+          Flushbar(
+            title: "Account Created",
+            message: state.message,
+            duration: const Duration(seconds: 3),
+            flushbarPosition: FlushbarPosition.TOP,
+            backgroundColor: Colors.green.withValues(alpha: 0.9),
+            icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+            borderRadius: BorderRadius.circular(12),
+            margin: const EdgeInsets.all(12),
+          ).show(context);
+
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted && context.mounted) {
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                LoginScreen.routeName,
+                (route) => false,
+              );
+            }
+          });
         }
         if (state is AuthFailure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.redAccent,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          Flushbar(
+            title: "Registration Failed",
+            message: state.message,
+            duration: const Duration(seconds: 4),
+            flushbarPosition: FlushbarPosition.TOP,
+            backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+            icon: const Icon(Icons.error_outline, color: Colors.white),
+            borderRadius: BorderRadius.circular(12),
+            margin: const EdgeInsets.all(12),
+          ).show(context);
         }
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -88,23 +117,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
           resizeToAvoidBottomInset: true,
           body: Stack(
             children: [
-              // Background Image
-              Positioned.fill(
-                child: Image.asset(
-                  'assets/images/cafe_hotel_bg.png',
-                  fit: BoxFit.cover,
-                ),
-              ),
               Positioned.fill(
                 child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.black.withOpacity(0.3),
-                        Colors.black.withOpacity(0.7),
-                      ],
+                  decoration: const BoxDecoration(
+                    color: Colors.black,
+                    image: DecorationImage(
+                      image: AssetImage('assets/images/cafe_hotel_bg.png'),
+                      fit: BoxFit.cover,
+                      opacity: 0.45,
                     ),
                   ),
                 ),
@@ -121,7 +141,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 50),
                           Column(
                             children: [
-                              Text(
+                              const Text(
                                 'Register with Zinko',
                                 style: TextStyle(
                                   color: Colors.white,
@@ -130,30 +150,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   letterSpacing: -0.5,
                                   shadows: [
                                     Shadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      offset: const Offset(0, 4),
+                                      color: Colors.black26,
+                                      offset: Offset(0, 4),
                                       blurRadius: 10,
                                     ),
                                   ],
                                 ),
-                              ),
+                              ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
                               const SizedBox(height: 8),
-                              Text(
+                              const Text(
                                 'Begin your journey with the finest experiences.',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Colors.white.withOpacity(0.85),
+                                  color: Colors.white70,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w400,
                                   letterSpacing: 0.2,
                                 ),
-                              ),
+                              ).animate(delay: 200.ms).fadeIn(),
                             ],
-                          ).animate(delay: 200.ms).fadeIn().slideY(begin: 0.1, end: 0),
+                          ),
                           const SizedBox(height: 40),
-                          _buildGlassRegisterCard(context, isDark),
+                          _buildGlassRegisterCard(context),
                           const SizedBox(height: 32),
-                          _LoginFooter().animate(delay: 600.ms).fadeIn(),
+                          const _LoginFooter(),
                           const SizedBox(height: 40),
                         ],
                       ),
@@ -168,29 +188,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
-  Widget _buildGlassRegisterCard(BuildContext context, bool isDark) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(32),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
+  Widget _buildGlassRegisterCard(BuildContext context) {
+    return BlocBuilder<RegisterFormBloc, RegisterFormState>(
+      builder: (context, formState) {
+        return BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            return Container(
               width: double.infinity,
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.12),
+                color: Colors.white.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.2),
-                  width: 1.2,
-                ),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1.2),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.25),
+                    blurRadius: 35,
+                    spreadRadius: -8,
+                  )
+                ],
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Colors.white.withOpacity(0.15),
-                    Colors.white.withOpacity(0.05),
+                    Colors.white.withValues(alpha: 0.2),
+                    Colors.white.withValues(alpha: 0.08),
                   ],
                 ),
               ),
@@ -244,14 +266,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _passwordController,
                       hint: 'Enter your password',
                       icon: Icons.lock_outline_rounded,
-                      obscureText: _obscurePassword,
+                      obscureText: formState.obscurePassword,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          formState.obscurePassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                           color: Colors.white70,
                           size: 20,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => context.read<RegisterFormBloc>().add(TogglePasswordVisibility()),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Password is required';
@@ -266,20 +288,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       controller: _confirmPasswordController,
                       hint: 'Repeat your password',
                       icon: Icons.lock_reset_rounded,
-                      obscureText: _obscureConfirmPassword,
+                      obscureText: formState.obscureConfirmPassword,
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          formState.obscureConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
                           color: Colors.white70,
                           size: 20,
                         ),
-                        onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                        onPressed: () => context.read<RegisterFormBloc>().add(ToggleConfirmPasswordVisibility()),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Confirm your password';
                         if (value != _passwordController.text) return 'Passwords do not match';
                         return null;
                       },
+                    ),
+                    const SizedBox(height: 18),
+                    _buildFieldLabel('Referral Code (Optional)'),
+                    const SizedBox(height: 10),
+                    _ModernTextField(
+                      controller: _referralController,
+                      hint: 'Enter referral code',
+                      icon: Icons.card_giftcard_rounded,
+                      keyboardType: TextInputType.text,
+                      textCapitalization: TextCapitalization.characters,
                     ),
                     const SizedBox(height: 28),
                     _PremiumButton(
@@ -290,11 +322,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ],
                 ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
-    ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.1, end: 0);
+    ).animate(delay: 400.ms).fadeIn();
   }
 
   Widget _buildFieldLabel(String label) {
@@ -316,6 +348,7 @@ class _ModernTextField extends StatelessWidget {
   final IconData icon;
   final bool obscureText;
   final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
 
@@ -325,6 +358,7 @@ class _ModernTextField extends StatelessWidget {
     required this.icon,
     this.obscureText = false,
     this.keyboardType,
+    this.textCapitalization = TextCapitalization.none,
     this.suffixIcon,
     this.validator,
   });
@@ -334,23 +368,24 @@ class _ModernTextField extends StatelessWidget {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
-      keyboardType: keyboardType,
       validator: validator,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withOpacity(0.08),
+        fillColor: Colors.white.withValues(alpha: 0.08),
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white38, fontSize: 14),
         prefixIcon: Icon(icon, color: Colors.white60, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withOpacity(0.1)),
+          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -402,6 +437,8 @@ class _PremiumButton extends StatelessWidget {
 }
 
 class _LoginFooter extends StatelessWidget {
+  const _LoginFooter();
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -412,7 +449,7 @@ class _LoginFooter extends StatelessWidget {
           style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
         ),
         GestureDetector(
-          onTap: () => Navigator.pop(context),
+          onTap: () => Navigator.pushNamed(context, LoginScreen.routeName),
           child: const Text(
             'Sign In',
             style: TextStyle(

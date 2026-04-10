@@ -1,4 +1,3 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import '../core/theme/app_colors.dart';
 
@@ -10,28 +9,32 @@ class ZinkoBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final view = View.of(context);
+    final screenSize = view.physicalSize / view.devicePixelRatio;
+
     return Stack(
+      clipBehavior: Clip.none,
       children: [
-        // Forced Dark Theme Background
-        Positioned.fill(
-          child: Image.asset(
-            'assets/images/dark_theme_bg.png',
-            fit: BoxFit.cover,
-            cacheWidth: 1080,
-          ),
-        ),
-        // Premium Dark Blur Overlay
-        Positioned.fill(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 0.0, sigmaY: 0.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.backgroundDark.withValues(alpha: 0.6),
+        // Static Background Layer - uses physical screen size to ignore keyboard resizing
+        Positioned(
+          top: 0,
+          left: 0,
+          width: screenSize.width,
+          height: screenSize.height,
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.backgroundDark,
+              image: const DecorationImage(
+                image: AssetImage('assets/images/dark_theme_bg.png'),
+                fit: BoxFit.cover,
+                opacity: 0.2,
+                alignment: Alignment.topCenter,
               ),
             ),
           ),
         ),
-        if (child != null) child!,
+        // Content Layer
+        child ?? SizedBox(),
       ],
     );
   }

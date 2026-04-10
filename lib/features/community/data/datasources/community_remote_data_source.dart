@@ -18,7 +18,8 @@ class CommunityRemoteDataSourceImpl implements CommunityRemoteDataSource {
       userRole: 'Product Designer',
       userAvatar: 'https://i.pravatar.cc/150?u=post1',
       timeAgo: '2h ago',
-      content: 'Just finished a great co-working session at Workspace Central. The vibes are amazing! 🚀',
+      content:
+          'Just finished a great co-working session at Workspace Central. The vibes are amazing! 🚀',
       likes: 24,
       comments: 5,
       isLiked: false,
@@ -29,7 +30,8 @@ class CommunityRemoteDataSourceImpl implements CommunityRemoteDataSource {
       userRole: 'Fullstack Developer',
       userAvatar: 'https://i.pravatar.cc/150?u=post2',
       timeAgo: '5h ago',
-      content: 'Anyone up for a quick coffee chat about Flutter? I\'m currently at Cafe Nero.',
+      content:
+          'Anyone up for a quick coffee chat about Flutter? I\'m currently at Cafe Nero.',
       likes: 12,
       comments: 3,
       isLiked: true,
@@ -48,7 +50,8 @@ class CommunityRemoteDataSourceImpl implements CommunityRemoteDataSource {
       id: 'group2',
       name: 'Flutter Developers',
       memberCount: '800 members',
-      image: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200',
+      image:
+          'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=200',
       isJoined: false,
     ),
   ];
@@ -58,7 +61,8 @@ class CommunityRemoteDataSourceImpl implements CommunityRemoteDataSource {
       id: 'u1',
       name: 'Michael Chen',
       role: 'Full Stack Dev',
-      bio: 'Full Stack Developer with a passion for building scalable web applications.',
+      bio:
+          'Full Stack Developer with a passion for building scalable web applications.',
       avatarUrl: 'https://i.pravatar.cc/300?u=1',
       location: 'London, UK',
       connections: 220,

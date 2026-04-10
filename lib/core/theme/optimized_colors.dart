@@ -15,7 +15,8 @@ class OptimizedColors {
   static const Color white40 = Color(0x66FFFFFF);
   static const Color white50 = Color(0x80FFFFFF);
   static const Color white60 = Color(0x99FFFFFF);
-  static const Color white70 = Color(0xB3FFFFFF); // Perfect for secondary text on dark
+  static const Color white70 =
+      Color(0xB3FFFFFF); // Perfect for secondary text on dark
   static const Color white80 = Color(0xCCFFFFFF);
   static const Color white90 = Color(0xE6FFFFFF);
 
@@ -25,15 +26,18 @@ class OptimizedColors {
 
   // --- PERFECTED GLASS BLACKS (Light mode depth) ---
   static const Color black04 = Color(0x0A000000);
-  static const Color black08 = Color(0x14000000); // Perfect base for light chips
+  static const Color black08 =
+      Color(0x14000000); // Perfect base for light chips
   static const Color black10 = Color(0x1A000000);
   static const Color black12 = Color(0x1E000000);
   static const Color black20 = Color(0x33000000);
   static const Color black30 = Color(0x4D000000);
-  static const Color black40 = Color(0x66000000); // Good for muted icons on light
+  static const Color black40 =
+      Color(0x66000000); // Good for muted icons on light
   static const Color black50 = Color(0x80000000);
   static const Color black60 = Color(0x99000000);
-  static const Color black70 = Color(0xB3000000); // Perfect for secondary text on light
+  static const Color black70 =
+      Color(0xB3000000); // Perfect for secondary text on light
   static const Color black80 = Color(0xCC000000);
 
   // Legacy mappings for compatibility
@@ -49,9 +53,11 @@ class OptimizedColors {
 
   // --- TEXT COLORS (Vibrant Visibility) ---
   // Increased intensity for secondary text (was 0.5, now ~0.7-0.8)
-  static const Color textSecondaryDark = Color(0xCCB3B3B3); // 0.8 opacity intensity
-  static const Color textSecondaryLight = Color(0xCC757575); // 0.8 opacity intensity
-  
+  static const Color textSecondaryDark =
+      Color(0xCCB3B3B3); // 0.8 opacity intensity
+  static const Color textSecondaryLight =
+      Color(0xCC757575); // 0.8 opacity intensity
+
   // Legacy / Lower intensity mappings
   static const Color textSecondaryDark50 = Color(0x80B3B3B3);
   static const Color textSecondaryLight50 = Color(0x80757575);
@@ -59,10 +65,11 @@ class OptimizedColors {
   // --- BORDERS (High Definition) ---
   // Optimized for sharp, visible edges on glass
   static const Color glassBorderLight = Color(0x40FFFFFF); // 0.25 opacity white
-  static const Color glassBorderDark = Color(0x26000000);  // 0.15 opacity black
-  
+  static const Color glassBorderDark = Color(0x26000000); // 0.15 opacity black
+
   // Legacy mappings for compatibility
-  static const Color glassBorderLight12 = Color(0x1FFFFFFF); // kept for very subtle look
+  static const Color glassBorderLight12 =
+      Color(0x1FFFFFFF); // kept for very subtle look
   static const Color glassBorderDark10 = Color(0x1A000000);
 
   // --- ACCENTS & BRAND ---

@@ -16,6 +16,8 @@ class UserError extends UserState {
   UserError(this.message);
 }
 
+class UserDeleted extends UserState {}
+
 class UserMembershipUpdateSuccess extends UserLoaded {
   final String plan;
   UserMembershipUpdateSuccess(super.user, this.plan);

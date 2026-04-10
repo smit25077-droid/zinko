@@ -355,7 +355,8 @@ final List<ZinkoPlace> kAllPlaces = [
           userName: 'Emma R.',
           avatarUrl: 'https://i.pravatar.cc/60?u=e1',
           rating: 4.5,
-          comment: 'Cozy atmosphere and excellent coffee. Perfect for afternoon work sessions.',
+          comment:
+              'Cozy atmosphere and excellent coffee. Perfect for afternoon work sessions.',
           timeAgo: '1 week ago'),
       ZinkoReview(
           userName: 'Tom H.',
@@ -412,19 +413,22 @@ final List<ZinkoPlace> kAllPlaces = [
           userName: 'Sarah P.',
           avatarUrl: 'https://i.pravatar.cc/60?u=s1',
           rating: 5.0,
-          comment: 'Amazing coworking space! The rooftop is perfect for breaks and the community is very welcoming.',
+          comment:
+              'Amazing coworking space! The rooftop is perfect for breaks and the community is very welcoming.',
           timeAgo: '3 days ago'),
       ZinkoReview(
           userName: 'Mike D.',
           avatarUrl: 'https://i.pravatar.cc/60?u=m1',
           rating: 4.5,
-          comment: 'Great facilities and fast WiFi. The gym access is a nice bonus!',
+          comment:
+              'Great facilities and fast WiFi. The gym access is a nice bonus!',
           timeAgo: '5 days ago'),
       ZinkoReview(
           userName: 'Lisa W.',
           avatarUrl: 'https://i.pravatar.cc/60?u=l1',
           rating: 5.0,
-          comment: 'Best coworking space in Shoreditch. Love the vibe and the free snacks!',
+          comment:
+              'Best coworking space in Shoreditch. Love the vibe and the free snacks!',
           timeAgo: '1 week ago'),
     ],
   ),
@@ -458,7 +462,6 @@ final List<ZinkoPlace> kAllPlaces = [
     rating: 4.3,
     price: '£7',
     priceUnit: '/hr',
-
     imageUrl:
         'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=800&q=80',
     amenities: [Icons.wifi, Icons.coffee_outlined],
@@ -607,13 +610,15 @@ final List<ZinkoPlace> kAllPlaces = [
           userName: 'James T.',
           avatarUrl: 'https://i.pravatar.cc/60?u=j1',
           rating: 5.0,
-          comment: 'Absolutely stunning views! The natural light makes working here a pleasure. Worth every penny.',
+          comment:
+              'Absolutely stunning views! The natural light makes working here a pleasure. Worth every penny.',
           timeAgo: '2 days ago'),
       ZinkoReview(
           userName: 'Rachel M.',
           avatarUrl: 'https://i.pravatar.cc/60?u=r1',
           rating: 4.8,
-          comment: 'Premium space with excellent amenities. The coffee is top-notch and the atmosphere is very professional.',
+          comment:
+              'Premium space with excellent amenities. The coffee is top-notch and the atmosphere is very professional.',
           timeAgo: '4 days ago'),
     ],
   ),
@@ -852,7 +857,8 @@ final List<ZinkoPlace> kAllPlaces = [
           userName: 'Alex P.',
           avatarUrl: 'https://i.pravatar.cc/60?u=alex1',
           rating: 5.0,
-          comment: 'Amazing creative space! The community here is incredibly supportive.',
+          comment:
+              'Amazing creative space! The community here is incredibly supportive.',
           timeAgo: '1 week ago'),
     ],
   ),
@@ -1049,7 +1055,8 @@ final List<ZinkoPlace> kAllPlaces = [
           userName: 'Dr. Sarah L.',
           avatarUrl: 'https://i.pravatar.cc/60?u=sarah2',
           rating: 5.0,
-          comment: 'Incredible facilities for innovation. The prototyping lab is world-class!',
+          comment:
+              'Incredible facilities for innovation. The prototyping lab is world-class!',
           timeAgo: '3 days ago'),
     ],
   ),
@@ -1318,7 +1325,8 @@ final List<ZinkoPerson> kAllPeople = [
     id: 'u16',
     name: 'Isabella Martinez',
     role: 'Content Creator',
-    bio: 'Digital content strategist and social media expert. Building brands online.',
+    bio:
+        'Digital content strategist and social media expert. Building brands online.',
     avatarUrl: 'https://i.pravatar.cc/300?u=16',
     location: 'Shoreditch, London',
     connections: 280,
@@ -1332,7 +1340,8 @@ final List<ZinkoPerson> kAllPeople = [
     id: 'u17',
     name: 'Marcus Johnson',
     role: 'Blockchain Developer',
-    bio: 'Building the decentralized future. Smart contracts and DeFi enthusiast.',
+    bio:
+        'Building the decentralized future. Smart contracts and DeFi enthusiast.',
     avatarUrl: 'https://i.pravatar.cc/300?u=17',
     location: 'Canary Wharf, London',
     connections: 195,
@@ -1360,7 +1369,8 @@ final List<ZinkoPerson> kAllPeople = [
     id: 'u19',
     name: 'Daniel Kim',
     role: 'Game Developer',
-    bio: 'Creating immersive gaming experiences. Unity and Unreal Engine specialist.',
+    bio:
+        'Creating immersive gaming experiences. Unity and Unreal Engine specialist.',
     avatarUrl: 'https://i.pravatar.cc/300?u=19',
     location: 'Soho, London',
     connections: 165,
@@ -1374,7 +1384,8 @@ final List<ZinkoPerson> kAllPeople = [
     id: 'u20',
     name: 'Sophia Anderson',
     role: 'Legal Tech Advisor',
-    bio: 'Bridging law and technology. Helping startups navigate legal complexities.',
+    bio:
+        'Bridging law and technology. Helping startups navigate legal complexities.',
     avatarUrl: 'https://i.pravatar.cc/300?u=20',
     location: 'City of London',
     connections: 290,
@@ -1883,8 +1894,10 @@ final List<ZinkoPost> kAllPosts = [
     userRole: 'Content Creator',
     userAvatar: 'https://i.pravatar.cc/300?u=16',
     timeAgo: '3 hours ago',
-    content: 'Just launched a new campaign for a sustainable fashion brand. Excited to see the impact!',
-    postImage: 'https://images.unsplash.com/photo-1558769132-cb1aea3c8565?auto=format&fit=crop&w=800&q=80',
+    content:
+        'Just launched a new campaign for a sustainable fashion brand. Excited to see the impact!',
+    postImage:
+        'https://images.unsplash.com/photo-1558769132-cb1aea3c8565?auto=format&fit=crop&w=800&q=80',
     likes: 78,
     comments: 12,
   ),
@@ -1894,7 +1907,8 @@ final List<ZinkoPost> kAllPosts = [
     userRole: 'Blockchain Developer',
     userAvatar: 'https://i.pravatar.cc/300?u=17',
     timeAgo: '6 hours ago',
-    content: 'Smart contract deployment successful! The future is decentralized.',
+    content:
+        'Smart contract deployment successful! The future is decentralized.',
     likes: 92,
     comments: 15,
   ),
@@ -1904,7 +1918,8 @@ final List<ZinkoPost> kAllPosts = [
     userRole: 'HR Consultant',
     userAvatar: 'https://i.pravatar.cc/300?u=18',
     timeAgo: '1 day ago',
-    content: 'Hiring tip: Culture fit is just as important as skills. Build teams that thrive together.',
+    content:
+        'Hiring tip: Culture fit is just as important as skills. Build teams that thrive together.',
     likes: 156,
     comments: 28,
   ),
@@ -1914,8 +1929,10 @@ final List<ZinkoPost> kAllPosts = [
     userRole: 'Game Developer',
     userAvatar: 'https://i.pravatar.cc/300?u=19',
     timeAgo: '2 days ago',
-    content: 'Working on a new indie game. Can\'t wait to share the trailer next month!',
-    postImage: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80',
+    content:
+        'Working on a new indie game. Can\'t wait to share the trailer next month!',
+    postImage:
+        'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80',
     likes: 234,
     comments: 42,
   ),
@@ -1925,7 +1942,8 @@ final List<ZinkoPost> kAllPosts = [
     userRole: 'Legal Tech Advisor',
     userAvatar: 'https://i.pravatar.cc/300?u=20',
     timeAgo: '5 hours ago',
-    content: 'New GDPR updates are rolling out. Make sure your startup is compliant!',
+    content:
+        'New GDPR updates are rolling out. Make sure your startup is compliant!',
     likes: 67,
     comments: 19,
   ),

@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_user_bookings.dart';
+import 'package:zinko_app/features/user/domain/usecases/update_visibility.dart';
 import 'core/network/dio_client.dart';
 import 'core/bloc/navigation/navigation_bloc.dart';
 import 'features/booking/presentation/bloc/map/map_bloc.dart';
@@ -20,7 +22,11 @@ import '../features/user/domain/usecases/get_user_profile.dart';
 import '../features/user/domain/usecases/update_user_profile.dart';
 import '../features/user/domain/usecases/add_money.dart';
 import '../features/user/domain/usecases/redeem_referral.dart';
+import '../features/user/domain/usecases/send_email_otp.dart';
+import '../features/user/domain/usecases/verify_email_otp.dart';
+import '../features/user/domain/usecases/delete_user.dart';
 import '../features/user/presentation/bloc/user_bloc.dart';
+import 'features/booking/domain/usecases/user_check_in.dart';
 
 // Community imports
 import '../features/community/domain/repositories/community_repository.dart';
@@ -31,8 +37,11 @@ import '../features/community/domain/usecases/group_usecases.dart';
 import '../features/community/domain/usecases/person_usecases.dart';
 import '../features/community/presentation/bloc/community_bloc.dart';
 
-import '../features/booking/presentation/bloc/workspace_bloc.dart';
-import '../features/booking/domain/usecases/get_workspaces.dart';
+import 'features/booking/presentation/bloc/create_booking/create_booking_bloc.dart';
+import 'features/booking/presentation/bloc/workspace_bloc.dart';
+import 'features/booking/domain/usecases/create_booking.dart';
+import 'features/booking/domain/usecases/get_workspaces.dart';
+import 'features/booking/domain/usecases/search_workspaces.dart';
 import '../features/booking/domain/repositories/workspace_repository.dart';
 import '../features/booking/data/repositories/workspace_repository_impl.dart';
 import '../features/booking/data/datasources/workspace_local_data_source.dart';
@@ -60,6 +69,13 @@ import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/datasources/auth_local_data_source.dart';
 
+// Cafe imports
+import 'features/cafe/domain/repositories/cafe_repository.dart';
+import 'features/cafe/data/repositories/cafe_repository_impl.dart';
+import 'features/cafe/data/datasources/cafe_remote_data_source.dart';
+import 'features/cafe/domain/usecases/search_cafes.dart';
+import 'features/cafe/presentation/bloc/cafe_bloc.dart';
+
 final sl = GetIt.instance;
 
 Future<void> init() async {
@@ -67,7 +83,7 @@ Future<void> init() async {
   final sharedPreferences = await SharedPreferences.getInstance();
   sl.registerLazySingleton(() => sharedPreferences);
   sl.registerLazySingleton(() => Dio());
-  sl.registerLazySingleton(() => DioClient(sl()));
+  sl.registerLazySingleton(() => DioClient(sl(), sl()));
 
   //! Features - Auth (Clean Architecture)
   // BLoC
@@ -107,6 +123,10 @@ Future<void> init() async {
       updateUserProfile: sl(),
       addMoney: sl(),
       redeemReferral: sl(),
+      updateVisibility: sl(),
+      sendEmailOtp: sl(),
+      verifyEmailOtp: sl(),
+      deleteUser: sl(),
     ),
   );
 
@@ -115,43 +135,61 @@ Future<void> init() async {
   sl.registerLazySingleton(() => UpdateUserProfile(sl()));
   sl.registerLazySingleton(() => AddMoney(sl()));
   sl.registerLazySingleton(() => RedeemReferral(sl()));
+  sl.registerLazySingleton(() => UpdateVisibility(sl()));
+  sl.registerLazySingleton(() => SendEmailOtp(sl()));
+  sl.registerLazySingleton(() => VerifyEmailOtp(sl()));
+  sl.registerLazySingleton(() => DeleteUser(sl()));
 
   //! Features - Booking
+  // Use cases
+  sl.registerLazySingleton(() => GetBookings(sl()));
+  sl.registerLazySingleton(() => GetUserBookings(sl()));
+  sl.registerLazySingleton(() => UserCheckIn(sl()));
+  sl.registerLazySingleton(() => AddBooking(sl()));
+  sl.registerLazySingleton(() => CompleteBooking(sl()));
+  sl.registerLazySingleton(() => GetWorkspaces(sl()));
+  sl.registerLazySingleton(() => SearchWorkspaces(sl()));
+  sl.registerLazySingleton(() => CreateBookingUseCase(sl()));
+
   // BLoC
   sl.registerFactory(
     () => BookingBloc(
       getBookings: sl(),
+      getUserBookings: sl(),
+      userCheckIn: sl(),
       addBooking: sl(),
       completeBooking: sl(),
       repository: sl(),
     ),
   );
 
-  // Use cases
-  sl.registerLazySingleton(() => GetBookings(sl()));
-  sl.registerLazySingleton(() => AddBooking(sl()));
-  sl.registerLazySingleton(() => CompleteBooking(sl()));
-  sl.registerLazySingleton(() => GetWorkspaces(sl()));
-
   // BLoC - Workspace
   sl.registerFactory(
     () => WorkspaceBloc(
       getWorkspaces: sl(),
+      searchWorkspaces: sl(),
       repository: sl(),
     ),
   );
+  sl.registerFactory(() => CreateBookingBloc(createBookingUseCase: sl()));
 
   // Repository
   sl.registerLazySingleton<BookingRepository>(
     () => BookingRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<WorkspaceRepository>(
-    () => WorkspaceRepositoryImpl(localDataSource: sl()),
+    () => WorkspaceRepositoryImpl(
+      localDataSource: sl(),
+      remoteDataSource: sl(),
+    ),
   );
 
   // Data source
   sl.registerLazySingleton<BookingRemoteDataSource>(
-    () => BookingRemoteDataSourceImpl(),
+    () => BookingRemoteDataSourceImpl(
+      client: sl(),
+      sharedPreferences: sl(),
+    ),
   );
   sl.registerLazySingleton<WorkspaceLocalDataSource>(
     () => WorkspaceLocalDataSourceImpl(),
@@ -193,7 +231,7 @@ Future<void> init() async {
     () => UserRepositoryImpl(remoteDataSource: sl()),
   );
   sl.registerLazySingleton<UserRemoteDataSource>(
-    () => UserRemoteDataSourceImpl(),
+    () => UserRemoteDataSourceImpl(client: sl()),
   );
 
   //! Features - Event
@@ -251,5 +289,21 @@ Future<void> init() async {
   sl.registerFactory(() => CafeMenuBloc(bookingBloc: sl()));
   sl.registerFactory(() => NavigationBloc());
   sl.registerFactory(() => MapBloc(getWorkspaces: sl(), getPeople: sl()));
-}
 
+  //! Features - Cafe
+  // BLoC
+  sl.registerFactory(() => CafeBloc(searchCafes: sl()));
+
+  // Use cases
+  sl.registerLazySingleton(() => SearchCafes(repository: sl()));
+
+  // Repository
+  sl.registerLazySingleton<CafeRepository>(
+    () => CafeRepositoryImpl(remoteDataSource: sl()),
+  );
+
+  // Data source
+  sl.registerLazySingleton<CafeRemoteDataSource>(
+    () => CafeRemoteDataSourceImpl(client: sl(), sharedPreferences: sl()),
+  );
+}

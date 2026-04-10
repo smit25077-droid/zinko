@@ -1,25 +1,35 @@
-import 'dart:async';
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../core/bloc/network_bloc.dart';
 
 /// A key that the overlay uses to show dialogs outside [MaterialApp]'s builder.
 /// Assign this to [MaterialApp.navigatorKey].
 final GlobalKey<NavigatorState> zinkoNavigatorKey = GlobalKey<NavigatorState>();
 
-class GlobalNetworkOverlay extends StatefulWidget {
+class GlobalNetworkOverlay extends StatelessWidget {
   final Widget child;
 
   const GlobalNetworkOverlay({super.key, required this.child});
 
   @override
-  State<GlobalNetworkOverlay> createState() => _GlobalNetworkOverlayState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => NetworkBloc(),
+      child: _OverlayContent(child: child),
+    );
+  }
 }
 
-class _GlobalNetworkOverlayState extends State<GlobalNetworkOverlay>
+class _OverlayContent extends StatefulWidget {
+  final Widget child;
+  const _OverlayContent({required this.child});
+
+  @override
+  State<_OverlayContent> createState() => _OverlayContentState();
+}
+
+class _OverlayContentState extends State<_OverlayContent>
     with SingleTickerProviderStateMixin {
-  late StreamSubscription<List<ConnectivityResult>> _sub;
-  bool _isConnected = true;
   bool _dialogShowing = false;
   late AnimationController _bannerCtrl;
   late Animation<Offset> _bannerSlide;
@@ -31,26 +41,9 @@ class _GlobalNetworkOverlayState extends State<GlobalNetworkOverlay>
         vsync: this, duration: const Duration(milliseconds: 400));
     _bannerSlide = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero)
         .animate(CurvedAnimation(parent: _bannerCtrl, curve: Curves.easeOut));
-
-    _sub = Connectivity()
-        .onConnectivityChanged
-        .listen(_onConnectivityChanged);
-    _checkOnce();
   }
 
-  Future<void> _checkOnce() async {
-    final res = await Connectivity().checkConnectivity();
-    _onConnectivityChanged(res);
-  }
-
-  void _onConnectivityChanged(List<ConnectivityResult> results) {
-    final connected =
-        results.isNotEmpty && results.any((r) => r != ConnectivityResult.none);
-
-    if (connected == _isConnected) return;
-
-    setState(() => _isConnected = connected);
-
+  void _onStatusChanged(bool connected) {
     if (!connected) {
       _bannerCtrl.forward();
       _showDialog();
@@ -74,11 +67,11 @@ class _GlobalNetworkOverlayState extends State<GlobalNetworkOverlay>
       barrierColor: Colors.black54,
       pageBuilder: (ctx, _, __) => _NoInternetDialog(
         onRetry: () async {
-          final res = await Connectivity().checkConnectivity();
-          if (res.any((r) => r != ConnectivityResult.none)) {
+          final bloc = context.read<NetworkBloc>();
+          await bloc.checkNow();
+          if (bloc.state.isConnected) {
             nav.pop();
             _dialogShowing = false;
-            setState(() => _isConnected = true);
             _bannerCtrl.reverse();
           }
         },
@@ -88,65 +81,68 @@ class _GlobalNetworkOverlayState extends State<GlobalNetworkOverlay>
 
   @override
   void dispose() {
-    _sub.cancel();
     _bannerCtrl.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Stack(
-        children: [
-          widget.child,
-        // Animated top banner
-        Positioned(
-          top: 0,
-          left: 0,
-          right: 0,
-          child: SlideTransition(
-            position: _bannerSlide,
-            child: SafeArea(
-              bottom: false,
-              child: Material(
-                color: Colors.transparent,
-                child: ClipRRect(
-                  child: Container(
-                      color: const Color(0xFFC62828), // Red 700 with 0.9 opacity baked in
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.wifi_off_rounded,
-                              color: Colors.white, size: 16),
-                          const SizedBox(width: 10),
-                          const Expanded(
-                            child: Text(
-                              'No Internet Connection',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700),
+    return BlocListener<NetworkBloc, NetworkState>(
+      listenWhen: (prev, curr) => prev.isConnected != curr.isConnected,
+      listener: (context, state) => _onStatusChanged(state.isConnected),
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Stack(
+          children: [
+            widget.child,
+            // Animated top banner
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SlideTransition(
+                position: _bannerSlide,
+                child: SafeArea(
+                  bottom: false,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ClipRRect(
+                      child: Container(
+                        color: const Color(0xFFC62828),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 10),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.wifi_off_rounded,
+                                color: Colors.white, size: 16),
+                            const SizedBox(width: 10),
+                            const Expanded(
+                              child: Text(
+                                'No Internet Connection',
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                                color: Colors.white54,
-                                shape: BoxShape.circle),
-                          ),
-                        ],
+                            const SizedBox(width: 8),
+                            Container(
+                              width: 8,
+                              height: 8,
+                              decoration: const BoxDecoration(
+                                  color: Colors.white54,
+                                  shape: BoxShape.circle),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -188,8 +184,8 @@ class _NoInternetDialogState extends State<_NoInternetDialog>
     final fgText = isDark ? Colors.white : Colors.black87;
     final subText = isDark ? Colors.white60 : Colors.black45;
 
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Center(
         child: ScaleTransition(
           scale: _scale,
@@ -203,7 +199,7 @@ class _NoInternetDialogState extends State<_NoInternetDialog>
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withValues(alpha: 0.3),
                       blurRadius: 30,
                       offset: const Offset(0, 10))
                 ],
@@ -232,8 +228,7 @@ class _NoInternetDialogState extends State<_NoInternetDialog>
                   Text(
                     'Please check your Wi-Fi or mobile data and try again.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: subText, fontSize: 14, height: 1.5),
+                    style: TextStyle(color: subText, fontSize: 14, height: 1.5),
                   ),
                   const SizedBox(height: 28),
                   SizedBox(

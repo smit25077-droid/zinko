@@ -8,22 +8,36 @@ abstract class ChatRemoteDataSource {
 }
 
 class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
-  final List<ChatModel> _mockChats = kAllChats.map((c) => ChatModel(
-    id: c.id,
-    name: c.name,
-    lastMessage: c.lastMessage,
-    time: c.time,
-    avatar: c.avatar,
-    unreadCount: c.unreadCount,
-    isOnline: c.isOnline,
-    isPremiumLocked: c.isPremiumLocked,
-  )).toList();
+  final List<ChatModel> _mockChats = kAllChats
+      .map((c) => ChatModel(
+            id: c.id,
+            name: c.name,
+            lastMessage: c.lastMessage,
+            time: c.time,
+            avatar: c.avatar,
+            unreadCount: c.unreadCount,
+            isOnline: c.isOnline,
+            isPremiumLocked: c.isPremiumLocked,
+          ))
+      .toList();
 
   final Map<String, List<MessageModel>> _messagesMap = {
     '1': [
-      const MessageModel(id: 'm1', text: "Hey! Are you going to the Flutter workshop?", time: "10:00 AM", isMe: false),
-      const MessageModel(id: 'm2', text: "Yes, I just registered! Are you?", time: "10:02 AM", isMe: true),
-      const MessageModel(id: 'm3', text: "Thinking about it. Is there a group discount?", time: "10:05 AM", isMe: false),
+      const MessageModel(
+          id: 'm1',
+          text: "Hey! Are you going to the Flutter workshop?",
+          time: "10:00 AM",
+          isMe: false),
+      const MessageModel(
+          id: 'm2',
+          text: "Yes, I just registered! Are you?",
+          time: "10:02 AM",
+          isMe: true),
+      const MessageModel(
+          id: 'm3',
+          text: "Thinking about it. Is there a group discount?",
+          time: "10:05 AM",
+          isMe: false),
     ],
   };
 
@@ -50,7 +64,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
     );
     _messagesMap.putIfAbsent(chatId, () => []);
     _messagesMap[chatId]!.add(newMsg);
-    
+
     // Update last message in chat list
     final index = _mockChats.indexWhere((c) => c.id == chatId);
     if (index != -1) {
@@ -65,7 +79,7 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
         isPremiumLocked: _mockChats[index].isPremiumLocked,
       );
     }
-    
+
     return newMsg;
   }
 }

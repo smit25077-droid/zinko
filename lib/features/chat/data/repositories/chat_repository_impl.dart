@@ -20,7 +20,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, List<MessageEntity>>> getMessages(String chatId) async {
+  Future<Either<Failure, List<MessageEntity>>> getMessages(
+      String chatId) async {
     try {
       final messages = await remoteDataSource.getMessages(chatId);
       return Right(messages.cast<MessageEntity>());
@@ -30,7 +31,8 @@ class ChatRepositoryImpl implements ChatRepository {
   }
 
   @override
-  Future<Either<Failure, MessageEntity>> sendMessage(String chatId, String text) async {
+  Future<Either<Failure, MessageEntity>> sendMessage(
+      String chatId, String text) async {
     try {
       final message = await remoteDataSource.sendMessage(chatId, text);
       return Right(message);

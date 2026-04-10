@@ -35,14 +35,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<EventBloc, EventState>(
       listener: (context, state) {
-        if (state is EventRegistrationSuccess && state.eventName == _event.title) {
+        if (state is EventRegistrationSuccess &&
+            state.eventName == _event.title) {
           _showSuccessOverlay(context);
         }
       },
       builder: (context, state) {
         if (state is EventLoaded) {
           try {
-            _event = state.events.firstWhere((e) => e.id == _event.id, orElse: () => _event);
+            _event = state.events
+                .firstWhere((e) => e.id == _event.id, orElse: () => _event);
           } catch (_) {}
         }
 
@@ -104,10 +106,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: _GlassHeaderButton(
-            icon: _event.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+            icon: _event.isFavorite
+                ? Icons.favorite_rounded
+                : Icons.favorite_border_rounded,
             iconColor: _event.isFavorite ? Colors.redAccent : null,
             onTap: () {
-              context.read<EventBloc>().add(ToggleFavoriteEventEvent(_event.id));
+              context
+                  .read<EventBloc>()
+                  .add(ToggleFavoriteEventEvent(_event.id));
             },
           ),
         ),
@@ -120,14 +126,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             Image.network(
               _event.imageUrl,
               fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Image.asset('assets/images/cafe_hotel_bg.png', fit: BoxFit.cover),
+              errorBuilder: (_, __, ___) => Image.asset(
+                  'assets/images/cafe_hotel_bg.png',
+                  fit: BoxFit.cover),
             ),
             Container(
                 decoration: BoxDecoration(
                     gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Colors.black.withOpacity(0.4), Colors.transparent, Colors.black.withOpacity(0.2)]))),
+                        colors: [
+                  Colors.black.withValues(alpha: 0.4),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.2)
+                ]))),
           ],
         ),
       ),
@@ -151,9 +163,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: GlassTheme.textColor(context).withOpacity(0.1),
+                  color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: GlassTheme.glassBorder(context)),
                 ),
@@ -166,7 +179,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     letterSpacing: 1.0,
                   ),
                 ),
-              ).animate().fadeIn().slideX(begin: -0.1),
+              ).animate().fadeIn(),
               const SizedBox(height: 12),
               Text(
                 _event.title,
@@ -176,11 +189,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
                 ),
-              ).animate().fadeIn().slideX(begin: -0.1),
+              ).animate().fadeIn(),
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.location_on_rounded, size: 14, color: GlassTheme.secondaryTextColor(context)),
+                  Icon(Icons.location_on_rounded,
+                      size: 14, color: GlassTheme.secondaryTextColor(context)),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -205,9 +219,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   Widget _buildGlassStatsRow() {
     return Row(
       children: [
-        _buildStatCard('DATE & TIME', _event.date, Icons.calendar_today_rounded),
+        _buildStatCard(
+            'DATE & TIME', _event.date, Icons.calendar_today_rounded),
         const SizedBox(width: 12),
-        _buildStatCard('ATTENDING', '${_event.attendees}', Icons.people_alt_rounded),
+        _buildStatCard(
+            'ATTENDING', '${_event.attendees}', Icons.people_alt_rounded),
       ],
     );
   }
@@ -227,7 +243,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             ),
             child: Row(
               children: [
-                Icon(icon, size: 18, color: GlassTheme.secondaryTextColor(context)),
+                Icon(icon,
+                    size: 18, color: GlassTheme.secondaryTextColor(context)),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -235,8 +252,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     children: [
                       Text(
                         value,
-                        style:
-                            TextStyle(color: GlassTheme.textColor(context), fontSize: 13, fontWeight: FontWeight.w900),
+                        style: TextStyle(
+                            color: GlassTheme.textColor(context),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(label,
@@ -264,7 +283,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         style: TextStyle(
           fontSize: 13,
           height: 1.5,
-          color: GlassTheme.textColor(context).withOpacity(0.7),
+          color: GlassTheme.textColor(context).withValues(alpha: 0.7),
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -282,8 +301,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(_event.hostName,
-                    style: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w900, fontSize: 14)),
-                Text('Official Host', style: TextStyle(color: GlassTheme.secondaryTextColor(context), fontSize: 11)),
+                    style: TextStyle(
+                        color: GlassTheme.textColor(context),
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14)),
+                Text('Official Host',
+                    style: TextStyle(
+                        color: GlassTheme.secondaryTextColor(context),
+                        fontSize: 11)),
               ],
             ),
           ),
@@ -294,7 +319,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               shape: BoxShape.circle,
               border: Border.all(color: GlassTheme.glassBorder(context)),
             ),
-            child: Icon(Icons.chat_bubble_outline_rounded, size: 16, color: GlassTheme.iconColor(context)),
+            child: Icon(Icons.chat_bubble_outline_rounded,
+                size: 16, color: GlassTheme.iconColor(context)),
           ),
         ],
       ),
@@ -342,7 +368,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
           decoration: BoxDecoration(
             color: GlassTheme.backgroundOverlay(context),
-            border: Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
+            border:
+                Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
           ),
           child: Row(
             children: [
@@ -352,13 +379,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   child: Container(
                     height: 52,
                     decoration: BoxDecoration(
-                      color: isRegistered ? Colors.green.withOpacity(0.5) : GlassTheme.textColor(context),
+                      color: isRegistered
+                          ? Colors.green.withValues(alpha: 0.5)
+                          : GlassTheme.textColor(context),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     alignment: Alignment.center,
-                    child: Text(isRegistered ? 'REGISTERED SUCCESSFULLY' : 'RESERVE MY SPOT',
+                    child: Text(
+                        isRegistered
+                            ? 'REGISTERED SUCCESSFULLY'
+                            : 'RESERVE MY SPOT',
                         style: TextStyle(
-                            color: isRegistered ? Colors.white : (isDark ? Colors.black : Colors.white),
+                            color: isRegistered
+                                ? Colors.white
+                                : (isDark ? Colors.black : Colors.white),
                             fontSize: 13,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 1.0)),
@@ -397,7 +431,7 @@ class _EventSuccessOverlay extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: Container(
-        color: Colors.black.withOpacity(0.9),
+        color: Colors.black.withValues(alpha: 0.9),
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Column(
@@ -407,27 +441,39 @@ class _EventSuccessOverlay extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.green.withOpacity(0.5), width: 2),
+                  border: Border.all(
+                      color: Colors.green.withValues(alpha: 0.5), width: 2),
                 ),
-                child: const Icon(Icons.check_rounded, color: Colors.green, size: 70),
+                child: const Icon(Icons.check_rounded,
+                    color: Colors.green, size: 70),
               ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
               const SizedBox(height: 32),
               const Text('YOU\'RE IN!',
-                  style: TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: 2)),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 2)),
               const SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Text(
                   'Your registration for $eventName is confirmed.',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600),
                 ),
               ),
               const SizedBox(height: 48),
               const Text('See you there!',
-                  style: TextStyle(color: Colors.white, fontSize: 18, fontStyle: FontStyle.italic)),
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontStyle: FontStyle.italic)),
             ],
           ).animate().fadeIn(),
         ),
@@ -441,7 +487,8 @@ class _GlassHeaderButton extends StatelessWidget {
   final Color? iconColor;
   final VoidCallback onTap;
 
-  const _GlassHeaderButton({required this.icon, this.iconColor, required this.onTap});
+  const _GlassHeaderButton(
+      {required this.icon, this.iconColor, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -459,10 +506,12 @@ class _GlassHeaderButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: GlassTheme.glassBorder(context)),
             ),
-            child: Icon(icon, color: iconColor ?? GlassTheme.iconColor(context), size: 18),
+            child: Icon(icon,
+                color: iconColor ?? GlassTheme.iconColor(context), size: 18),
           ),
         ),
       ),
     );
   }
 }
+

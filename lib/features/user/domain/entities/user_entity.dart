@@ -13,6 +13,16 @@ class UserEntity {
   final bool isEmailVerified;
   final bool isPhoneVerified;
 
+  final int userCode;
+  final bool userVisibility;
+  final String referralCode;
+
+  final String city;
+  final String state;
+  final String gender;
+  final String birthdate;
+  final String companyName;
+
   const UserEntity({
     required this.name,
     required this.email,
@@ -25,7 +35,59 @@ class UserEntity {
     required this.transactions,
     required this.isEmailVerified,
     required this.isPhoneVerified,
+    required this.userCode,
+    required this.userVisibility,
+    required this.referralCode,
+    this.city = '',
+    this.state = '',
+    this.gender = '',
+    this.birthdate = '',
+    this.companyName = '',
   });
+
+  UserEntity copyWith({
+    String? name,
+    String? email,
+    String? phone,
+    String? profileImage,
+    String? role,
+    String? bio,
+    String? membership,
+    double? balance,
+    List<TransactionEntity>? transactions,
+    bool? isEmailVerified,
+    bool? isPhoneVerified,
+    int? userCode,
+    bool? userVisibility,
+    String? referralCode,
+    String? city,
+    String? state,
+    String? gender,
+    String? birthdate,
+    String? companyName,
+  }) {
+    return UserEntity(
+      name: name ?? this.name,
+      email: email ?? this.email,
+      phone: phone ?? this.phone,
+      profileImage: profileImage ?? this.profileImage,
+      role: role ?? this.role,
+      bio: bio ?? this.bio,
+      membership: membership ?? this.membership,
+      balance: balance ?? this.balance,
+      transactions: transactions ?? this.transactions,
+      isEmailVerified: isEmailVerified ?? this.isEmailVerified,
+      isPhoneVerified: isPhoneVerified ?? this.isPhoneVerified,
+      userCode: userCode ?? this.userCode,
+      userVisibility: userVisibility ?? this.userVisibility,
+      referralCode: referralCode ?? this.referralCode,
+      city: city ?? this.city,
+      state: state ?? this.state,
+      gender: gender ?? this.gender,
+      birthdate: birthdate ?? this.birthdate,
+      companyName: companyName ?? this.companyName,
+    );
+  }
 
   bool get isPremium =>
       membership.toLowerCase() == 'pro' || membership.toLowerCase() == 'elite';
