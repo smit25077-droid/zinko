@@ -24,6 +24,8 @@ import '../../features/notifications/presentation/pages/notifications_screen.dar
 import '../../features/user/presentation/pages/wallet_screen.dart';
 import '../../features/user/presentation/pages/verification_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
+import '../../features/settings/presentation/pages/reset_password_screen.dart';
+import '../../features/password_change/presentation/pages/password_change_screen.dart';
 import '../../features/booking/presentation/pages/otp_check_in_screen.dart';
 import '../../features/booking/presentation/pages/cafe_menu_screen.dart';
 import '../../features/user/presentation/pages/person_profile_screen.dart';
@@ -143,6 +145,10 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const VerificationScreen());
       case SettingsScreen.routeName:
         return MaterialPageRoute(builder: (_) => const SettingsScreen());
+      case ResetPasswordScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const ResetPasswordScreen());
+      case PasswordChangeScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const PasswordChangeScreen());
       case OTPCheckInScreen.routeName:
         return MaterialPageRoute(builder: (_) => const OTPCheckInScreen());
       case CafeMenuScreen.routeName:

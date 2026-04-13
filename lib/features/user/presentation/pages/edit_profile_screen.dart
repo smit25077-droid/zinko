@@ -12,6 +12,7 @@ import '../bloc/user_state.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../bloc/edit_profile_form_bloc.dart';
+import '../../../../utils/zinko_flushbar.dart';
 
 class EditProfileScreen extends StatelessWidget {
   static const String routeName = '/edit-profile';
@@ -213,14 +214,10 @@ class _EditProfileContentState extends State<_EditProfileContent> {
           child: BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is UserLoaded) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile updated successfully')),
-                );
+                ZinkoFlushbar.showSuccess(context: context, message: 'Profile updated successfully');
                 AppRouter.safetyPop(context);
               } else if (state is UserError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.message)),
-                );
+                ZinkoFlushbar.showError(context: context, message: state.message);
               }
             },
             child: BlocBuilder<UserBloc, UserState>(

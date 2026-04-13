@@ -26,6 +26,7 @@ import '../../features/user/domain/usecases/update_visibility.dart';
 import '../../features/user/domain/usecases/send_email_otp.dart';
 import '../../features/user/domain/usecases/verify_email_otp.dart';
 import '../../features/user/domain/usecases/delete_user.dart';
+import '../../features/user/domain/usecases/change_password.dart';
 import '../../features/user/presentation/bloc/user_bloc.dart';
 import '../../features/booking/domain/usecases/user_check_in.dart';
 import '../../features/community/domain/repositories/community_repository.dart';
@@ -65,6 +66,12 @@ import '../../features/cafe/data/repositories/cafe_repository_impl.dart';
 import '../../features/cafe/data/datasources/cafe_remote_data_source.dart';
 import '../../features/cafe/domain/usecases/search_cafes.dart';
 import '../../features/cafe/presentation/bloc/cafe_bloc.dart';
+// Password Change imports
+import '../../features/password_change/data/datasources/password_change_remote_data_source.dart';
+import '../../features/password_change/data/repositories/password_change_repository_impl.dart';
+import '../../features/password_change/domain/repositories/password_change_repository.dart';
+import '../../features/password_change/domain/usecases/password_change_usecases.dart';
+import '../../features/password_change/presentation/bloc/password_change_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -134,6 +141,7 @@ class ServiceLocator {
         sendEmailOtp: sl(),
         verifyEmailOtp: sl(),
         deleteUser: sl(),
+        changePassword: sl(),
       ),
     );
 
@@ -146,6 +154,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => SendEmailOtp(sl()));
     sl.registerLazySingleton(() => VerifyEmailOtp(sl()));
     sl.registerLazySingleton(() => DeleteUser(sl()));
+    sl.registerLazySingleton(() => ChangePassword(sl()));
 
     //! Features - Booking
     // Use cases
@@ -312,6 +321,24 @@ class ServiceLocator {
     // Data source
     sl.registerLazySingleton<CafeRemoteDataSource>(
       () => CafeRemoteDataSourceImpl(client: sl(), sharedPreferences: sl()),
+    );
+
+    //! Features - Password Change
+    sl.registerFactory(
+      () => PasswordChangeBloc(
+        sendOtpUseCase: sl(),
+        verifyOtpUseCase: sl(),
+        resetPasswordUseCase: sl(),
+      ),
+    );
+    sl.registerLazySingleton(() => SendPasswordResetOtp(sl()));
+    sl.registerLazySingleton(() => VerifyPasswordResetOtp(sl()));
+    sl.registerLazySingleton(() => ResetPassword(sl()));
+    sl.registerLazySingleton<PasswordChangeRepository>(
+      () => PasswordChangeRepositoryImpl(remoteDataSource: sl()),
+    );
+    sl.registerLazySingleton<PasswordChangeRemoteDataSource>(
+      () => PasswordChangeRemoteDataSourceImpl(client: sl()),
     );
   }
 }

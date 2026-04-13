@@ -12,7 +12,9 @@ import '../../../../features/auth/presentation/pages/otp_screen.dart';
 import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../../../features/auth/presentation/bloc/auth_event.dart';
 import '../../../onboarding/presentation/pages/splash_screen.dart';
+import './reset_password_screen.dart';
 import '../bloc/settings_bloc.dart';
+import '../../../../utils/zinko_flushbar.dart';
 
 
 class SettingsScreen extends StatelessWidget {
@@ -45,9 +47,7 @@ class _SettingsContent extends StatelessWidget {
             (route) => false,
           );
         } else if (state is UserError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          ZinkoFlushbar.showError(context: context, message: state.message);
         }
       },
       child: BlocBuilder<SettingsBloc, SettingsState>(
@@ -165,17 +165,26 @@ class _SettingsContent extends StatelessWidget {
                             Icons.phone_iphone_rounded,
                             'Mobile Verification',
                             isPhoneVerified
-                                ? 'Securely linked: $phone'
-                                : 'Verification coming soon ($phone)',
-                            onTap: () {},
-                            trailing: isPhoneVerified
-                                ? const Icon(Icons.check_circle_rounded,
-                                    color: Colors.greenAccent, size: 20)
-                                : null,
-                          ),
-                        ],
-                      );
-                    },
+                                    ? 'Securely linked: $phone'
+                                    : 'Verification coming soon ($phone)',
+                                onTap: () {},
+                                trailing: isPhoneVerified
+                                    ? const Icon(Icons.check_circle_rounded,
+                                        color: Colors.greenAccent, size: 20)
+                                    : null,
+                              ),
+                              _buildDivider(context),
+                              _buildActionTile(
+                                context,
+                                Icons.lock_reset_rounded,
+                                'Reset Password',
+                                'Change your account password',
+                                onTap: () => Navigator.pushNamed(
+                                    context, ResetPasswordScreen.routeName),
+                              ),
+                            ],
+                          );
+                        },
                   ),
                   const SizedBox(height: 24),
                   _buildSectionTitle(context, 'GENERAL'),

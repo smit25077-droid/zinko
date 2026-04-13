@@ -14,4 +14,7 @@ class ApiEndpoints {
   static const String sendEmailOtp = 'alert/send/email/for/email/verification';
   static const String verifyEmailOtp = 'user/email/verification';
   static const String deleteUser = 'user/remove';
+  static const String changePassword = 'user/change/password';
+  static const String sendPasswordResetOtp = 'alert/send/otp/for/password/reset';
+  static const String verifyPasswordResetOtp = 'user/password/reset/otp/verification';
 }

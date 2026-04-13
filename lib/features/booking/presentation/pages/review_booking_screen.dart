@@ -19,6 +19,7 @@ import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';
+import '../../../../utils/zinko_flushbar.dart';
 
 class ReviewBookingScreen extends StatelessWidget {
   static const String routeName = '/review-booking';
@@ -67,9 +68,7 @@ class ReviewBookingScreen extends StatelessWidget {
           .read<CreateBookingBloc>()
           .add(CreateBookingSubmittedEvent(request));
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login to continue')),
-      );
+      ZinkoFlushbar.showError(context: context, message: 'Please login to continue');
     }
   }
 
@@ -104,9 +103,7 @@ class ReviewBookingScreen extends StatelessWidget {
                 },
               );
             } else if (state is CreateBookingError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
+              ZinkoFlushbar.showError(context: context, message: state.message);
             }
           },
         ),

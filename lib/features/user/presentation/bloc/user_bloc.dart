@@ -7,6 +7,7 @@ import '../../domain/usecases/update_visibility.dart';
 import '../../domain/usecases/send_email_otp.dart';
 import '../../domain/usecases/verify_email_otp.dart';
 import '../../domain/usecases/delete_user.dart';
+import '../../domain/usecases/change_password.dart';
 import '../../../../core/usecases/usecase.dart';
 import 'user_event.dart';
 import 'user_state.dart';
@@ -20,6 +21,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   final SendEmailOtp sendEmailOtp;
   final VerifyEmailOtp verifyEmailOtp;
   final DeleteUser deleteUser;
+  final ChangePassword changePassword;
 
   UserBloc({
     required this.getUserProfile,
@@ -30,6 +32,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     required this.sendEmailOtp,
     required this.verifyEmailOtp,
     required this.deleteUser,
+    required this.changePassword,
   }) : super(UserInitial()) {
     on<GetUserProfileEvent>(_onGetUserProfile);
     on<UpdateUserProfileEvent>(_onUpdateUserProfile);
@@ -41,6 +44,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<VerifyEmailOtpEvent>(_onVerifyEmailOtp);
     on<VerifyPhoneEvent>(_onVerifyPhone);
     on<DeleteUserEvent>(_onDeleteUser);
+    on<ChangePasswordEvent>(_onChangePassword);
   }
 
   Future<void> _onDeleteUser(
@@ -199,6 +203,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           add(GetUserProfileEvent());
         }
       },
+    );
+  }
+
+  Future<void> _onChangePassword(
+      ChangePasswordEvent event, Emitter<UserState> emit) async {
+    emit(UserLoading());
+    final result = await changePassword(ChangePasswordParams(
+      userCode: event.userCode,
+      password: event.password,
+    ));
+    result.fold(
+      (failure) => emit(UserError(failure.message)),
+      (success) => emit(PasswordChanged("Password Change Successfully")),
     );
   }
 }

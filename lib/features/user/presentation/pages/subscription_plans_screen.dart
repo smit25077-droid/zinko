@@ -8,6 +8,8 @@ import '../bloc/user_state.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_success_overlay.dart';
+import '../../../../core/routes/app_router.dart';
 
 class SubscriptionPlansScreen extends StatelessWidget {
   static const String routeName = '/subscription-plans';
@@ -123,115 +125,17 @@ class SubscriptionPlansScreen extends StatelessWidget {
   }
 
   void _showSuccessDialog(BuildContext context, String plan) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => _SuccessOverlay(plan: plan),
-    );
-    Future.delayed(const Duration(seconds: 2), () {
-      if (context.mounted) {
-        Navigator.pop(context);
-        Navigator.pop(context);
-      }
-    });
-  }
-}
-
-class _SuccessOverlay extends StatelessWidget {
-  final String plan;
-  const _SuccessOverlay({required this.plan});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: Colors.black.withValues(alpha: 0.85),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  ...List.generate(
-                    15,
-                    (i) => Transform.translate(
-                      offset: Offset((i % 2 == 0 ? 1 : -1) * (30 + i * 10),
-                          (i % 3 == 0 ? 1 : -1) * (40 + i * 5)),
-                      child: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color:
-                              i % 2 == 0 ? AppColors.gold : AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                      )
-                          .animate(onPlay: (ctrl) => ctrl.repeat())
-                          .moveY(
-                              begin: 0,
-                              end: -100,
-                              duration: 1500.ms,
-                              curve: Curves.easeOutCubic)
-                          .fadeOut(),
-                    ),
-                  ),
-                  Container(
-                    width: 140,
-                    height: 140,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.1),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.workspace_premium_rounded,
-                          color: AppColors.gold, size: 80),
-                    ),
-                  ).animate().scale(duration: 800.ms, curve: Curves.elasticOut),
-                ],
-              ),
-              const SizedBox(height: 48),
-              const Text(
-                'CONGRATULATIONS!',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 32,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2),
-              ).animate().fadeIn(),
-              const SizedBox(height: 12),
-              Text(
-                'YOU ARE NOW AN $plan MEMBER!',
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1),
-              ).animate(delay: 200.ms).fadeIn(),
-              const SizedBox(height: 32),
-              Text(
-                'Thanks for join with Zinko',
-                style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.6),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    fontStyle: FontStyle.italic),
-              )
-                  .animate(delay: 400.ms)
-                  .fadeIn(duration: 1000.ms)
-                  ,
-            ],
-          ),
-        ),
-      ).animate().fadeIn(),
+    ZinkoSuccessOverlay.show(
+      context,
+      title: 'CONGRATULATIONS!',
+      subtitle: 'YOU ARE NOW AN $plan MEMBER!\nThanks for joining Zinko.',
+      onFinish: () {
+        AppRouter.safetyPop(context);
+      },
     );
   }
 }
+
 
 class _SubscriptionCard extends StatelessWidget {
   final String title;

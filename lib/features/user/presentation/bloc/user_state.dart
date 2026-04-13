@@ -22,3 +22,8 @@ class UserMembershipUpdateSuccess extends UserLoaded {
   final String plan;
   UserMembershipUpdateSuccess(super.user, this.plan);
 }
+
+class PasswordChanged extends UserState {
+  final String message;
+  PasswordChanged(this.message);
+}

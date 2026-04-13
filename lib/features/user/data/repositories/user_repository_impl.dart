@@ -189,4 +189,26 @@ class UserRepositoryImpl implements UserRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, bool>> changePassword(
+      {required int userCode, required String password}) async {
+    try {
+      final result = await remoteDataSource.changePassword(
+        userCode: userCode,
+        password: password,
+      );
+      return Right(result);
+    } on DioException catch (e) {
+      String message = 'Server error';
+      if (e.response?.data is Map) {
+        message = e.response?.data['message'] ?? e.message ?? message;
+      } else {
+        message = e.message ?? message;
+      }
+      return Left(ServerFailure(message));
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

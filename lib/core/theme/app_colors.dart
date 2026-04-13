@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand / Primary
-  static const Color primary = Color(0xFF1E88E5);
-  static const Color primaryDark = Color(0xFF1565C0);
-  static const Color secondary = Color(0xFF26A69A);
+  // Brand / Primary (From user image)
+  static const Color royalBlue = Color(0xFF1D4ED8);
+  static const Color primaryBlue = Color(0xFF1A73E8);
+  static const Color brightBlue = Color(0xFF2F80ED);
+  static const Color midnightNavy = Color(0xFF0F172A);
+
+  static const Color primary = primaryBlue;
+  static const Color primaryDark = royalBlue;
+  static const Color secondary = brightBlue;
 
   // Zinko Premium Accents
   static const Color elite = Color(0xFF9C27B0);
-  static const Color pro = Color(0xFF1E88E5);
+  static const Color pro = primaryBlue;
   static const Color gold = Color(0xFFFFB300);
 
   // Glass Neutral Colors
@@ -18,9 +23,8 @@ class AppColors {
   static const Color glassBorderDark = Color(0x66000000);
 
   // Backgrounds
-  static const Color backgroundLight =
-      Color(0xFFF4F6F8); // Modern warm glass tone
-  static const Color backgroundDark = Color(0xFF0D121B);
+  static const Color backgroundLight = Color(0xFFF4F6F8); 
+  static const Color backgroundDark = midnightNavy;
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF1E1E1E);
   static const Color cardDark = Color(0xFF1A1D1E);
@@ -28,8 +32,7 @@ class AppColors {
   // Text Colors
   static const Color textPrimaryLight = Color(0xFF000000);
   static const Color textPrimaryDark = Color(0xFFFFFFFF);
-  static const Color textSecondaryLight =
-      Color(0xFF424242); // Grey 800 for better light mode contrast
+  static const Color textSecondaryLight = Color(0xFF424242); 
   static const Color textSecondaryDark = Color.fromARGB(255, 228, 228, 228);
 
   // Status Colors

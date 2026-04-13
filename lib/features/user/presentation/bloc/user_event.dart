@@ -69,3 +69,9 @@ class UpdateVisibilityEvent extends UserEvent {
   final bool visibility;
   UpdateVisibilityEvent(this.visibility);
 }
+
+class ChangePasswordEvent extends UserEvent {
+  final int userCode;
+  final String password;
+  ChangePasswordEvent({required this.userCode, required this.password});
+}

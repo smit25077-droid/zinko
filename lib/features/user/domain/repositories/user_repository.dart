@@ -27,4 +27,6 @@ abstract class UserRepository {
   Future<Either<Failure, bool>> verifyEmailOtp(
       {required String userCode, required String otp});
   Future<Either<Failure, bool>> deleteUser(int userCode);
+  Future<Either<Failure, bool>> changePassword(
+      {required int userCode, required String password});
 }

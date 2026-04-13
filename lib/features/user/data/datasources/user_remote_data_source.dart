@@ -36,6 +36,7 @@ abstract class UserRemoteDataSource {
   });
 
   Future<bool> deleteUser(int userCode);
+  Future<bool> changePassword({required int userCode, required String password});
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
@@ -150,6 +151,19 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     final response = await client.post(
       ApiEndpoints.deleteUser,
       data: {'user_code': userCode},
+    );
+    return response.statusCode == 200;
+  }
+
+  @override
+  Future<bool> changePassword(
+      {required int userCode, required String password}) async {
+    final response = await client.post(
+      ApiEndpoints.changePassword,
+      data: {
+        'user_code': userCode,
+        'password': password,
+      },
     );
     return response.statusCode == 200;
   }

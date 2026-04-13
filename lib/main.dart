@@ -48,11 +48,7 @@ void main() async {
           BlocProvider(create: (_) => sl<CafeBloc>()),
           BlocProvider(create: (_) => sl<CreateBookingBloc>()),
         ],
-        child: GestureDetector(
-            onTap: () {
-              FocusManager.instance.primaryFocus?.unfocus();
-            },
-            child: const MyApp()),
+        child: const MyApp(),
       ),
     ),
   );
@@ -131,8 +127,11 @@ class _KeyboardUnfocusWrapperState extends State<KeyboardUnfocusWrapper>
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onTap: () {
-        // Normal tap-to-unfocus
-        FocusManager.instance.primaryFocus?.unfocus();
+        // Only unfocus if the tap is on the background (not on a keyboard/textfield)
+        FocusScopeNode currentFocus = FocusScope.of(context);
+        if (!currentFocus.hasPrimaryFocus && currentFocus.focusedChild != null) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
       },
       child: widget.child,
     );

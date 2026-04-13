@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:another_flushbar/flushbar.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../password_change/presentation/pages/password_change_screen.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../../../../utils/zinko_flushbar.dart';
 import './register_screen.dart';
 import '../../../booking/presentation/pages/home_screen.dart';
 import './login_form_bloc.dart';
@@ -67,16 +68,7 @@ class _LoginContentState extends State<_LoginContent> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          Flushbar(
-            title: "Success",
-            message: "Login Successful",
-            duration: const Duration(seconds: 3),
-            flushbarPosition: FlushbarPosition.TOP,
-            backgroundColor: Colors.green.withValues(alpha: 0.9),
-            icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-            borderRadius: BorderRadius.circular(12),
-            margin: const EdgeInsets.all(12),
-          ).show(context);
+          ZinkoFlushbar.showSuccess(context: context, message: "Login Successful");
           Navigator.pushNamedAndRemoveUntil(
             context,
             HomeScreen.routeName,
@@ -84,16 +76,7 @@ class _LoginContentState extends State<_LoginContent> {
           );
         }
         if (state is AuthFailure) {
-          Flushbar(
-            title: "Error",
-            message: state.message,
-            duration: const Duration(seconds: 4),
-            flushbarPosition: FlushbarPosition.TOP,
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
-            icon: const Icon(Icons.error_outline, color: Colors.white),
-            borderRadius: BorderRadius.circular(12),
-            margin: const EdgeInsets.all(12),
-          ).show(context);
+          ZinkoFlushbar.showError(context: context, message: state.message);
         }
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
@@ -252,7 +235,7 @@ class _LoginContentState extends State<_LoginContent> {
                         ),
                         const Spacer(),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () => Navigator.pushNamed(context, PasswordChangeScreen.routeName),
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700),

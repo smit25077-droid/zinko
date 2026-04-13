@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
+import '../../../../utils/zinko_flushbar.dart';
+import '../../../../widgets/zinko_success_overlay.dart';
 
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -77,38 +78,27 @@ class _RegisterContentState extends State<_RegisterContent> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          Flushbar(
-            title: "Account Created",
-            message: state.message,
-            duration: const Duration(seconds: 3),
-            flushbarPosition: FlushbarPosition.TOP,
-            backgroundColor: Colors.green.withValues(alpha: 0.9),
-            icon: const Icon(Icons.check_circle_outline, color: Colors.white),
-            borderRadius: BorderRadius.circular(12),
-            margin: const EdgeInsets.all(12),
-          ).show(context);
-
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted && context.mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                context,
-                LoginScreen.routeName,
-                (route) => false,
-              );
-            }
-          });
+          ZinkoSuccessOverlay.show(
+            context,
+            title: "WELCOME!",
+            subtitle: "Your account has been created successfully.",
+            onFinish: () {
+              if (mounted && context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  LoginScreen.routeName,
+                  (route) => false,
+                );
+              }
+            },
+          );
         }
         if (state is AuthFailure) {
-          Flushbar(
-            title: "Registration Failed",
+          ZinkoFlushbar.showError(
+            context: context,
             message: state.message,
-            duration: const Duration(seconds: 4),
-            flushbarPosition: FlushbarPosition.TOP,
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
-            icon: const Icon(Icons.error_outline, color: Colors.white),
-            borderRadius: BorderRadius.circular(12),
-            margin: const EdgeInsets.all(12),
-          ).show(context);
+            title: "Registration Failed",
+          );
         }
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(

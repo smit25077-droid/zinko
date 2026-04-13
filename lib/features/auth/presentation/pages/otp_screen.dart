@@ -7,6 +7,10 @@ import '../../../user/presentation/bloc/user_event.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../bloc/otp_bloc.dart';
+import 'package:pinput/pinput.dart';
+import '../../../../utils/zinko_flushbar.dart';
+import '../../../../widgets/zinko_success_overlay.dart';
+import '../../../../core/routes/app_router.dart';
 
 class OtpScreen extends StatelessWidget {
   final String type;
@@ -48,27 +52,18 @@ class _OtpContent extends StatefulWidget {
 }
 
 class _OtpContentState extends State<_OtpContent> {
-  final List<TextEditingController> _controllers =
-      List.generate(6, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void dispose() {
-    for (var c in _controllers) {
-      c.dispose();
-    }
-    for (var f in _focusNodes) {
-      f.dispose();
-    }
+    _otpController.dispose();
     super.dispose();
   }
 
   void _onVerify(BuildContext context) {
-    final otp = _controllers.map((c) => c.text).join();
+    final otp = _otpController.text;
     if (otp.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter all 6 digits')),
-      );
+      ZinkoFlushbar.showError(context: context, message: 'Please enter all 6 digits');
       return;
     }
 
@@ -92,19 +87,18 @@ class _OtpContentState extends State<_OtpContent> {
         if (state is UserLoaded && otpBloc.state.isVerifying) {
           // Success!
           otpBloc.add(SetOtpVerifying(false));
-          otpBloc.add(SetOtpSuccess(true));
-          Future.delayed(const Duration(seconds: 2), () {
-            if (mounted && context.mounted) Navigator.pop(context);
-          });
+          ZinkoSuccessOverlay.show(
+            context,
+            title: "VERIFIED!",
+            subtitle: "Your identity has been successfully confirmed.",
+            onFinish: () {
+              if (mounted && context.mounted) AppRouter.safetyPop(context);
+            },
+          );
         } else if (state is UserError && otpBloc.state.isVerifying) {
           // Failure
           otpBloc.add(SetOtpVerifying(false));
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
+          ZinkoFlushbar.showError(context: context, message: state.message);
         }
       },
       child: BlocBuilder<OtpBloc, OtpState>(
@@ -177,10 +171,41 @@ class _OtpContentState extends State<_OtpContent> {
                                 height: 1.5),
                           ),
                           const SizedBox(height: 48),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(
-                                6, (index) => _buildOtpBox(index)),
+                          Pinput(
+                            length: 6,
+                            controller: _otpController,
+                            keyboardType: TextInputType.number,
+                            defaultPinTheme: PinTheme(
+                              width: 50,
+                              height: 60,
+                              textStyle: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: GlassTheme.textColor(context)),
+                              decoration: BoxDecoration(
+                                color: GlassTheme.textColor(context)
+                                    .withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: GlassTheme.glassBorder(context)),
+                              ),
+                            ),
+                            focusedPinTheme: PinTheme(
+                              width: 50,
+                              height: 60,
+                              textStyle: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  color: GlassTheme.textColor(context)),
+                              decoration: BoxDecoration(
+                                color: GlassTheme.textColor(context)
+                                    .withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                    color: GlassTheme.textColor(context),
+                                    width: 1.5),
+                              ),
+                            ),
                           ),
                           const SizedBox(height: 48),
                           _GlassButton(
@@ -206,10 +231,7 @@ class _OtpContentState extends State<_OtpContent> {
                               context
                                   .read<UserBloc>()
                                   .add(SendEmailOtpEvent(widget.target));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('OTP Resent Successfully')),
-                              );
+                              ZinkoFlushbar.showSuccess(context: context, message: 'OTP Resent Successfully');
                             },
                             child: Text('RESEND CODE',
                                 style: TextStyle(
@@ -262,39 +284,8 @@ class _OtpContentState extends State<_OtpContent> {
       ),
     );
   }
-
-  Widget _buildOtpBox(int index) {
-    return Container(
-      width: 50,
-      height: 60,
-      decoration: BoxDecoration(
-        color: GlassTheme.textColor(context).withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: GlassTheme.glassBorder(context)),
-      ),
-      child: TextField(
-        controller: _controllers[index],
-        focusNode: _focusNodes[index],
-        textAlign: TextAlign.center,
-        keyboardType: TextInputType.number,
-        maxLength: 1,
-        style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
-            color: GlassTheme.textColor(context)),
-        decoration:
-            const InputDecoration(counterText: "", border: InputBorder.none),
-        onChanged: (value) {
-          if (value.isNotEmpty && index < 5) {
-            _focusNodes[index + 1].requestFocus();
-          } else if (value.isEmpty && index > 0) {
-            _focusNodes[index - 1].requestFocus();
-          }
-        },
-      ),
-    );
-  }
 }
+
 
 class _GlassButton extends StatelessWidget {
   final VoidCallback onPressed;
