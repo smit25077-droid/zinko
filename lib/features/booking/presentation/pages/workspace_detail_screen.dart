@@ -15,7 +15,6 @@ import '../bloc/workspace_state.dart';
 import 'booking_screen.dart';
 import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../../user/presentation/bloc/user_state.dart';
-import '../../../../utils/zinko_flushbar.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';

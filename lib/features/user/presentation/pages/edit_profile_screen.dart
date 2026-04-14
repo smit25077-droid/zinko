@@ -242,7 +242,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                       child:
                           CircularProgressIndicator(color: theme.primaryColor));
                 }
-                final user = (state is UserLoaded) ? state.user : null;
+                // final user = (state is UserLoaded) ? state.user : null;
                 return BlocBuilder<EditProfileFormBloc, EditProfileFormState>(
                   builder: (context, formState) {
                     return SingleChildScrollView(
