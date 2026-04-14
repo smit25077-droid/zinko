@@ -15,6 +15,7 @@ class UpdateUserProfileEvent extends UserEvent {
   final String? gender;
   final String? birthdate;
   final String? companyName;
+  final int userCode;
 
   UpdateUserProfileEvent({
     required this.name,
@@ -22,6 +23,7 @@ class UpdateUserProfileEvent extends UserEvent {
     required this.phone,
     required this.role,
     required this.bio,
+    required this.userCode,
     this.profileImage,
     this.membership,
     this.city,

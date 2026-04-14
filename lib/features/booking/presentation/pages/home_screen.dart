@@ -8,6 +8,7 @@ import '../../../community/presentation/pages/community_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../widgets/zinko_glass_box.dart';
+import '../../../../widgets/zinko_background.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/bloc/navigation/navigation_bloc.dart';
@@ -33,36 +34,38 @@ class HomeScreen extends StatelessWidget {
       create: (_) => di.sl<NavigationBloc>(),
       child: BlocBuilder<NavigationBloc, NavigationState>(
         builder: (context, state) {
-          return PopScope(
-            canPop: state.index == 0,
-            onPopInvokedWithResult: (didPop, result) {
-              if (didPop) return;
-              if (state.index != 0) {
-                context
-                    .read<NavigationBloc>()
-                    .add(const NavigationTabChanged(0));
-              }
-            },
-            child: Scaffold(
-              backgroundColor: AppColors.transparent,
-              body: Stack(
-                children: [
-                  IndexedStack(
-                    index: state.index,
-                    children: _screens,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: _FloatingGlassDock(
-                      currentIndex: state.index,
-                      onTap: (index) => context
-                          .read<NavigationBloc>()
-                          .add(NavigationTabChanged(index)),
+          return ZinkoBackground(
+            child: PopScope(
+              canPop: state.index == 0,
+              onPopInvokedWithResult: (didPop, result) {
+                if (didPop) return;
+                if (state.index != 0) {
+                  context
+                      .read<NavigationBloc>()
+                      .add(const NavigationTabChanged(0));
+                }
+              },
+              child: Scaffold(
+                backgroundColor: AppColors.transparent,
+                body: Stack(
+                  children: [
+                    IndexedStack(
+                      index: state.index,
+                      children: _screens,
                     ),
-                  ),
-                ],
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: _FloatingGlassDock(
+                        currentIndex: state.index,
+                        onTap: (index) => context
+                            .read<NavigationBloc>()
+                            .add(NavigationTabChanged(index)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

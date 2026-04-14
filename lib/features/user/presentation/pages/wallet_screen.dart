@@ -2,7 +2,6 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zinko_app/core/routes/app_router.dart';
 import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
@@ -11,6 +10,7 @@ import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_app_bar.dart';
 
 class WalletScreen extends StatelessWidget {
   static const String routeName = '/wallet';
@@ -18,11 +18,14 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      backgroundColor: AppColors.transparent,
-      body: ZinkoBackground(
-        child: BlocListener<UserBloc, UserState>(
+    return ZinkoBackground(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        backgroundColor: AppColors.transparent,
+        appBar: const ZinkoAppBar(
+          title: 'My Wallet',
+        ),
+        body: BlocListener<UserBloc, UserState>(
           listener: (context, state) {
             if (state is UserLoaded) {
               // We could check for a flag in state, but assuming a load after redeem is success
@@ -60,7 +63,6 @@ class WalletScreen extends StatelessWidget {
                 return CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   slivers: [
-                    _buildSliverAppBar(context),
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -139,32 +141,6 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  SliverAppBar _buildSliverAppBar(BuildContext context) {
-    return SliverAppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      floating: true,
-      pinned: true,
-      expandedHeight: 0,
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _GlassHeaderButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onTap: () => AppRouter.safetyPop(context),
-        ),
-      ),
-      title: Text(
-        'MY WALLET',
-        style: TextStyle(
-          color: GlassTheme.textColor(context),
-          fontWeight: FontWeight.w900,
-          fontSize: 16,
-          letterSpacing: 2.0,
-        ),
-      ),
-      centerTitle: true,
-    );
-  }
 
   Widget _buildWalletCard(BuildContext context, double balance) {
     return ClipRRect(
@@ -530,32 +506,32 @@ class WalletScreen extends StatelessWidget {
   }
 }
 
-class _GlassHeaderButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassHeaderButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-            ),
-            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
-          ),
-        ),
-      ),
-    );
-  }
-}
+// class _GlassHeaderButton extends StatelessWidget {
+//   final IconData icon;
+//   final VoidCallback onTap;
+//   const _GlassHeaderButton({required this.icon, required this.onTap});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       onTap: onTap,
+//       child: ClipRRect(
+//         borderRadius: BorderRadius.circular(12),
+//         child: BackdropFilter(
+//           filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+//           child: Container(
+//             width: 40,
+//             height: 40,
+//             decoration: BoxDecoration(
+//               color: GlassTheme.glassColor(context),
+//               borderRadius: BorderRadius.circular(12),
+//               border: Border.all(color: GlassTheme.glassBorder(context)),
+//             ),
+//             child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 

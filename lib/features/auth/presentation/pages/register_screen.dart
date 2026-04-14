@@ -11,6 +11,8 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../data/models/auth_requests.dart';
 import './register_form_bloc.dart';
+import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_app_bar.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const String routeName = '/register';
@@ -103,75 +105,66 @@ class _RegisterContentState extends State<_RegisterContent> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: Scaffold(
-          resizeToAvoidBottomInset: true,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/cafe_hotel_bg.png'),
-                      fit: BoxFit.cover,
-                      opacity: 0.45,
+        child: ZinkoBackground(
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            backgroundColor: Colors.transparent,
+            appBar: const ZinkoAppBar(
+              title: 'Register',
+              showBackButton: true,
+            ),
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 50),
+                        Column(
+                          children: [
+                            const Text(
+                              'Register with Zinko',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 34,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black26,
+                                    offset: Offset(0, 4),
+                                    blurRadius: 10,
+                                  ),
+                                ],
+                              ),
+                            ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Begin your journey with the finest experiences.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 0.2,
+                              ),
+                            ).animate(delay: 200.ms).fadeIn(),
+                          ],
+                        ),
+                        const SizedBox(height: 40),
+                        _buildGlassRegisterCard(context),
+                        const SizedBox(height: 32),
+                        const _LoginFooter(),
+                        const SizedBox(height: 40),
+                      ],
                     ),
                   ),
                 ),
               ),
-              SafeArea(
-                child: Center(
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 50),
-                          Column(
-                            children: [
-                              const Text(
-                                'Register with Zinko',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
-                                  shadows: [
-                                    Shadow(
-                                      color: Colors.black26,
-                                      offset: Offset(0, 4),
-                                      blurRadius: 10,
-                                    ),
-                                  ],
-                                ),
-                              ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Begin your journey with the finest experiences.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  letterSpacing: 0.2,
-                                ),
-                              ).animate(delay: 200.ms).fadeIn(),
-                            ],
-                          ),
-                          const SizedBox(height: 40),
-                          _buildGlassRegisterCard(context),
-                          const SizedBox(height: 32),
-                          const _LoginFooter(),
-                          const SizedBox(height: 40),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

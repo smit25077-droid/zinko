@@ -4,8 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:another_flushbar/flushbar.dart';
-import 'package:zinko_app/core/theme/app_colors.dart';
-import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
@@ -16,16 +14,16 @@ import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';
 
-class BookingsScreen extends StatefulWidget {
-  static const String routeName = '/bookings';
+class CompleteCafeListScreen extends StatefulWidget {
+  static const String routeName = '/CompleteCafeListScreen';
 
-  const BookingsScreen({super.key});
+  const CompleteCafeListScreen({super.key});
 
   @override
-  State<BookingsScreen> createState() => _BookingsScreenState();
+  State<CompleteCafeListScreen> createState() => _BookingsScreenState();
 }
 
-class _BookingsScreenState extends State<BookingsScreen> {
+class _BookingsScreenState extends State<CompleteCafeListScreen> {
   @override
   void initState() {
     super.initState();
@@ -38,7 +36,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(
-          'BOOKINGS',
+          'COMPLETED BOOKINGS',
           style: TextStyle(
             color: GlassTheme.textColor(context),
             fontWeight: FontWeight.w900,
@@ -77,22 +75,17 @@ class _BookingsScreenState extends State<BookingsScreen> {
             child: BlocBuilder<BookingBloc, BookingState>(
               builder: (context, state) {
                 if (state is BookingLoading) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          color: GlassTheme.textColor(context)));
+                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
                 } else if (state is BookingsLoaded) {
                   final filteredBookings = state.bookings.where((b) {
                     final status = b.bookingStatus.toUpperCase();
-                    if (state.tabIndex == 0) return status == 'UPCOMING';
-                    if (state.tabIndex == 1) return status == 'PENDING';
-                    if (state.tabIndex == 2) return status == 'CONFIRMED';
-                    return false;
+                   return status != 'UPCOMING' && status != 'PENDING' && status != 'CONFIRMED';
                   }).toList();
 
                   return Column(
                     children: [
                       const SizedBox(height: 8),
-                      _buildTabs(context, state.tabIndex),
+                      // _buildTabs(context, state.tabIndex),
                       Expanded(
                         child: RefreshIndicator(
                           onRefresh: () async {
@@ -102,18 +95,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           child: filteredBookings.isEmpty
                               ? _buildEmptyState(context)
                               : ListView.builder(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                                  physics: const AlwaysScrollableScrollPhysics(
-                                      parent: BouncingScrollPhysics()),
+                                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                                   itemCount: filteredBookings.length,
                                   itemBuilder: (context, index) {
                                     return _BookingCard(
                                       booking: filteredBookings[index],
-                                    )
-                                        .animate()
-                                        .fadeIn(delay: (index * 80).ms)
-                                        ;
+                                    ).animate().fadeIn(delay: (index * 80).ms);
                                   },
                                 ),
                         ),
@@ -130,37 +118,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
     );
   }
 
-  Widget _buildTabs(BuildContext context, int selectedTab) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: ZinkoCommonCard(
-        padding: const EdgeInsets.all(4),
-        child: Row(
-          children: [
-            _TabItem(
-                title: 'UPCOMING',
-                isSelected: selectedTab == 0,
-                onTap: () => context
-                    .read<BookingBloc>()
-                    .add(FilterBookingsByTabEvent(0))),
-            _TabItem(
-                title: 'PENDING',
-                isSelected: selectedTab == 1,
-                onTap: () => context
-                    .read<BookingBloc>()
-                    .add(FilterBookingsByTabEvent(1))),
-            _TabItem(
-                title: 'CONFIRMED',
-                isSelected: selectedTab == 2,
-                onTap: () => context
-                    .read<BookingBloc>()
-                    .add(FilterBookingsByTabEvent(2))),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
@@ -169,12 +126,12 @@ class _BookingsScreenState extends State<BookingsScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.midnightNavy,
+              color: GlassTheme.glassColor(context),
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: GlassTheme.glassBorder(context)),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.brightBlue.withValues(alpha: 0.1),
+                  color: Colors.black.withValues(alpha: 0.2),
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 )
@@ -183,7 +140,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
             child: Icon(
               Icons.event_busy_rounded,
               size: 40,
-              color: AppColors.white50,
+              color: GlassTheme.textColor(context).withValues(alpha: 0.4),
             ),
           ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
           const SizedBox(height: 24),
@@ -215,43 +172,6 @@ class _BookingsScreenState extends State<BookingsScreen> {
   }
 }
 
-class _TabItem extends StatelessWidget {
-  final String title;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _TabItem(
-      {required this.title, required this.isSelected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w900,
-              color: isSelected
-                  ? Colors.black
-                  : AppColors.white.withValues(alpha: 0.4),
-              letterSpacing: 1.0,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class _BookingCard extends StatelessWidget {
   final UserBookingEntity booking;
 
@@ -264,128 +184,128 @@ class _BookingCard extends StatelessWidget {
     final isConfirmed = status == 'CONFIRMED';
     final isUpcoming = status == 'UPCOMING';
     final isPending = status == 'PENDING';
-
     // Fallback UI data
     final String cafeName = 'Cafe #${booking.cafeId}';
     final String location = 'Workspace #${booking.cafeWorkspacesId}';
-    const String imageUrl =
-        'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=200';
+    const String imageUrl = 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=200';
 
-    return ZinkoCommonCard(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border:
-                        Border.all(color: AppColors.white.withValues(alpha: 0.1)),
-                  ),
-                  child: ZinkoNetworkImage(
-                    imageUrl: imageUrl,
-                    width: 70,
-                    height: 70,
-                    borderRadius: 16,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        cafeName,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.white,
-                            letterSpacing: -0.5),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          decoration: BoxDecoration(
+            color: GlassTheme.glassColor(context),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: GlassTheme.glassBorder(context)),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: GlassTheme.glassBorder(context)),
                       ),
-                      const SizedBox(height: 2),
-                      Row(
+                      child: ZinkoNetworkImage(
+                        imageUrl: imageUrl,
+                        width: 70,
+                        height: 70,
+                        borderRadius: 16,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.location_on_rounded,
-                              size: 10,
-                              color: AppColors.white.withValues(alpha: 0.4)),
-                          const SizedBox(width: 4),
-                          Expanded(
+                          Text(
+                            cafeName,
+                            style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: GlassTheme.textColor(context),
+                                letterSpacing: -0.5),
+                          ),
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on_rounded,
+                                  size: 10, color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4)),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  location,
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.5),
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: GlassTheme.textColor(context).withValues(alpha: 0.05),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
                             child: Text(
-                              location,
+                              status,
                               style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.white.withValues(alpha: 0.5),
-                                  fontWeight: FontWeight.w600),
-                              overflow: TextOverflow.ellipsis,
+                                color: GlassTheme.textColor(context).withValues(alpha: 0.8),
+                                fontSize: 9,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: (isConfirmed ? AppColors.success : AppColors.white).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                            color: isConfirmed ? AppColors.success : AppColors.white50,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Divider(
-              height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
-          Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('CODE: ${booking.bookingCode}',
-                        style: TextStyle(
-                            fontSize: 8,
-                            color: AppColors.white.withValues(alpha: 0.4),
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0)),
-                    const SizedBox(height: 2),
-                    Text(
-                      booking.bookingDate != null
-                          ? '${DateFormat('MMM d').format(booking.bookingDate!).toUpperCase()} • ${booking.tentativeCheckInDatetime.split('T').last.substring(0, 5)}'
-                          : 'DATE TBD',
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.white),
                     ),
                   ],
                 ),
-                if (isConfirmed) _CheckInButton(booking: booking),
-                if (isUpcoming || isPending)
-                  _CancelButton(booking: booking),
-              ],
-            ),
+              ),
+              Divider(height: 1, color: GlassTheme.glassBorder(context).withValues(alpha: 0.1)),
+              Padding(
+                padding: const EdgeInsets.all(14.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('CODE: ${booking.bookingCode}',
+                            style: TextStyle(
+                                fontSize: 8,
+                                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4),
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.0)),
+                        const SizedBox(height: 2),
+                        Text(
+                          booking.bookingDate != null
+                              ? '${DateFormat('MMM d').format(booking.bookingDate!).toUpperCase()} • ${booking.tentativeCheckInDatetime.split('T').last.substring(0, 5)}'
+                              : 'DATE TBD',
+                          style: TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w800, color: GlassTheme.textColor(context)),
+                        ),
+                      ],
+                    ),
+                    if (isConfirmed) _CheckInButton(booking: booking),
+                    if (isUpcoming || isPending) _CancelButton(booking: booking),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -433,8 +353,7 @@ class _CancelButton extends StatelessWidget {
                             color: Colors.redAccent.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.cancel_rounded,
-                              color: Colors.redAccent, size: 32),
+                          child: const Icon(Icons.cancel_rounded, color: Colors.redAccent, size: 32),
                         ),
                         const SizedBox(height: 20),
                         Text(
@@ -451,8 +370,7 @@ class _CancelButton extends StatelessWidget {
                           'Are you sure you want to cancel this booking? This action cannot be undone.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: GlassTheme.secondaryTextColor(context)
-                                .withValues(alpha: 0.7),
+                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.7),
                             fontSize: 13,
                             height: 1.5,
                           ),
@@ -465,8 +383,7 @@ class _CancelButton extends StatelessWidget {
                                 onPressed: () => Navigator.pop(context),
                                 child: Text('KEEP IT',
                                     style: TextStyle(
-                                        color: GlassTheme.textColor(context)
-                                            .withValues(alpha: 0.5),
+                                        color: GlassTheme.textColor(context).withValues(alpha: 0.5),
                                         fontWeight: FontWeight.w800)),
                               ),
                             ),
@@ -474,20 +391,16 @@ class _CancelButton extends StatelessWidget {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  context.read<BookingBloc>().add(
-                                      CancelBookingEvent(booking.bookingCode));
+                                  context.read<BookingBloc>().add(CancelBookingEvent(booking.bookingCode));
                                   Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.redAccent,
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   elevation: 0,
                                 ),
-                                child: const Text('CANCEL',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w900)),
+                                child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w900)),
                               ),
                             ),
                           ],
@@ -517,11 +430,7 @@ class _CancelButton extends StatelessWidget {
         ),
         child: const Text(
           'CANCEL',
-          style: TextStyle(
-              color: Colors.redAccent,
-              fontWeight: FontWeight.w900,
-              fontSize: 11,
-              letterSpacing: 0.5),
+          style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
         ),
       ),
     );
@@ -550,16 +459,11 @@ class _CheckInButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.lock_person_rounded,
-                size: 16, color: Colors.black),
+            const Icon(Icons.lock_person_rounded, size: 16, color: Colors.black),
             const SizedBox(width: 8),
             const Text(
               'CHECK IN',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11,
-                  letterSpacing: 0.5),
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
             ),
           ],
         ),
@@ -578,17 +482,22 @@ class _GlassHeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: GlassTheme.glassColor(context),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: GlassTheme.glassBorder(context)),
+            ),
+            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
+          ),
         ),
-        child: Icon(icon, color: AppColors.white, size: 18),
       ),
     );
   }
 }
-

@@ -11,6 +11,7 @@ abstract class UserRemoteDataSource {
     required String phone,
     required String role,
     required String bio,
+    required int userCode,
     String? profileImage,
     String? membership,
     bool? isEmailVerified,
@@ -62,6 +63,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     required String phone,
     required String role,
     required String bio,
+    required int userCode,
     String? profileImage,
     String? membership,
     bool? isEmailVerified,
@@ -72,22 +74,23 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     String? birthdate,
     String? companyName,
   }) async {
-    final user = await getUserProfile();
     final response = await client.post('user/profile/update', data: {
-      'user_code': user.userCode,
-      'city': city ?? user.city,
-      'state': state ?? user.state,
-      'gender': gender ?? user.gender,
-      'birthdate': birthdate ?? user.birthdate,
+      'user_code': userCode,
+      'city': city,
+      'state': state,
+      'gender': gender,
+      'birthdate': birthdate,
       'profession': role,
-      'company_name': companyName ?? user.companyName,
+      'company_name': companyName,
       'profile_bio': bio,
       'full_name': name,
     });
+
     if (response.statusCode == 200) {
+      // Re-fetch profile to get updated totals/states
       return await getUserProfile();
     }
-    return user;
+    throw Exception('Failed to update profile');
   }
 
   @override

@@ -285,7 +285,7 @@ class _SettingsContent extends StatelessWidget {
               value: value,
               onChanged: onChanged,
               activeTrackColor: GlassTheme.textColor(context).withValues(alpha: 0.3),
-              activeColor: GlassTheme.textColor(context),
+              activeThumbColor: GlassTheme.textColor(context),
             ),
           ),
         ],

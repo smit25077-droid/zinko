@@ -9,8 +9,7 @@ class ZinkoBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final view = View.of(context);
-    final screenSize = view.physicalSize / view.devicePixelRatio;
+    final screenSize = MediaQuery.sizeOf(context);
 
     return Stack(
       clipBehavior: Clip.none,
@@ -22,9 +21,9 @@ class ZinkoBackground extends StatelessWidget {
           width: screenSize.width,
           height: screenSize.height,
           child: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppColors.backgroundDark,
-              image: const DecorationImage(
+              image: DecorationImage(
                 image: AssetImage('assets/images/dark_theme_bg.png'),
                 fit: BoxFit.cover,
                 opacity: 0.2,

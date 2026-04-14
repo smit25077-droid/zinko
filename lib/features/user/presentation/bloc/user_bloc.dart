@@ -59,6 +59,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   Future<void> _onGetUserProfile(
       GetUserProfileEvent event, Emitter<UserState> emit) async {
+    if (state is UserLoading) return;
     emit(UserLoading());
     final result = await getUserProfile(NoParams());
     result.fold(
@@ -69,6 +70,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   Future<void> _onUpdateUserProfile(
       UpdateUserProfileEvent event, Emitter<UserState> emit) async {
+    if (state is UserLoading) return;
     emit(UserLoading());
     final result = await updateUserProfile(UpdateUserParams(
       name: event.name,
@@ -76,6 +78,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       phone: event.phone,
       role: event.role,
       bio: event.bio,
+      userCode: event.userCode,
       profileImage: event.profileImage,
       membership: event.membership,
       city: event.city,
@@ -96,11 +99,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final user = (state as UserLoaded).user;
 
       final result = await updateUserProfile(UpdateUserParams(
-        name: user.name,
+        name: user.name,  
         email: user.email,
         phone: user.phone,
         role: user.role,
         bio: user.bio,
+        userCode: user.userCode,
         membership: event.membership,
       ));
 
@@ -164,6 +168,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         phone: user.phone,
         role: user.role,
         bio: user.bio,
+        userCode: user.userCode,
         isPhoneVerified: true,
       ));
       result.fold(

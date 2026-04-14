@@ -48,4 +48,9 @@ class AppColors {
   static const Color transparent = Colors.transparent;
   static const Color white = Colors.white;
   static const Color black = Colors.black;
+
+  // New Brand-Specific Opacities
+  static final Color white50 = Colors.white.withValues(alpha: 0.5);
+  static final Color white30 = Colors.white.withValues(alpha: 0.3);
+  static final Color white10 = Colors.white.withValues(alpha: 0.1);
 }

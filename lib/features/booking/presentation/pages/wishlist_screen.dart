@@ -1,7 +1,9 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import '../../domain/entities/workspace_entity.dart';
 import '../bloc/workspace_bloc.dart';
@@ -94,50 +96,56 @@ class WishlistScreen extends StatelessWidget {
   }
 
   Widget _buildEmptyState(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.favorite_rounded,
-              size: 56, color: GlassTheme.textColor(context).withValues(alpha: 0.05)),
+          const Icon(Icons.favorite_rounded,
+              size: 56, color: OptimizedColors.white10),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'EMPTY WISHLIST',
             style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w900,
-                color: GlassTheme.textColor(context).withValues(alpha: 0.6),
+                color: OptimizedColors.white50,
                 letterSpacing: 1.5),
           ),
           const SizedBox(height: 6),
-          Text(
+          const Text(
             'Your favorite spaces will appear here',
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontSize: 13,
-                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4),
+                color: OptimizedColors.white50,
                 fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 24),
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               decoration: BoxDecoration(
-                color: isDark ? Colors.white : Colors.black,
-                borderRadius: BorderRadius.circular(14),
+                color: AppColors.primaryBlue,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  )
+                ],
               ),
-              child: Text(
+              child: const Text(
                 'EXPLORE SPACES',
                 style: TextStyle(
                     fontWeight: FontWeight.w900,
                     fontSize: 13,
-                    color: isDark ? Colors.black : Colors.white,
+                    color: AppColors.white,
                     letterSpacing: 0.5),
               ),
             ),
-          ),
+          ).animate().scale(),
         ],
       ),
     );
@@ -152,111 +160,98 @@ class _WishlistCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Stack(
+    return ZinkoCommonCard(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.zero,
+      child: Stack(
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(24),
-                          bottomLeft: Radius.circular(24)),
-                      child: ZinkoNetworkImage(
-                          imageUrl: workspace.imageUrl,
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+              SizedBox(
+                width: 100,
+                height: 100,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      bottomLeft: Radius.circular(24)),
+                  child: ZinkoNetworkImage(
+                      imageUrl: workspace.imageUrl,
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover),
+                ),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(workspace.name,
+                          style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w900,
+                              color: AppColors.white,
+                              letterSpacing: -0.5)),
+                      const SizedBox(height: 2),
+                      Row(
                         children: [
-                          Text(workspace.name,
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
-                                  color: GlassTheme.textColor(context),
-                                  letterSpacing: -0.5)),
-                          const SizedBox(height: 2),
+                          const Icon(Icons.location_on_rounded,
+                              color: OptimizedColors.white50,
+                              size: 10),
+                          const SizedBox(width: 4),
+                          Expanded(
+                              child: Text(workspace.location,
+                                  style: const TextStyle(
+                                      color: OptimizedColors.white50,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis)),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
                           Row(
                             children: [
-                              Icon(Icons.location_on_rounded,
-                                  color: GlassTheme.secondaryTextColor(context)
-                                      .withValues(alpha: 0.4),
-                                  size: 10),
+                              const Icon(Icons.star_rounded,
+                                  color: Colors.amberAccent, size: 14),
                               const SizedBox(width: 4),
-                              Expanded(
-                                  child: Text(workspace.location,
-                                      style: TextStyle(
-                                          color: GlassTheme.secondaryTextColor(
-                                                  context)
-                                              .withValues(alpha: 0.5),
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w600),
-                                      overflow: TextOverflow.ellipsis)),
+                              Text(workspace.rating.toString(),
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: AppColors.white,
+                                      fontSize: 12)),
                             ],
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.star_rounded,
-                                      color: Colors.amberAccent, size: 14),
-                                  const SizedBox(width: 4),
-                                  Text(workspace.rating.toString(),
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.w800,
-                                          color: GlassTheme.textColor(context),
-                                          fontSize: 12)),
-                                ],
-                              ),
-                              Text(
-                                '${workspace.price}${workspace.priceUnit}',
-                                style: TextStyle(
-                                    color: GlassTheme.textColor(context),
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 15,
-                                    letterSpacing: -0.5),
-                              ),
-                            ],
+                          Text(
+                            '${workspace.price}${workspace.priceUnit}',
+                            style: const TextStyle(
+                                color: AppColors.white,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 15,
+                                letterSpacing: -0.5),
                           ),
                         ],
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-              Positioned(
-                top: 4,
-                right: 4,
-                child: IconButton(
-                  onPressed: onRemove,
-                  icon: const Icon(Icons.favorite_rounded,
-                      color: Colors.redAccent, size: 20),
                 ),
               ),
             ],
           ),
-        ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: IconButton(
+              onPressed: onRemove,
+              icon: const Icon(Icons.favorite_rounded,
+                  color: Colors.redAccent, size: 20),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -271,21 +266,15 @@ class _GlassHeaderButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-            ),
-            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
-          ),
+      child: Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: AppColors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
         ),
+        child: Icon(icon, color: AppColors.white, size: 18),
       ),
     );
   }

@@ -17,6 +17,7 @@ class UpdateUserProfile implements UseCase<UserEntity, UpdateUserParams> {
       phone: params.phone,
       role: params.role,
       bio: params.bio,
+      userCode: params.userCode,
       profileImage: params.profileImage,
       membership: params.membership,
       isEmailVerified: params.isEmailVerified,
@@ -45,6 +46,7 @@ class UpdateUserParams {
   final String? gender;
   final String? birthdate;
   final String? companyName;
+  final int userCode;
 
   UpdateUserParams({
     required this.name,
@@ -52,6 +54,7 @@ class UpdateUserParams {
     required this.phone,
     required this.role,
     required this.bio,
+    required this.userCode,
     this.profileImage,
     this.membership,
     this.isEmailVerified,

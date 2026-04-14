@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../utils/glass_theme.dart';
 import '../core/theme/app_colors.dart';
 
 class ZinkoSuccessOverlay extends StatefulWidget {
@@ -190,8 +188,8 @@ class _ZinkoSuccessOverlayState extends State<ZinkoSuccessOverlay> {
   }
 
   Widget _buildParticle(int index) {
-    final random = (index * 7) % 360;
-    final angle = random * 3.1415 / 180;
+    // final random = (index * 7) % 360;
+    // final angle = random * 3.1415 / 180;
     final speed = 100 + (index * 10) % 150;
     
     return Center(

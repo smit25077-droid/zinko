@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/widgets/zinko_empty_state.dart';
 import '../../domain/entities/workspace_entity.dart';
 import '../bloc/workspace_bloc.dart';
 import '../bloc/workspace_event.dart';
@@ -9,6 +10,7 @@ import 'workspace_detail_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_glass_box.dart';
+import '../../../../widgets/zinko_network_image.dart';
 
 class AllWorkspacesScreen extends StatefulWidget {
   static const String routeName = '/all-workspaces';
@@ -130,11 +132,12 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                           : state.workspaces;
 
                       if (filtered.isEmpty) {
-                        return _EmptyState(
-                          query: query,
-                          onClear: () {
-                            _searchController.clear();
-                            context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
+                        return ZinkoEmptyState(
+                          title: 'NO MATCHES FOUND',
+                          message: 'We couldn\'t find anything matching "${state.searchQuery}".',
+                          onRetry: () {
+                             _searchController.clear();
+                             context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
                           },
                         );
                       }
@@ -154,22 +157,13 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                         },
                       );
                     } else if (state is WorkspaceError) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(state.message,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: GlassTheme.textColor(context))),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () => context
+                      return ZinkoEmptyState(
+                        title: 'OOPS!',
+                        message: state.message,
+                        icon: Icons.error_outline_rounded,
+                        onRetry: () => context
                                   .read<WorkspaceBloc>()
                                   .add(const SearchWorkspacesEvent('')),
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
                       );
                     }
                     return const SizedBox();
@@ -206,7 +200,7 @@ class _ShimmerCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       child: ZinkoGlassBox.light(
-        useBlur: false, // Performance optimization for shimmer lists
+        useBlur: false,
         child: SizedBox(
           height: 300,
           child: Column(
@@ -298,7 +292,7 @@ class _WorkspaceCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         child: ZinkoGlassBox.light(
-          useBlur: false, // PERFORMANCE: Disable blur in long lists
+          useBlur: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -306,16 +300,11 @@ class _WorkspaceCard extends StatelessWidget {
                 height: 160,
                 child: Stack(
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                      child: Image.network(
-                        workspace.imageUrl,
-                        width: double.infinity,
-                        height: 160,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            Container(color: GlassTheme.glassColor(context), height: 160),
-                      ),
+                    ZinkoNetworkImage(
+                      imageUrl: workspace.imageUrl,
+                      width: double.infinity,
+                      height: 160,
+                      borderRadius: 24,
                     ),
                     Positioned(
                       top: 12,
@@ -412,7 +401,7 @@ class _GlassFavButton extends StatelessWidget {
         width: 36,
         height: 36,
         decoration: BoxDecoration(
-          color: Colors.black45, // Solid dark for better visibility and performance
+          color: Colors.black45,
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white10),
         ),
@@ -471,102 +460,6 @@ class _GlassHeaderButton extends StatelessWidget {
           width: 40,
           height: 40,
           child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
-        ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  final String query;
-  final VoidCallback onClear;
-
-  const _EmptyState({required this.query, required this.onClear});
-
-  @override
-  Widget build(BuildContext context) {
-    final isSearch = query.isNotEmpty;
-
-    return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 100),
-            // Animated Icon with Glow
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: GlassTheme.textColor(context).withValues(alpha: 0.05),
-                        blurRadius: 40,
-                        spreadRadius: 10,
-                      )
-                    ],
-                  ),
-                ),
-                Icon(
-                  isSearch ? Icons.search_off_rounded : Icons.home_work_outlined,
-                  size: 100,
-                  color: GlassTheme.textColor(context).withValues(alpha: 0.15),
-                ).animate(onPlay: (c) => c.repeat(reverse: true))
-                 .scale(duration: 2.seconds, begin: const Offset(0.95, 0.95), end: const Offset(1.05, 1.05)),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Text(
-              isSearch ? 'NO MATCHES FOUND' : 'NO WORKSPACES',
-              style: TextStyle(
-                color: GlassTheme.textColor(context),
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
-              ),
-            ).animate().fadeIn(delay: 200.ms),
-            const SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 48),
-              child: Text(
-                isSearch
-                    ? 'We couldn\'t find anything matching "$query". Try something else!'
-                    : 'Currently, there are no workspaces available. Check back soon!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.6),
-                  fontSize: 14,
-                  height: 1.5,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ).animate(delay: 400.ms).fadeIn(),
-            const SizedBox(height: 48),
-            if (isSearch)
-              TextButton.icon(
-                onPressed: onClear,
-                style: TextButton.styleFrom(
-                  backgroundColor: GlassTheme.textColor(context).withValues(alpha: 0.08),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                icon: Icon(Icons.refresh_rounded, color: GlassTheme.textColor(context), size: 18),
-                label: Text(
-                  'RESET SEARCH',
-                  style: TextStyle(
-                    color: GlassTheme.textColor(context),
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1,
-                    fontSize: 12,
-                  ),
-                ),
-              ).animate(delay: 600.ms).fadeIn().scale(),
-          ],
         ),
       ),
     );

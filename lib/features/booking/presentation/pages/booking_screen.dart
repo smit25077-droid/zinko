@@ -1,7 +1,8 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
@@ -273,49 +274,38 @@ class _BookingScreenContent extends StatelessWidget {
     final monthLabel =
         '${_monthName(state.displayMonth.month)} ${state.displayMonth.year}'
             .toUpperCase();
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Column(
+    return ZinkoCommonCard(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.arrow_back_ios_rounded,
-                        size: 16, color: GlassTheme.textColor(context)),
-                    onPressed: () => context
-                        .read<BookingSelectionBloc>()
-                        .add(const ChangeMonthEvent(isNext: false)),
-                  ),
-                  Text(monthLabel,
-                      style: TextStyle(
-                          color: GlassTheme.textColor(context),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w900,
-                          letterSpacing: 1.0)),
-                  IconButton(
-                    icon: Icon(Icons.arrow_forward_ios_rounded,
-                        size: 16, color: GlassTheme.textColor(context)),
-                    onPressed: () => context
-                        .read<BookingSelectionBloc>()
-                        .add(const ChangeMonthEvent(isNext: true)),
-                  ),
-                ],
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios_rounded,
+                    size: 16, color: AppColors.white),
+                onPressed: () => context
+                    .read<BookingSelectionBloc>()
+                    .add(const ChangeMonthEvent(isNext: false)),
               ),
-              const SizedBox(height: 8),
-              _buildDateGrid(context, state),
+              Text(monthLabel,
+                  style: const TextStyle(
+                      color: AppColors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.0)),
+              IconButton(
+                icon: const Icon(Icons.arrow_forward_ios_rounded,
+                    size: 16, color: AppColors.white),
+                onPressed: () => context
+                    .read<BookingSelectionBloc>()
+                    .add(const ChangeMonthEvent(isNext: true)),
+              ),
             ],
           ),
-        ),
+          const SizedBox(height: 8),
+          _buildDateGrid(context, state),
+        ],
       ),
     );
   }
@@ -349,36 +339,34 @@ class _BookingScreenContent extends StatelessWidget {
               : null,
           child: Container(
             margin: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: selected
-                  ? GlassTheme.textColor(context)
-                  : (selectable
-                      ? GlassTheme.textColor(context).withValues(alpha: 0.08)
-                      : Colors.transparent),
-              shape: BoxShape.circle,
-              border: selected
-                  ? null
-                  : Border.all(
-                      color: selectable
-                          ? GlassTheme.textColor(context).withValues(alpha: 0.12)
-                          : Colors.transparent),
-            ),
-            child: Center(
-              child: Text(
-                '$dayNum',
-                style: TextStyle(
-                  color: selected
-                      ? (Theme.of(context).brightness == Brightness.dark
-                          ? Colors.black
-                          : Colors.white)
-                      : (selectable
-                          ? GlassTheme.textColor(context)
-                          : GlassTheme.textColor(context).withValues(alpha: 0.2)),
-                  fontSize: 12,
-                  fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
-                ),
+          decoration: BoxDecoration(
+            color: selected
+                ? AppColors.brightBlue
+                : (selectable
+                    ? AppColors.white.withValues(alpha: 0.08)
+                    : Colors.transparent),
+            shape: BoxShape.circle,
+            border: selected
+                ? null
+                : Border.all(
+                    color: selectable
+                        ? AppColors.white.withValues(alpha: 0.12)
+                        : Colors.transparent),
+          ),
+          child: Center(
+            child: Text(
+              '$dayNum',
+              style: TextStyle(
+                color: selected
+                    ? AppColors.white
+                    : (selectable
+                        ? AppColors.white
+                        : AppColors.white.withValues(alpha: 0.2)),
+                fontSize: 12,
+                fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
               ),
             ),
+          ),
           ),
         );
       },
@@ -442,22 +430,18 @@ class _BookingScreenContent extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: selected
-                        ? GlassTheme.textColor(context)
-                        : GlassTheme.textColor(context).withValues(alpha: 0.08),
+                        ? AppColors.brightBlue
+                        : AppColors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                         color: selected
-                            ? GlassTheme.textColor(context)
-                            : GlassTheme.textColor(context).withValues(alpha: 0.1)),
+                            ? AppColors.brightBlue
+                            : AppColors.white.withValues(alpha: 0.1)),
                   ),
                   alignment: Alignment.center,
                   child: Text(label,
                       style: TextStyle(
-                          color: selected
-                              ? (Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.black
-                                  : Colors.white)
-                              : GlassTheme.textColor(context),
+                          color: AppColors.white,
                           fontSize: 11,
                           fontWeight:
                               selected ? FontWeight.w900 : FontWeight.w600)),
@@ -528,22 +512,18 @@ class _BookingScreenContent extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: selected
-                        ? GlassTheme.textColor(context)
-                        : GlassTheme.textColor(context).withValues(alpha: 0.08),
+                        ? AppColors.brightBlue
+                        : AppColors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                         color: selected
-                            ? GlassTheme.textColor(context)
-                            : GlassTheme.textColor(context).withValues(alpha: 0.1)),
+                            ? AppColors.brightBlue
+                            : AppColors.white.withValues(alpha: 0.1)),
                   ),
                   alignment: Alignment.center,
                   child: Text(t,
                       style: TextStyle(
-                          color: selected
-                              ? (Theme.of(context).brightness == Brightness.dark
-                                  ? Colors.black
-                                  : Colors.white)
-                              : GlassTheme.textColor(context),
+                          color: AppColors.white,
                           fontSize: 11,
                           fontWeight:
                               selected ? FontWeight.w900 : FontWeight.w600)),
@@ -591,16 +571,14 @@ class _BookingScreenContent extends StatelessWidget {
           const SizedBox(height: 16),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: GlassTheme.textColor(context),
+              activeTrackColor: AppColors.brightBlue,
               inactiveTrackColor:
-                  GlassTheme.textColor(context).withValues(alpha: 0.1),
-              thumbColor: GlassTheme.textColor(context),
-              overlayColor: GlassTheme.textColor(context).withValues(alpha: 0.2),
+                  AppColors.white.withValues(alpha: 0.1),
+              thumbColor: AppColors.white,
+              overlayColor: AppColors.brightBlue.withValues(alpha: 0.2),
               trackHeight: 4,
-              valueIndicatorTextStyle: TextStyle(
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.black
-                    : Colors.white,
+              valueIndicatorTextStyle: const TextStyle(
+                color: Colors.white,
                 fontWeight: FontWeight.w900,
               ),
             ),
@@ -670,45 +648,29 @@ class _BookingScreenContent extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: occupied
-                          ? GlassTheme.textColor(context).withValues(alpha: 0.04)
+                          ? AppColors.white.withValues(alpha: 0.04)
                           : (selected
-                              ? GlassTheme.textColor(context)
-                              : GlassTheme.textColor(context)
-                                  .withValues(alpha: 0.08)),
+                              ? AppColors.brightBlue
+                              : AppColors.white.withValues(alpha: 0.08)),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                           color: selected
-                              ? GlassTheme.textColor(context)
-                              : GlassTheme.textColor(context).withValues(alpha: 0.1)),
+                              ? AppColors.brightBlue
+                              : AppColors.white.withValues(alpha: 0.1)),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(label,
                             style: TextStyle(
-                                color: selected
-                                    ? (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.black
-                                        : Colors.white)
-                                    : (occupied
-                                        ? GlassTheme.textColor(context)
-                                            .withValues(alpha: 0.2)
-                                        : GlassTheme.textColor(context)),
+                                color: AppColors.white.withValues(
+                                    alpha: occupied ? 0.2 : 1.0),
                                 fontSize: 11,
                                 fontWeight: FontWeight.w900)),
                         Text('${ws.totalSeats} seats',
                             style: TextStyle(
-                                color: selected
-                                    ? (Theme.of(context).brightness ==
-                                            Brightness.dark
-                                        ? Colors.black.withValues(alpha: 0.6)
-                                        : Colors.white.withValues(alpha: 0.6))
-                                    : (occupied
-                                        ? GlassTheme.secondaryTextColor(context)
-                                            .withValues(alpha: 0.1)
-                                        : GlassTheme.secondaryTextColor(context)
-                                            .withValues(alpha: 0.5)),
+                                color: AppColors.white.withValues(
+                                    alpha: selected ? 0.7 : 0.4),
                                 fontSize: 8,
                                 fontWeight: FontWeight.w600)),
                       ],
@@ -775,32 +737,21 @@ class _BookingScreenContent extends StatelessWidget {
       {required BuildContext context,
       required String title,
       required Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title,
-                  style: TextStyle(
-                      color: GlassTheme.tertiaryTextColor(context),
-                      fontSize: 9,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5)),
-              const SizedBox(height: 12),
-              child,
-            ],
-          ),
-        ),
+    return ZinkoCommonCard(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title,
+              style: TextStyle(
+                  color: AppColors.white50,
+                  fontSize: 9,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5)),
+          const SizedBox(height: 12),
+          child,
+        ],
       ),
     );
   }
@@ -813,59 +764,59 @@ class _BookingScreenContent extends StatelessWidget {
       double tax,
       double total,
       bool active) {
-    return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+      decoration: BoxDecoration(
+        color: AppColors.midnightNavy.withValues(alpha: 0.95),
+        border: Border(
+            top: BorderSide(
+                color: AppColors.white.withValues(alpha: 0.1))),
+      ),
+      child: GestureDetector(
+        onTap: active
+            ? () {
+                final slot = _getSlotForDate(ws, state.selectedDate);
+                Navigator.pushNamed(context, ReviewBookingScreen.routeName,
+                    arguments: {
+                      'workspace': ws,
+                      'date': state.selectedDate,
+                      'checkInTime': state.checkInTime,
+                      'checkOutTime': state.checkOutTime,
+                      'duration': state.durationHours,
+                      'timeSlotId': slot?.id ?? 0,
+                      'table': state.selectedTable,
+                      'tableId': state.selectedTableId,
+                      'subtotal': sub,
+                      'tax': tax,
+                      'total': total,
+                      'peopleCount': state.peopleCount,
+                    });
+              }
+            : null,
         child: Container(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+          height: 52,
           decoration: BoxDecoration(
-            color: GlassTheme.backgroundOverlay(context),
-            border: Border(
-                top: BorderSide(
-                    color: GlassTheme.textColor(context).withValues(alpha: 0.1))),
+            color: active
+                ? AppColors.primaryBlue
+                : AppColors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: active ? [
+              BoxShadow(
+                color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 5),
+              )
+            ] : null,
           ),
-          child: GestureDetector(
-            onTap: active
-                ? () {
-                    final slot = _getSlotForDate(ws, state.selectedDate);
-                    Navigator.pushNamed(context, ReviewBookingScreen.routeName,
-                        arguments: {
-                          'workspace': ws,
-                          'date': state.selectedDate,
-                          'checkInTime': state.checkInTime,
-                          'checkOutTime': state.checkOutTime,
-                          'duration': state.durationHours,
-                          'timeSlotId': slot?.id ?? 0,
-                          'table': state.selectedTable,
-                          'tableId': state.selectedTableId,
-                          'subtotal': sub,
-                          'tax': tax,
-                          'total': total,
-                          'peopleCount': state.peopleCount,
-                        });
-                  }
-                : null,
-            child: Container(
-              height: 52,
-              decoration: BoxDecoration(
-                color: active
-                    ? GlassTheme.textColor(context)
-                    : GlassTheme.textColor(context).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              alignment: Alignment.center,
-              child: Text('CONTINUE TO REVIEW',
-                  style: TextStyle(
-                      color: active
-                          ? (Theme.of(context).brightness == Brightness.dark
-                              ? Colors.black
-                              : Colors.white)
-                          : GlassTheme.secondaryTextColor(context),
-                      fontSize: 13,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.0)),
-            ),
-          ),
+          alignment: Alignment.center,
+          child: Text('CONTINUE TO REVIEW',
+              style: TextStyle(
+                  color: active
+                      ? AppColors.white
+                      : AppColors.white.withValues(alpha: 0.3),
+                  fontSize: 13,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.0)),
         ),
       ),
     );

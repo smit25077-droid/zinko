@@ -8,6 +8,7 @@ import '../bloc/password_change_bloc.dart';
 import '../../../../injection_container.dart';
 import '../../../../widgets/zinko_success_overlay.dart';
 import '../../../../core/routes/app_router.dart';
+import '../../../../widgets/zinko_app_bar.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
   static const String routeName = '/password-change';
@@ -58,23 +59,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
             return Scaffold(
               extendBodyBehindAppBar: true,
               resizeToAvoidBottomInset: false,
-              appBar: AppBar(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                leading: IconButton(
-                  icon: Icon(Icons.arrow_back_ios_new, color: GlassTheme.textColor(context), size: 20),
-                  onPressed: () => AppRouter.safetyPop(context),
-                ),
-                title: Text(
-                  'FORGOT PASSWORD',
-                  style: TextStyle(
-                    color: GlassTheme.textColor(context),
-                    fontWeight: FontWeight.w900,
-                    fontSize: 18,
-                    letterSpacing: 2.0,
-                  ),
-                ),
-                centerTitle: true,
+              appBar: ZinkoAppBar(
+                title: 'Forgot Password',
+                onBackTap: () => AppRouter.safetyPop(context),
               ),
               body: Stack(
                 children: [

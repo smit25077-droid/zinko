@@ -1,9 +1,11 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'dart:io' show Platform;
 
 import '../../domain/entities/workspace_entity.dart';
@@ -11,10 +13,12 @@ import '../bloc/workspace_bloc.dart';
 import '../bloc/workspace_event.dart';
 import '../bloc/workspace_state.dart';
 import 'booking_screen.dart';
+import '../../../user/presentation/bloc/user_bloc.dart';
+import '../../../user/presentation/bloc/user_state.dart';
+import '../../../../utils/zinko_flushbar.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';
-import '../../../../widgets/zinko_glass_box.dart';
 import '../bloc/workspace_detail_bloc.dart';
 
 class WorkspaceDetailScreen extends StatelessWidget {
@@ -44,14 +48,14 @@ class WorkspaceDetailScreen extends StatelessWidget {
 
 class _DetailContent extends StatefulWidget {
   final WorkspaceEntity workspace;
+
   const _DetailContent({required this.workspace});
 
   @override
   State<_DetailContent> createState() => _DetailContentState();
 }
 
-class _DetailContentState extends State<_DetailContent>
-    with WidgetsBindingObserver {
+class _DetailContentState extends State<_DetailContent> with WidgetsBindingObserver {
   late PageController _pageController;
 
   @override
@@ -118,8 +122,7 @@ class _DetailContentState extends State<_DetailContent>
                                 const SizedBox(height: 12),
                                 _buildGlassAmenities(),
                               ],
-                              if (workspace.phone.isNotEmpty ||
-                                  workspace.email.isNotEmpty) ...[
+                              if (workspace.phone.isNotEmpty || workspace.email.isNotEmpty) ...[
                                 const SizedBox(height: 12),
                                 _buildGlassContactInfo(),
                               ],
@@ -154,7 +157,7 @@ class _DetailContentState extends State<_DetailContent>
 
   Widget _buildGlassHeader() {
     final workspace = widget.workspace;
-    return ZinkoGlassBox.thick(
+    return ZinkoCommonCard(
       padding: const EdgeInsets.all(20),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,9 +168,9 @@ class _DetailContentState extends State<_DetailContent>
               children: [
                 Text(
                   workspace.name,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 22,
-                    color: GlassTheme.textColor(context),
+                    color: AppColors.white,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -0.5,
                   ),
@@ -175,16 +178,14 @@ class _DetailContentState extends State<_DetailContent>
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.location_on_rounded,
-                        size: 14,
-                        color: GlassTheme.secondaryTextColor(context)),
+                    Icon(Icons.location_on_rounded, size: 14, color: AppColors.white50),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         '${workspace.location}${workspace.distance.isNotEmpty ? ' • ${workspace.distance}' : ''}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: GlassTheme.secondaryTextColor(context),
+                          color: AppColors.white50,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -205,10 +206,10 @@ class _DetailContentState extends State<_DetailContent>
       title: 'ABOUT',
       child: Text(
         widget.workspace.description,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 13,
           height: 1.5,
-          color: GlassTheme.textColor(context),
+          color: AppColors.white,
           fontWeight: FontWeight.w500,
         ),
       ),
@@ -224,25 +225,19 @@ class _DetailContentState extends State<_DetailContent>
         runSpacing: 8,
         children: workspace.perkTags
             .map((perk) => Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
                     color: Colors.orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
-                    border:
-                        Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.flash_on_rounded,
-                          size: 12, color: Colors.orange),
+                      const Icon(Icons.flash_on_rounded, size: 12, color: Colors.orange),
                       const SizedBox(width: 4),
                       Text(perk,
-                          style: const TextStyle(
-                              color: Colors.orange,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 10)),
+                          style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w800, fontSize: 10)),
                     ],
                   ),
                 ))
@@ -270,21 +265,19 @@ class _DetailContentState extends State<_DetailContent>
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: GlassTheme.textColor(context).withValues(alpha: 0.04),
+              color: AppColors.white.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
+              border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
             ),
             child: Row(
               children: [
-                Icon(workspace.amenities[index],
-                    size: 14, color: GlassTheme.secondaryTextColor(context)),
+                Icon(workspace.amenities[index], size: 14, color: AppColors.brightBlue),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(workspace.amenityNames[index],
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 11,
-                          color: GlassTheme.textColor(context)
-                              .withValues(alpha: 0.9),
+                          color: AppColors.white,
                           fontWeight: FontWeight.w600),
                       overflow: TextOverflow.ellipsis),
                 ),
@@ -332,12 +325,10 @@ class _DetailContentState extends State<_DetailContent>
                   Positioned.fill(
                     child: GestureDetector(
                       onTap: () async {
-                        final encodedName =
-                            Uri.encodeComponent(workspace.name);
+                        final encodedName = Uri.encodeComponent(workspace.name);
                         final googleUrl =
                             'https://www.google.com/maps/search/?api=1&query=${workspace.lat},${workspace.lng}&query_place_id=$encodedName';
-                        final appleUrl =
-                            'https://maps.apple.com/?q=$encodedName&ll=${workspace.lat},${workspace.lng}';
+                        final appleUrl = 'https://maps.apple.com/?q=$encodedName&ll=${workspace.lat},${workspace.lng}';
 
                         if (Platform.isIOS) {
                           if (await canLaunchUrl(Uri.parse(appleUrl))) {
@@ -357,18 +348,17 @@ class _DetailContentState extends State<_DetailContent>
             ),
           ),
           const SizedBox(height: 12),
-          Row(
+          const Row(
             children: [
-              Icon(Icons.directions_rounded,
-                  size: 16, color: GlassTheme.secondaryTextColor(context)),
-              const SizedBox(width: 8),
+              Icon(Icons.directions_rounded, size: 16, color: AppColors.brightBlue),
+              SizedBox(width: 8),
               Expanded(
                 child: Text(
                   'Tap to get directions in your map app',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: GlassTheme.secondaryTextColor(context),
+                    color: OptimizedColors.white50,
                   ),
                 ),
               ),
@@ -399,9 +389,7 @@ class _DetailContentState extends State<_DetailContent>
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                              radius: 14,
-                              backgroundImage: NetworkImage(r.avatarUrl)),
+                          CircleAvatar(radius: 14, backgroundImage: NetworkImage(r.avatarUrl)),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Column(
@@ -414,8 +402,7 @@ class _DetailContentState extends State<_DetailContent>
                                         fontWeight: FontWeight.w800)),
                                 Text(r.timeAgo,
                                     style: TextStyle(
-                                        color: GlassTheme.tertiaryTextColor(
-                                            context),
+                                        color: GlassTheme.tertiaryTextColor(context),
                                         fontSize: 9,
                                         fontWeight: FontWeight.w600)),
                               ],
@@ -427,8 +414,7 @@ class _DetailContentState extends State<_DetailContent>
                       const SizedBox(height: 8),
                       Text(r.comment,
                           style: TextStyle(
-                              color: GlassTheme.textColor(context)
-                                  .withValues(alpha: 0.8),
+                              color: GlassTheme.textColor(context).withValues(alpha: 0.8),
                               fontSize: 12,
                               height: 1.4,
                               fontWeight: FontWeight.w500)),
@@ -441,19 +427,16 @@ class _DetailContentState extends State<_DetailContent>
   }
 
   Widget _buildSectionCard({required String title, required Widget child}) {
-    return ZinkoGlassBox.light(
+    return ZinkoCommonCard(
       padding: const EdgeInsets.all(18),
       borderRadius: 22,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: TextStyle(
-                  color: GlassTheme.textColor(context),
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2)),
-          const SizedBox(height: 8),
+              style: const TextStyle(
+                  color: AppColors.white, fontSize: 13, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
           child,
         ],
       ),
@@ -480,14 +463,10 @@ class _DetailContentState extends State<_DetailContent>
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: _GlassHeaderButton(
-            icon: workspace.isFavorite
-                ? Icons.favorite_rounded
-                : Icons.favorite_border_rounded,
+            icon: workspace.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
             iconColor: workspace.isFavorite ? Colors.redAccent : Colors.white,
             onTap: () {
-              context
-                  .read<WorkspaceBloc>()
-                  .add(ToggleFavoriteWorkspaceEvent(workspace.id));
+              context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(workspace.id));
             },
           ),
         ),
@@ -499,15 +478,11 @@ class _DetailContentState extends State<_DetailContent>
           children: [
             PageView.builder(
               controller: _pageController,
-              onPageChanged: (index) => context
-                  .read<WorkspaceDetailBloc>()
-                  .add(UpdatePageIndex(index)),
+              onPageChanged: (index) => context.read<WorkspaceDetailBloc>().add(UpdatePageIndex(index)),
               itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
               itemBuilder: (context, index) {
                 return ZinkoNetworkImage(
-                  imageUrl: workspace.images.isEmpty
-                      ? workspace.imageUrl
-                      : workspace.images[index],
+                  imageUrl: workspace.images.isEmpty ? workspace.imageUrl : workspace.images[index],
                   fit: BoxFit.cover,
                 );
               },
@@ -546,12 +521,7 @@ class _DetailContentState extends State<_DetailContent>
                             color: isSelected ? Colors.white : Colors.white24,
                             borderRadius: BorderRadius.circular(2),
                             boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                        color:
-                                            Colors.white.withValues(alpha: 0.3),
-                                        blurRadius: 4)
-                                  ]
+                                ? [BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 4)]
                                 : [],
                           ),
                         );
@@ -567,10 +537,13 @@ class _DetailContentState extends State<_DetailContent>
   }
 
   Widget _buildCompactRatingBadge(double rating, {bool isSmall = false}) {
-    return ZinkoGlassBox.light(
-      borderRadius: 10,
-      padding: EdgeInsets.symmetric(
-          horizontal: isSmall ? 6 : 8, vertical: isSmall ? 3 : 5),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: isSmall ? 6 : 8, vertical: isSmall ? 3 : 5),
+      decoration: BoxDecoration(
+        color: AppColors.brightBlue.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.brightBlue.withValues(alpha: 0.3)),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -579,9 +552,7 @@ class _DetailContentState extends State<_DetailContent>
           Text(
             rating.toStringAsFixed(1),
             style: TextStyle(
-                color: GlassTheme.textColor(context),
-                fontSize: isSmall ? 11 : 13,
-                fontWeight: FontWeight.w900),
+                color: AppColors.white, fontSize: isSmall ? 11 : 13, fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -590,12 +561,13 @@ class _DetailContentState extends State<_DetailContent>
 
   Widget _buildActionFAB(BuildContext context) {
     final workspace = widget.workspace;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ZinkoGlassBox.thick(
-      borderRadius: 0,
+    return Container(
+      width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
-      border: Border(top: BorderSide(color: GlassTheme.glassBorder(context))),
-      color: GlassTheme.backgroundOverlay(context),
+      decoration: BoxDecoration(
+        color: AppColors.midnightNavy.withValues(alpha: 0.95),
+        border: Border(top: BorderSide(color: AppColors.white.withValues(alpha: 0.1))),
+      ),
       child: Row(
         children: [
           if (workspace.price.isNotEmpty)
@@ -606,7 +578,7 @@ class _DetailContentState extends State<_DetailContent>
                 children: [
                   Text('STARTING FROM',
                       style: TextStyle(
-                          color: GlassTheme.secondaryTextColor(context),
+                          color: AppColors.white50,
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.0)),
@@ -616,16 +588,14 @@ class _DetailContentState extends State<_DetailContent>
                       children: [
                         TextSpan(
                             text: workspace.price,
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900,
-                                color: GlassTheme.textColor(context))),
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.white)),
                         TextSpan(
                             text: ' ${workspace.priceUnit}',
                             style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: GlassTheme.tertiaryTextColor(context))),
+                                color: AppColors.white50)),
                       ],
                     ),
                   ),
@@ -637,39 +607,46 @@ class _DetailContentState extends State<_DetailContent>
           const SizedBox(width: 16),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, BookingScreen.routeName,
-                  arguments: {
-                    'workspaceId': workspace.id,
-                    'workspaceName': workspace.name,
-                    'workspace': workspace,
-                  });
+              final userState = context.read<UserBloc>().state;
+              if (userState is UserLoaded && !userState.user.isProfileComplete) {
+                _showProfileIncompleteDialog(context, userState.user.completionPercentage);
+                return;
+              }
+              Navigator.pushNamed(context, BookingScreen.routeName, arguments: {
+                'workspaceId': workspace.id,
+                'workspaceName': workspace.name,
+                'workspace': workspace,
+              });
             },
             child: Container(
               height: 50,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               decoration: BoxDecoration(
-                color: GlassTheme.textColor(context),
+                color: AppColors.primaryBlue,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4))
+                    color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                    blurRadius: 15,
+                    offset: const Offset(0, 5),
+                  )
                 ],
               ),
-              child: Center(
-                child: Text('BOOK NOW',
-                    style: TextStyle(
-                        color: isDark ? Colors.black : Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.0)),
+              child: const Center(
+                child: Text(
+                  'BOOK NOW',
+                  style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.2),
+                ),
               ),
             ),
           ).animate().scale(),
         ],
       ),
-    );
+    ).animate().fadeIn(duration: 400.ms);
   }
 
   Widget _buildGlassContactInfo() {
@@ -682,8 +659,7 @@ class _DetailContentState extends State<_DetailContent>
             _buildContactRow(Icons.phone_rounded, workspace.phone, () {
               launchUrl(Uri.parse('tel:${workspace.phone}'));
             }),
-          if (workspace.phone.isNotEmpty && workspace.email.isNotEmpty)
-            const SizedBox(height: 12),
+          if (workspace.phone.isNotEmpty && workspace.email.isNotEmpty) const SizedBox(height: 12),
           if (workspace.email.isNotEmpty)
             _buildContactRow(Icons.email_rounded, workspace.email, () {
               launchUrl(Uri.parse('mailto:${workspace.email}'));
@@ -699,30 +675,78 @@ class _DetailContentState extends State<_DetailContent>
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: GlassTheme.textColor(context).withValues(alpha: 0.04),
+          color: AppColors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: GlassTheme.glassBorder(context)),
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 16, color: GlassTheme.secondaryTextColor(context)),
+            Icon(icon, size: 16, color: AppColors.royalBlue),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 text,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 13,
-                  color: GlassTheme.textColor(context),
+                  color: AppColors.white,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
             Icon(Icons.open_in_new_rounded,
-                size: 14,
-                color: GlassTheme.secondaryTextColor(context)
-                    .withValues(alpha: 0.5)),
+                size: 14, color: AppColors.white.withValues(alpha: 0.3)),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showProfileIncompleteDialog(BuildContext context, double percentage) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF121212),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Text('PROFILE INCOMPLETE',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1.0)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'To ensure a secure community, Zinko requires a 100% complete profile before making any bookings.',
+              style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 20),
+            LinearProgressIndicator(
+              value: percentage,
+              backgroundColor: Colors.white12,
+              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+              minHeight: 6,
+            ),
+            const SizedBox(height: 8),
+            Text('${(percentage * 100).toInt()}% Complete',
+                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, fontSize: 12)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('LATER', style: TextStyle(color: OptimizedColors.white50, fontWeight: FontWeight.w700)),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: const Text('COMPLETE NOW', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -733,28 +757,21 @@ class _GlassHeaderButton extends StatelessWidget {
   final Color? iconColor;
   final VoidCallback onTap;
 
-  const _GlassHeaderButton(
-      {required this.icon, this.iconColor, required this.onTap});
+  const _GlassHeaderButton({required this.icon, this.iconColor, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-            ),
-            child: Icon(icon, color: iconColor ?? Colors.white, size: 18),
-          ),
+      child: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
         ),
+        child: Icon(icon, color: iconColor ?? Colors.white, size: 18),
       ),
     );
   }

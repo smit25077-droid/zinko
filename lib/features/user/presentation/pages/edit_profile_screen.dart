@@ -1,16 +1,18 @@
-import 'dart:io';
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/widgets/global_network_overlay.dart';
 import '../bloc/user_bloc.dart';
 import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
+import 'package:intl/intl.dart';
 import '../../../../utils/glass_theme.dart';
+import '../../../../widgets/zinko_text_field.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_app_bar.dart';
 import '../bloc/edit_profile_form_bloc.dart';
 import '../../../../utils/zinko_flushbar.dart';
 
@@ -26,7 +28,17 @@ class EditProfileScreen extends StatelessWidget {
         String birthdate = '';
         if (state is UserLoaded) {
           gender = state.user.gender;
-          birthdate = state.user.birthdate;
+          final rawDate = state.user.birthdate;
+          if (rawDate.isNotEmpty && RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(rawDate)) {
+            try {
+              final date = DateTime.parse(rawDate);
+              birthdate = DateFormat('dd MMMM yyyy').format(date);
+            } catch (_) {
+              birthdate = rawDate;
+            }
+          } else {
+            birthdate = rawDate;
+          }
         }
         return BlocProvider(
           create: (context) => EditProfileFormBloc(
@@ -57,6 +69,8 @@ class _EditProfileContentState extends State<_EditProfileContent> {
   late TextEditingController _cityController;
   late TextEditingController _stateController;
   late TextEditingController _companyNameController;
+
+  bool _processedSuccess = false;
 
   @override
   void initState() {
@@ -89,7 +103,6 @@ class _EditProfileContentState extends State<_EditProfileContent> {
     _bioController = TextEditingController(text: bio);
     _cityController = TextEditingController(text: city);
     _stateController = TextEditingController(text: stateStr);
-    _stateController = TextEditingController(text: stateStr);
     _companyNameController = TextEditingController(text: companyName);
   }
 
@@ -104,16 +117,6 @@ class _EditProfileContentState extends State<_EditProfileContent> {
     _stateController.dispose();
     _companyNameController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage(BuildContext context) async {
-    final picker = ImagePicker();
-    final result = await picker.pickImage(source: ImageSource.gallery);
-    if (result != null) {
-      if (context.mounted) {
-        context.read<EditProfileFormBloc>().add(SetImagePath(result.path));
-      }
-    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -137,11 +140,21 @@ class _EditProfileContentState extends State<_EditProfileContent> {
       },
     );
     if (picked != null) {
-      final formattedDate =
-          "${picked.year}-${picked.month.toString().padLeft(2, '0')}-${picked.day.toString().padLeft(2, '0')}";
+      final formattedDate = DateFormat('dd MMMM yyyy').format(picked);
       if (context.mounted) {
         context.read<EditProfileFormBloc>().add(SetBirthdate(formattedDate));
       }
+    }
+  }
+
+  String _toApiDate(String prettyDate) {
+    if (prettyDate.isEmpty) return prettyDate;
+    try {
+      if (RegExp(r'^\d{4}-\d{2}-\d{2}').hasMatch(prettyDate)) return prettyDate;
+      final date = DateFormat('dd MMMM yyyy').parse(prettyDate);
+      return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    } catch (_) {
+      return prettyDate;
     }
   }
 
@@ -149,6 +162,10 @@ class _EditProfileContentState extends State<_EditProfileContent> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final formState = context.read<EditProfileFormBloc>().state;
+    final userState = context.read<UserBloc>().state;
+    final int userCode = (userState is UserLoaded) ? userState.user.userCode : 0;
+
+    _processedSuccess = false; // Reset before starting new update
 
     context.read<UserBloc>().add(
           UpdateUserProfileEvent(
@@ -157,12 +174,12 @@ class _EditProfileContentState extends State<_EditProfileContent> {
             phone: _phoneController.text.trim(),
             role: _roleController.text.trim(),
             bio: _bioController.text.trim(),
+            userCode: userCode,
             city: _cityController.text.trim(),
             state: _stateController.text.trim(),
             gender: formState.gender,
-            birthdate: formState.birthdate,
+            birthdate: _toApiDate(formState.birthdate),
             companyName: _companyNameController.text.trim(),
-            profileImage: formState.pickedImagePath,
           ),
         );
   }
@@ -171,52 +188,50 @@ class _EditProfileContentState extends State<_EditProfileContent> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
+    return ZinkoBackground(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _GlassHeaderButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => AppRouter.safetyPop(context),
-          ),
-        ),
-        title: Text(
-          'EDIT IDENTITY',
-          style: TextStyle(
-            color: GlassTheme.textColor(context),
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-            letterSpacing: 2.0,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () => _onSave(context),
-            child: Text(
-              'SAVE',
-              style: TextStyle(
-                color: theme.primaryColor,
-                fontWeight: FontWeight.w900,
-                fontSize: 14,
-                letterSpacing: 1.0,
+        appBar: ZinkoAppBar(
+          title: 'Edit Identity',
+          actions: [
+            TextButton(
+              onPressed: () => _onSave(context),
+              child: Text(
+                'SAVE',
+                style: TextStyle(
+                  color: theme.primaryColor,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  letterSpacing: 1.0,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-        ],
-      ),
-      body: ZinkoBackground(
-        child: SafeArea(
+            const SizedBox(width: 8),
+          ],
+        ),
+        body: SafeArea(
           child: BlocListener<UserBloc, UserState>(
             listener: (context, state) {
               if (state is UserLoaded) {
-                ZinkoFlushbar.showSuccess(context: context, message: 'Profile updated successfully');
-                AppRouter.safetyPop(context);
+                if (_processedSuccess) return; // Prevent double execution
+                _processedSuccess = true;
+
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  if (Navigator.of(context).canPop()) {
+                    AppRouter.safetyPop(context);
+                  }
+                  context.read<UserBloc>().add(GetUserProfileEvent());
+                  
+                  if (zinkoNavigatorKey.currentContext != null) {
+                    ZinkoFlushbar.showSuccess(
+                      context: zinkoNavigatorKey.currentContext!,
+                      message: 'Profile updated successfully',
+                    );
+                  }
+                });
               } else if (state is UserError) {
+                _processedSuccess = false; // Reset on error to allow retry
                 ZinkoFlushbar.showError(context: context, message: state.message);
               }
             },
@@ -237,77 +252,34 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                     key: _formKey,
                     child: Column(
                       children: [
-                        const SizedBox(height: 24),
-                        Center(
-                          child: GestureDetector(
-                            onTap: () => _pickImage(context),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color:
-                                          theme.primaryColor.withValues(alpha: 0.3),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: formState.pickedImagePath != null
-                                        ? Image.file(
-                                            File(formState.pickedImagePath!),
-                                            width: 120,
-                                            height: 120,
-                                            fit: BoxFit.cover,
-                                          )
-                                        : (user != null
-                                            ? Image.network(
-                                                user.profileImage,
-                                                width: 120,
-                                                height: 120,
-                                                fit: BoxFit.cover,
-                                                errorBuilder: (_, __, ___) =>
-                                                    Container(
-                                                        color: Colors.grey,
-                                                        width: 120,
-                                                        height: 120),
-                                              )
-                                            : Container(
-                                                color: Colors.grey,
-                                                width: 120,
-                                                height: 120)),
-                                  ),
-                                ).animate().scale(
-                                    curve: Curves.elasticOut, duration: 800.ms),
-                                Positioned(
-                                  bottom: 4,
-                                  right: 4,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: theme.primaryColor,
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.2),
-                                          blurRadius: 10,
-                                        )
-                                      ],
-                                    ),
-                                    child: const Icon(
-                                      Icons.camera_alt_rounded,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
-                                  ),
-                                ).animate(delay: 400.ms).fadeIn().scale(),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 12),
+                        // Center(
+                        //   child: (user != null
+                        //       ? Container(
+                        //           padding: const EdgeInsets.all(4),
+                        //           decoration: BoxDecoration(
+                        //             shape: BoxShape.circle,
+                        //             border: Border.all(
+                        //               color:
+                        //                   theme.primaryColor.withValues(alpha: 0.3),
+                        //               width: 2,
+                        //             ),
+                        //           ),
+                        //           child: ClipRRect(
+                        //             borderRadius: BorderRadius.circular(100),
+                        //             child: ZinkoNetworkImage(
+                        //               imageUrl: user.profileImage,
+                        //               width: 120,
+                        //               height: 120,
+                        //               fit: BoxFit.cover,
+                        //             ),
+                        //           ),
+                        //         )
+                        //             .animate()
+                        //             .scale(curve: Curves.elasticOut, duration: 800.ms)
+                        //       : const SizedBox()),
+                        // ),
+                        // const SizedBox(height: 24),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(32),
                           child: BackdropFilter(
@@ -325,22 +297,20 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                               ),
                               child: Column(
                                 children: [
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'FULL NAME',
                                     controller: _fullNameController,
                                     icon: Icons.person_outline_rounded,
+                                    isPascalCase: true,
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'JOB TITLE',
                                     controller: _roleController,
                                     icon: Icons.badge_outlined,
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'EMAIL ADDRESS',
                                     controller: _emailController,
                                     icon: Icons.alternate_email_rounded,
@@ -348,8 +318,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                     readOnly: true,
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'PHONE NUMBER',
                                     controller: _phoneController,
                                     icon: Icons.phone_android_rounded,
@@ -357,42 +326,39 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                     readOnly: true,
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'CITY',
                                     controller: _cityController,
                                     icon: Icons.location_city_rounded,
+                                    isPascalCase: true,
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'STATE',
                                     controller: _stateController,
                                     icon: Icons.map_rounded,
+                                    isPascalCase: true,
                                   ),
                                   const SizedBox(height: 20),
                                   _buildGenderRadio(context, formState),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'BIRTHDATE',
                                     controller: TextEditingController(
                                         text: formState.birthdate),
                                     icon: Icons.calendar_today_rounded,
-                                    hintText: 'YYYY-MM-DD',
+                                    hintText: 'Select Birthday',
                                     onTap: () => _selectDate(context),
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'COMPANY NAME',
                                     controller: _companyNameController,
                                     icon: Icons.business_rounded,
                                     isRequired: false,
                                   ),
                                   const SizedBox(height: 20),
-                                  _buildPremiumField(
-                                    context,
+                                  ZinkoTextField(
                                     label: 'BIO',
                                     controller: _bioController,
                                     icon: Icons.notes_rounded,
@@ -421,81 +387,6 @@ class _EditProfileContentState extends State<_EditProfileContent> {
     );
   }
 
-  Widget _buildPremiumField(
-    BuildContext context, {
-    required String label,
-    required TextEditingController controller,
-    required IconData icon,
-    int maxLines = 1,
-    TextInputType? keyboardType,
-    String? hintText,
-    bool readOnly = false,
-    bool isRequired = true,
-    VoidCallback? onTap,
-  }) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4),
-            fontSize: 10,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          readOnly: readOnly || onTap != null,
-          onTap: onTap,
-          keyboardType: keyboardType,
-          style: TextStyle(
-              color: GlassTheme.textColor(context)
-                  .withValues(alpha: readOnly ? 0.5 : 1.0),
-              fontSize: 14,
-              fontWeight: FontWeight.w600),
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: readOnly || onTap != null
-                ? OptimizedColors.white12.withValues(alpha: 0.05)
-                : OptimizedColors.white12,
-            prefixIcon: Icon(icon,
-                color: GlassTheme.iconColor(context)
-                    .withValues(alpha: readOnly ? 0.2 : 0.4),
-                size: 18),
-            hintText: hintText ?? 'Enter $label',
-            hintStyle: TextStyle(
-                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.2),
-                fontSize: 13),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: GlassTheme.glassBorder(context)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: GlassTheme.glassBorder(context)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: theme.primaryColor, width: 1.5),
-            ),
-          ),
-          validator: isRequired
-              ? (value) {
-                  if (value == null || value.isEmpty) return 'Required';
-                  return null;
-                }
-              : null,
-        ),
-      ],
-    );
-  }
 
   Widget _buildGenderRadio(BuildContext context, EditProfileFormState formState) {
     return Column(
@@ -554,35 +445,6 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                 fontWeight: FontWeight.w900,
               ),
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GlassHeaderButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassHeaderButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-            ),
-            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
           ),
         ),
       ),

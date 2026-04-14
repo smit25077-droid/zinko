@@ -58,15 +58,19 @@ class ZinkoFlushbar {
     required Icon icon,
     required Duration duration,
   }) {
-    Flushbar(
-      title: title,
-      message: message,
-      duration: duration,
-      flushbarPosition: FlushbarPosition.TOP,
-      backgroundColor: backgroundColor,
-      icon: icon,
-      borderRadius: BorderRadius.circular(12),
-      margin: const EdgeInsets.all(12),
-    ).show(context);
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!context.mounted) return;
+      
+      Flushbar(
+        title: title,
+        message: message,
+        duration: duration,
+        flushbarPosition: FlushbarPosition.TOP,
+        backgroundColor: backgroundColor,
+        icon: icon,
+        borderRadius: BorderRadius.circular(12),
+        margin: const EdgeInsets.all(12),
+      ).show(context);
+    });
   }
 }

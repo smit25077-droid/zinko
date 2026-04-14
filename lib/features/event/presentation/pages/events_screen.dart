@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zinko_app/widgets/common_appbar.dart';
 import '../../../../widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -34,10 +33,10 @@ class _EventsScreenState extends State<EventsScreen> {
     return ZinkoBackground(
       child: Scaffold(
         backgroundColor: AppColors.transparent,
-        appBar: CommonAppBar(
-          title: 'EVENTS',
-          isBackEnable: false,
-        ),
+        // appBar: CommonAppBar(
+        //   title: 'EVENTS',
+        //   isBackEnable: false,
+        // ),
         body: Column(
           children: [
             // SizedBox(height: 80),

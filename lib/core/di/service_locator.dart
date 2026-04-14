@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -95,7 +96,7 @@ class ServiceLocator {
         sl.registerSingleton<VideoPlayerController>(controller);
       } catch (e) {
         // If it fails, we'll try again in the splash screen or show logo
-        print('DI: Splash video pre-init failed: $e');
+        debugPrint('DI: Splash video pre-init failed: $e');
       }
     }
 

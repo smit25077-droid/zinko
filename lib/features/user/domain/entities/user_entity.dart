@@ -91,4 +91,21 @@ class UserEntity {
 
   bool get isPremium =>
       membership.toLowerCase() == 'pro' || membership.toLowerCase() == 'elite';
+
+  double get completionPercentage {
+    int points = 0;
+    if (name.isNotEmpty) points++;
+    if (email.isNotEmpty) points++;
+    if (phone.isNotEmpty) points++;
+    if (profileImage.isNotEmpty) points++;
+    if (role.isNotEmpty) points++;
+    if (bio.isNotEmpty) points++;
+    if (city.isNotEmpty) points++;
+    if (state.isNotEmpty) points++;
+    if (gender.isNotEmpty) points++;
+    if (birthdate.isNotEmpty) points++;
+    return points / 10;
+  }
+
+  bool get isProfileComplete => completionPercentage >= 1.0;
 }

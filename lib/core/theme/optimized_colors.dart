@@ -84,34 +84,33 @@ class OptimizedColors {
 
   /// Helper method to get the perfect glass surface color
   /// Forced to Dark Mode for consistent Zinko premium aesthetic
+  /// Helper method to get the perfect glass surface color
+  /// Forced to Dark Mode for consistent Zinko premium aesthetic
+  /// Uses Midnight Navy as the deep base
   static Color glassColor(BuildContext context, {bool isSelected = false}) {
     if (isSelected) {
-      return white30; // High contrast frosty white for selection
+      return AppColors.brightBlue.withValues(alpha: 0.3); // Vibrant blue for selection
     }
-    return white12; // Base dark glass level
+    return AppColors.midnightNavy.withValues(alpha: 0.7); // Deep navy base for glass
   }
 
-  // Define black15 for better light mode visibility
-  static const Color black15 = Color(0x26000000);
-
   /// Helper method to get high-definition glass border
-  /// Forced to Dark Mode
+  /// Uses a subtle blue-white mix
   static Color glassBorder(BuildContext context) {
-    return glassBorderLight;
+    return AppColors.brightBlue.withValues(alpha: 0.2);
   }
 
   /// Helper method to get vibrant secondary text color
-  /// Forced to Dark Mode
   static Color secondaryTextColor(BuildContext context) {
     return textSecondaryDark;
   }
 
   /// Helper method to get high-visibility icons
-  /// Forced to Dark Mode
+  /// Uses brand colors for selection
   static Color iconColor(BuildContext context, {bool isSelected = false}) {
     if (isSelected) {
-      return AppColors.white;
+      return AppColors.brightBlue;
     }
-    return white70; // 70% intensity for clear 'inactive' state on dark
+    return white70; 
   }
 }

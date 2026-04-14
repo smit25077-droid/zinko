@@ -19,7 +19,8 @@ class AuthInterceptor extends Interceptor {
       try {
         final userData = UserData.fromJson(json.decode(jsonString));
         if (userData.token.isNotEmpty) {
-          options.headers['Authentication'] = userData.token;
+          final cleanToken = userData.token.trim().replaceAll('"', '');
+          options.headers['Authentication'] = cleanToken;
         }
       } catch (_) {
         // Handle malformed JSON if necessary

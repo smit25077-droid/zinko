@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
+import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
 import '../../features/onboarding/presentation/pages/splash_screen.dart';
 import '../../features/onboarding/presentation/pages/onboarding_screen.dart';
 import '../../features/auth/presentation/pages/login_screen.dart';
@@ -153,6 +154,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const OTPCheckInScreen());
       case CafeMenuScreen.routeName:
         return MaterialPageRoute(builder: (_) => const CafeMenuScreen());
+        case CompleteCafeListScreen.routeName:
+        return MaterialPageRoute(builder: (_) => const CompleteCafeListScreen());
       default:
         final prefs = GetIt.instance<SharedPreferences>();
         final hasToken = prefs.containsKey('CACHED_USER_DATA');

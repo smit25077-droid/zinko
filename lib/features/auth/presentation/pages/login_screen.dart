@@ -13,6 +13,8 @@ import './register_screen.dart';
 import '../../../booking/presentation/pages/home_screen.dart';
 import './login_form_bloc.dart';
 import '../../data/models/auth_requests.dart';
+import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_app_bar.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
@@ -68,7 +70,6 @@ class _LoginContentState extends State<_LoginContent> {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthAuthenticated) {
-          ZinkoFlushbar.showSuccess(context: context, message: "Login Successful");
           Navigator.pushNamedAndRemoveUntil(
             context,
             HomeScreen.routeName,
@@ -81,69 +82,60 @@ class _LoginContentState extends State<_LoginContent> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Stack(
-            children: [
-              Positioned.fill(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/cafe_hotel_bg.png'),
-                      fit: BoxFit.cover,
-                      opacity: 0.5,
+        child: ZinkoBackground(
+          child: Scaffold(
+            resizeToAvoidBottomInset: false,
+            backgroundColor: Colors.transparent,
+            appBar: const ZinkoAppBar(
+              title: 'Login',
+              showBackButton: true,
+            ),
+            body: SafeArea(
+              child: Center(
+                child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 20),
+                        Column(
+                          children: [
+                            const Text(
+                              'Welcome to Zinko',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 34,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.5,
+                                shadows: [
+                                  Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
+                                ],
+                              ),
+                            ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Login to continue your journey',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ).animate(delay: 200.ms).fadeIn(),
+                          ],
+                        ),
+                        const SizedBox(height: 48),
+                        _buildGlassContainer(context),
+                        const SizedBox(height: 32),
+                        const _SignupFooter(),
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   ),
                 ),
               ),
-              SafeArea(
-                child: Center(
-                  child: SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 20),
-                          Column(
-                            children: [
-                              const Text(
-                                'Welcome to Zinko',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 34,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
-                                  shadows: [
-                                    Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
-                                  ],
-                                ),
-                              ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Login to continue your journey',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ).animate(delay: 200.ms).fadeIn(),
-                            ],
-                          ),
-                          const SizedBox(height: 48),
-                          _buildGlassContainer(context),
-                          const SizedBox(height: 32),
-                          const _SignupFooter(),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

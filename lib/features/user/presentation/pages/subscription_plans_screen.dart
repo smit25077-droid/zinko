@@ -8,6 +8,7 @@ import '../bloc/user_state.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_app_bar.dart';
 import '../../../../widgets/zinko_success_overlay.dart';
 import '../../../../core/routes/app_router.dart';
 
@@ -27,31 +28,14 @@ class SubscriptionPlansScreen extends StatelessWidget {
           _showSuccessDialog(context, state.plan);
         }
       },
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _GlassAppBarButton(
-              icon: Icons.arrow_back_ios_new_rounded,
-              onTap: () => Navigator.pop(context),
-            ),
+      child: ZinkoBackground(
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: AppColors.transparent,
+          appBar: const ZinkoAppBar(
+            title: 'Membership',
           ),
-          title: Text(
-            'MEMBERSHIP',
-            style: TextStyle(
-              color: GlassTheme.textColor(context),
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
-              letterSpacing: 2.0,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: ZinkoBackground(
-          child: SafeArea(
+          body: SafeArea(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(20, 20, 20, 60),
@@ -315,32 +299,4 @@ class _SubscriptionCard extends StatelessWidget {
   }
 }
 
-class _GlassAppBarButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassAppBarButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-            ),
-            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
-          ),
-        ),
-      ),
-    );
-  }
-}
 

@@ -10,6 +10,7 @@ abstract class UserRepository {
     required String phone,
     required String role,
     required String bio,
+    required int userCode,
     String? profileImage,
     String? membership,
     bool? isEmailVerified,

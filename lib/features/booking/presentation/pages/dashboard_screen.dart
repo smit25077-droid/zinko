@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 import '../../domain/entities/workspace_entity.dart';
 import '../bloc/workspace_bloc.dart';
 import '../bloc/workspace_event.dart';
@@ -19,6 +20,8 @@ import '../../../../features/cafe/presentation/bloc/cafe_bloc.dart';
 import '../../../../features/cafe/presentation/bloc/cafe_event.dart';
 import '../../../../features/cafe/presentation/bloc/cafe_state.dart';
 import '../../../../features/cafe/data/mappers/cafe_mapper.dart';
+import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_empty_state.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -42,7 +45,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(GetUserProfileEvent());
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserInitial || userState is UserError) {
+      context.read<UserBloc>().add(GetUserProfileEvent());
+    }
     context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
     context.read<CafeBloc>().add(const SearchCafesEvent(keyword: ''));
   }
@@ -65,175 +71,155 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.transparent, 
-      extendBodyBehindAppBar: true,
-      body: SafeArea(
-        child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
-          builder: (context, state) {
-            if (state is WorkspaceLoading) return const _DashboardShimmer();
+    return ZinkoBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        body: SafeArea(
+          child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
+            buildWhen: (p, c) => c is WorkspaceLoading || c is WorkspaceLoaded || c is WorkspaceError,
+            builder: (context, state) {
+              if (state is WorkspaceLoading) return const _DashboardShimmer();
 
-            final workspaces = state is WorkspaceLoaded
-                ? state.workspaces
-                : <WorkspaceEntity>[];
-            final selectedCategory =
-                state is WorkspaceLoaded ? state.selectedCategory : 'All';
-            final bool isMainError = state is WorkspaceError ||
-                (state is WorkspaceLoaded && workspaces.isEmpty);
+              final workspaces = state is WorkspaceLoaded ? state.workspaces : <WorkspaceEntity>[];
+              final selectedCategory = state is WorkspaceLoaded ? state.selectedCategory : 'All';
+              final bool isMainError = state is WorkspaceError || (state is WorkspaceLoaded && workspaces.isEmpty);
 
-            return RefreshIndicator(
-              onRefresh: _onRefresh,
-              color: Colors.white,
-              backgroundColor: Colors.black87,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: RepaintBoundary(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const _TopBar()
-                          .animate()
-                          .fadeIn(duration: 500.ms),
-                      const SizedBox(height: 4),
-                      const _Title()
-                          .animate()
-                          .fadeIn(duration: 500.ms, delay: 100.ms),
-                      const SizedBox(height: 8),
-                      _SectionHeader(title: 'RECOMMENDED', onSeeAll: _goSeeAll)
-                          .animate()
-                          .fadeIn(duration: 500.ms, delay: 200.ms),
-                      BlocBuilder<CafeBloc, CafeState>(
+              return RefreshIndicator(
+                onRefresh: _onRefresh,
+                color: AppColors.primary,
+                backgroundColor: GlassTheme.glassColor(context),
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+                  slivers: [
+                    const SliverToBoxAdapter(child: _TopBar()),
+                    const SliverToBoxAdapter(child: SizedBox(height: 4)),
+                    const SliverToBoxAdapter(child: _Title()),
+                    const SliverToBoxAdapter(child: SizedBox(height: 8)),
+                    
+                    SliverToBoxAdapter(
+                      child: _SectionHeader(title: 'RECOMMENDED', onSeeAll: _goSeeAll),
+                    ),
+                    SliverToBoxAdapter(
+                      child: BlocBuilder<CafeBloc, CafeState>(
                         builder: (context, cafeState) {
-                          if (cafeState is CafeLoading) {
-                            return const _HorizontalShimmer();
-                          }
-
+                          if (cafeState is CafeLoading) return const _HorizontalShimmer();
                           if (cafeState is CafeLoaded) {
                             if (cafeState.cafes.isEmpty) {
-                              return const _EmptyView(
-                                  message: 'No recommended cafes found');
+                              return const ZinkoEmptyState(
+                                title: 'No Recommendations',
+                                message: 'Check back later for curated picks.',
+                                icon: Icons.straighten_outlined,
+                              );
                             }
-                            final recommended = cafeState.cafes
-                                .map((c) => CafeMapper.toWorkspaceEntity(c))
-                                .toList();
+                            final recommended = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
                             return _RecommendedList(
                               workspaces: recommended,
-                              onFavTap: (id) => context
-                                  .read<WorkspaceBloc>()
-                                  .add(ToggleFavoriteWorkspaceEvent(id)),
+                              onFavTap: (id) => context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(id)),
                             );
                           }
-
-                          if (cafeState is CafeError) {
-                            return const _EmptyView(
-                                message: 'No cafes available right now');
-                          }
-
                           return const _HorizontalShimmer();
                         },
-                      )
-                          .animate()
-                          .fadeIn(duration: 500.ms, delay: 400.ms),
-                      _CategoryChips(
+                      ),
+                    ),
+
+                    SliverToBoxAdapter(
+                      child: _CategoryChips(
                         categories: _categories,
                         selected: selectedCategory,
                         onSelect: (cat) {
-                          context
-                              .read<WorkspaceBloc>()
-                              .add(FilterWorkspacesByCategoryEvent(cat));
+                          context.read<WorkspaceBloc>().add(FilterWorkspacesByCategoryEvent(cat));
                           if (cat == 'Cafes' || cat == 'All') {
-                            context
-                                .read<CafeBloc>()
-                                .add(const SearchCafesEvent(keyword: ''));
+                            context.read<CafeBloc>().add(const SearchCafesEvent(keyword: ''));
                           }
                         },
-                      ).animate().fadeIn(duration: 500.ms, delay: 500.ms),
-                      _SectionHeader(title: 'NEARBY PLACES', onSeeAll: _goSeeAll)
-                          .animate()
-                          .fadeIn(duration: 500.ms, delay: 600.ms),
-                      const SizedBox(height: 4),
-                      if (selectedCategory == 'Cafes' ||
-                          selectedCategory == 'All')
-                        BlocBuilder<CafeBloc, CafeState>(
-                          builder: (context, cafeState) {
-                            if (cafeState is CafeLoading) {
-                              return const _VerticalShimmer();
-                            }
+                      ),
+                    ),
 
-                            if (cafeState is CafeLoaded) {
-                              if (cafeState.cafes.isEmpty) {
-                                return const _EmptyView(
-                                    message: 'No cafes nearby');
-                              }
+                    SliverToBoxAdapter(
+                      child: _SectionHeader(title: 'NEARBY PLACES', onSeeAll: _goSeeAll),
+                    ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 4)),
 
-                              final cafes = cafeState.cafes
-                                  .map((c) => CafeMapper.toWorkspaceEntity(c))
-                                  .toList();
-                              return _NearbyList(nearby: cafes);
-                            } else if (cafeState is CafeError) {
-                              return const _EmptyView(
-                                  message: 'No cafes found nearby');
+                    if (selectedCategory == 'Cafes' || selectedCategory == 'All')
+                      BlocBuilder<CafeBloc, CafeState>(
+                        builder: (context, cafeState) {
+                          if (cafeState is CafeLoading) return const SliverToBoxAdapter(child: _VerticalShimmer());
+                          if (cafeState is CafeLoaded) {
+                            if (cafeState.cafes.isEmpty) {
+                              return const SliverFillRemaining(
+                                hasScrollBody: false,
+                                child: ZinkoEmptyState(
+                                  title: 'No Cafes Nearby',
+                                  message: 'Try exploring another category.',
+                                ),
+                              );
                             }
-                            return const _VerticalShimmer();
-                          },
-                        )
-                      else if (isMainError)
-                        const _EmptyView(
-                          message: 'No workspaces found',
-                        )
-                      else ...[
-                        _NearbyList(
-                          nearby: workspaces
-                              .where((w) => w.type.name.toLowerCase().startsWith(
-                                  selectedCategory.toLowerCase().substring(0, 3)))
-                              .toList(),
+                            final cafes = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
+                            return _SliverNearbyList(nearby: cafes);
+                          }
+                          return const SliverToBoxAdapter(child: _VerticalShimmer());
+                        },
+                      )
+                    else if (isMainError)
+                      const SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: ZinkoEmptyState(
+                          title: 'Nothing Found',
+                          message: 'No workspaces currently match your criteria.',
                         ),
-                      ],
-                      if (_isLoadingMore)
-                        const Padding(
+                      )
+                    else
+                      _SliverNearbyList(
+                        nearby: workspaces
+                            .where((w) => w.type.name.toLowerCase().startsWith(
+                                selectedCategory.toLowerCase().substring(0, 3)))
+                            .toList(),
+                      ),
+
+                    if (_isLoadingMore)
+                      const SliverToBoxAdapter(
+                        child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 24),
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.white,
-                            ),
-                          ),
+                          child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white)),
                         ),
-                      const SizedBox(height: 100),
-                    ],
-                  ),
+                      ),
+                    const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                  ],
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
   }
 }
 
-class _NearbyList extends StatelessWidget {
+class _SliverNearbyList extends StatelessWidget {
   final List<WorkspaceEntity> nearby;
 
-  const _NearbyList({required this.nearby});
+  const _SliverNearbyList({required this.nearby});
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: nearby.length > 8 ? 8 : nearby.length,
-      itemBuilder: (context, index) {
-        final w = nearby[index];
-        return _NearbyCard(
-          workspace: w,
-          onFavTap: () => context
-              .read<WorkspaceBloc>()
-              .add(ToggleFavoriteWorkspaceEvent(w.id)),
-        ).animate().fadeIn(delay: (index * 50).ms); 
-      },
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
+            final w = nearby[index];
+            return _NearbyCard(
+              workspace: w,
+              onFavTap: () => context
+                  .read<WorkspaceBloc>()
+                  .add(ToggleFavoriteWorkspaceEvent(w.id)),
+            ).animate().fadeIn(delay: (index * 30).ms); 
+          },
+          childCount: nearby.length > 8 ? 8 : nearby.length,
+        ),
+      ),
     );
   }
 }
@@ -266,7 +252,13 @@ class _TopBar extends StatelessWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       border: Border.all(
-                          color: GlassTheme.glassBorder(context), width: 1.5),
+                          color: AppColors.brightBlue.withValues(alpha: 0.5), width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.brightBlue.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                        )
+                      ],
                     ),
                     child: profileImage.isNotEmpty
                         ? ZinkoNetworkImage(
@@ -277,9 +269,12 @@ class _TopBar extends StatelessWidget {
                             fit: BoxFit.cover,
                           )
                         : Container(
-                            color: GlassTheme.glassColor(context),
-                            child: Icon(Icons.person,
-                                color: GlassTheme.textColor(context))),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.midnightNavy,
+                            ),
+                            child: const Icon(Icons.person,
+                                color: AppColors.white)),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -323,17 +318,14 @@ class _GlassIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return ZinkoCommonCard(
+      width: 44,
+      height: 44,
+      borderRadius: 14,
+      padding: EdgeInsets.zero,
       onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: GlassTheme.glassColor(context).withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: GlassTheme.glassBorder(context)),
-        ),
-        child: Icon(icon, color: GlassTheme.textColor(context), size: 22),
+      child: Center(
+        child: Icon(icon, color: AppColors.white, size: 22),
       ),
     );
   }
@@ -410,97 +402,93 @@ class _RecommendedList extends StatelessWidget {
         itemCount: workspaces.length,
         itemBuilder: (_, i) {
           final w = workspaces[i];
-          return GestureDetector(
+          return ZinkoCommonCard(
+            width: 280,
+            margin: const EdgeInsets.only(right: 20),
+            padding: EdgeInsets.zero,
             onTap: () => Navigator.pushNamed(
                 context, WorkspaceDetailScreen.routeName,
                 arguments: w),
-            child: Container(
-              width: 280,
-              margin: const EdgeInsets.only(right: 20),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(28),
-                child: Stack(
-                  children: [
-                    ZinkoNetworkImage(
-                        imageUrl: w.imageUrl,
-                        width: 280,
-                        height: double.infinity,
-                        borderRadius: 28),
-                    Positioned.fill(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            stops: const [0.4, 1.0],
-                            colors: [
-                              AppColors.transparent,
-                              AppColors.black.withValues(alpha: 0.85)
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 16,
-                      left: 16,
-                      child: w.discount != null
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                  color: AppColors.error,
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Text(w.discount!,
-                                  style: const TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900)),
-                            )
-                          : const SizedBox(),
-                    ),
-                    Positioned(
-                      bottom: 20,
-                      left: 20,
-                      right: 20,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(w.name,
-                              style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900)),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on_rounded,
-                                  color: OptimizedColors.white70, size: 12),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                  child: Text(w.location,
-                                      style: const TextStyle(
-                                          color: OptimizedColors.white70,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w600),
-                                      overflow: TextOverflow.ellipsis)),
-                              const SizedBox(width: 8),
-                              const Icon(Icons.star_rounded,
-                                  color: AppColors.gold, size: 14),
-                              const SizedBox(width: 4),
-                              Text(w.rating.toStringAsFixed(1),
-                                  style: const TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w800)),
-                            ],
-                          ),
+            child: Stack(
+              children: [
+                ZinkoNetworkImage(
+                    imageUrl: w.imageUrl,
+                    width: 280,
+                    height: double.infinity,
+                    borderRadius: 24),
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.4, 1.0],
+                        colors: [
+                          AppColors.transparent,
+                          AppColors.midnightNavy.withValues(alpha: 0.9)
                         ],
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: w.discount != null
+                      ? Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                              color: AppColors.error,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: Text(w.discount!,
+                              style: const TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w900)),
+                        )
+                      : const SizedBox(),
+                ),
+                Positioned(
+                  bottom: 20,
+                  left: 20,
+                  right: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(w.name,
+                          style: const TextStyle(
+                              color: AppColors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900)),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on_rounded,
+                              color: AppColors.white.withValues(alpha: 0.7), size: 12),
+                          const SizedBox(width: 4),
+                          Expanded(
+                              child: Text(w.location,
+                                  style: TextStyle(
+                                      color: AppColors.white.withValues(alpha: 0.7),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600),
+                                  overflow: TextOverflow.ellipsis)),
+                          const SizedBox(width: 8),
+                          const Icon(Icons.star_rounded,
+                              color: AppColors.gold, size: 14),
+                          const SizedBox(width: 4),
+                          Text(w.rating.toStringAsFixed(1),
+                              style: const TextStyle(
+                                  color: AppColors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           );
         },
@@ -533,7 +521,6 @@ class _CategoryChips extends StatelessWidget {
           itemBuilder: (_, i) {
             final cat = categories[i];
             final isSelected = cat == selected;
-            final isDark = Theme.of(context).brightness == Brightness.dark;
 
             return GestureDetector(
               onTap: () => onSelect(cat),
@@ -543,13 +530,13 @@ class _CategoryChips extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? (isDark ? AppColors.white : AppColors.black)
-                      : GlassTheme.glassColor(context),
+                      ? AppColors.brightBlue
+                      : AppColors.midnightNavy.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                       color: isSelected
-                          ? (isDark ? AppColors.white : AppColors.black)
-                          : GlassTheme.glassBorder(context)),
+                          ? AppColors.brightBlue
+                          : Colors.white.withValues(alpha: 0.1)),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -558,8 +545,8 @@ class _CategoryChips extends StatelessWidget {
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
                       color: isSelected
-                          ? (isDark ? AppColors.black : AppColors.white)
-                          : GlassTheme.secondaryTextColor(context),
+                          ? AppColors.white
+                          : AppColors.white.withValues(alpha: 0.5),
                       letterSpacing: 0.5),
                 ),
               ),
@@ -579,135 +566,129 @@ class _NearbyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return ZinkoCommonCard(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.zero,
       onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName,
           arguments: workspace),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: GlassTheme.glassColor(context).withValues(alpha: 0.2), 
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: GlassTheme.glassBorder(context)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 140,
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(24)),
-                    child: ZinkoNetworkImage(
-                        imageUrl: workspace.imageUrl,
-                        width: double.infinity,
-                        height: 140,
-                        fit: BoxFit.cover),
-                  ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 140,
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(24)),
+                  child: ZinkoNetworkImage(
+                      imageUrl: workspace.imageUrl,
+                      width: double.infinity,
+                      height: 140,
+                      fit: BoxFit.cover),
+                ),
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  child: _GlassFavButton(
+                      isFavorite: workspace.isFavorite, onTap: onFavTap),
+                ),
+                if (workspace.isBooked)
                   Positioned(
                     top: 12,
-                    right: 12,
-                    child: _GlassFavButton(
-                        isFavorite: workspace.isFavorite, onTap: onFavTap),
-                  ),
-                  if (workspace.isBooked)
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                            color: AppColors.success.withValues(alpha: 0.8),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: const Text('BOOKED',
-                            style: TextStyle(
-                                color: AppColors.white,
-                                fontSize: 9,
-                                fontWeight: FontWeight.w900)),
-                      ),
+                    left: 12,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                          color: AppColors.success.withValues(alpha: 0.8),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: const Text('BOOKED',
+                          style: TextStyle(
+                              color: AppColors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900)),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (workspace.price.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(workspace.name,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w900,
-                                  color: GlassTheme.textColor(context),
-                                  letterSpacing: -0.5),
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                        Flexible(
-                          child: Text(
-                              '${workspace.price}${workspace.priceUnit}',
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w900,
-                                  color: GlassTheme.textColor(context)),
-                              overflow: TextOverflow.ellipsis),
-                        ),
-                      ],
-                    )
-                  else
-                    Text(workspace.name,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: GlassTheme.textColor(context),
-                            letterSpacing: -0.5),
-                        overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 6),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (workspace.price.isNotEmpty)
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.location_on_rounded,
-                          size: 12, color: OptimizedColors.white70),
-                      const SizedBox(width: 4),
                       Expanded(
-                        child: Text(
-                            '${workspace.location}${workspace.distance.isNotEmpty ? ' • ${workspace.distance}' : ''}',
+                        child: Text(workspace.name,
                             style: const TextStyle(
-                                fontSize: 13,
-                                color: OptimizedColors.white70,
-                                fontWeight: FontWeight.w600),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1),
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.white,
+                                letterSpacing: -0.5),
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      Flexible(
+                        child: Text(
+                            '${workspace.price}${workspace.priceUnit}',
+                            style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.brightBlue),
+                            overflow: TextOverflow.ellipsis),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: workspace.amenities.take(4).map((icon) {
-                      return Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                            color: GlassTheme.glassColor(context).withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8)),
-                        child: Icon(icon,
-                            size: 14, color: OptimizedColors.white80),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
+                  )
+                else
+                  Text(workspace.name,
+                      style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.white,
+                          letterSpacing: -0.5),
+                      overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    const Icon(Icons.location_on_rounded,
+                        size: 12, color: OptimizedColors.white70),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                          '${workspace.location}${workspace.distance.isNotEmpty ? ' • ${workspace.distance}' : ''}',
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: OptimizedColors.white70,
+                              fontWeight: FontWeight.w600),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: workspace.amenities.take(4).map((icon) {
+                    return Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                          color: AppColors.brightBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8)),
+                      child: Icon(icon,
+                          size: 14, color: AppColors.brightBlue),
+                    );
+                  }).toList(),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    ).animate().fadeIn();
+    );
   }
 }
 
@@ -745,35 +726,6 @@ class _GlassFavButton extends StatelessWidget {
   }
 }
 
-class _EmptyView extends StatelessWidget {
-  final String message;
-
-  const _EmptyView({required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(40),
-        child: Column(
-          children: [
-            Icon(Icons.search_off_rounded,
-                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.5),
-                size: 48),
-            const SizedBox(height: 12),
-            Text(message,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: GlassTheme.secondaryTextColor(context),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600)),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _DashboardShimmer extends StatelessWidget {
   const _DashboardShimmer();
 
@@ -795,60 +747,54 @@ class _DashboardShimmer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _shimmerBox(60, 10, 4),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     _shimmerBox(120, 16, 4),
                   ],
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 32),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _shimmerBox(200, 28, 4),
-                const SizedBox(height: 8),
-                _shimmerBox(150, 28, 4),
-              ],
-            ),
+            child: _shimmerBox(220, 60, 4),
           ),
-          const SizedBox(height: 24),
-          const _HorizontalShimmer(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 40),
+          _shimmerHorizontalList(),
+          const SizedBox(height: 40),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Row(
-              children: [
-                _shimmerBox(60, 34, 12),
-                const SizedBox(width: 10),
-                _shimmerBox(80, 34, 12),
-                const SizedBox(width: 10),
-                _shimmerBox(70, 34, 12),
-              ],
-            ),
+            child: _shimmerBox(double.infinity, 120, 24),
           ),
-          const SizedBox(height: 24),
-          const _VerticalShimmer(),
         ],
       ),
     );
   }
 
-  Widget _shimmerBox(double width, double height, double radius) {
-    return Builder(builder: (context) {
-      return Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: GlassTheme.glassColor(context).withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(radius),
+  Widget _shimmerBox(double w, double h, double r) {
+    return Container(
+      width: w,
+      height: h,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(r),
+      ),
+    ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
+  }
+
+  Widget _shimmerHorizontalList() {
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        itemCount: 3,
+        itemBuilder: (_, __) => Padding(
+          padding: const EdgeInsets.only(right: 20),
+          child: _shimmerBox(280, 200, 24),
         ),
-      ).animate(onPlay: (c) => c.repeat()).shimmer(
-          duration: 1200.ms,
-          color: Colors.white.withValues(alpha: 0.3));
-    });
+      ),
+    );
   }
 }
 
@@ -867,12 +813,10 @@ class _HorizontalShimmer extends StatelessWidget {
           width: 280,
           margin: const EdgeInsets.only(right: 20),
           decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context).withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(28),
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(24),
           ),
-        ).animate(onPlay: (c) => c.repeat()).shimmer(
-            duration: 1200.ms,
-            color: Colors.white.withValues(alpha: 0.3)),
+        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms),
       ),
     );
   }
@@ -883,21 +827,18 @@ class _VerticalShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      itemCount: 3,
-      itemBuilder: (_, __) => Container(
-        height: 240,
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: GlassTheme.glassColor(context).withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(24),
-        ),
-      ).animate(onPlay: (c) => c.repeat()).shimmer(
-          duration: 1200.ms,
-          color: Colors.white.withValues(alpha: 0.3)),
+      child: Column(
+        children: List.generate(3, (index) => Container(
+          height: 180,
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.05),
+            borderRadius: BorderRadius.circular(24),
+          ),
+        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms)),
+      ),
     );
   }
 }
