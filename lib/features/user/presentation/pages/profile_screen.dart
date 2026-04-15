@@ -381,12 +381,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildMenuGrid(BuildContext context) {
     return GridView.count(
       shrinkWrap: true,
-      padding: EdgeInsets.zero,
+      // padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
       mainAxisSpacing: 10,
       crossAxisSpacing: 10,
       childAspectRatio: 1.8,
+
       children: [
         _buildMenuCard(context, 'BOOKINGS', Icons.calendar_today_rounded,
             BookingsScreen.routeName),
@@ -405,20 +406,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ZinkoCommonCard(
       onTap: () => Navigator.pushNamed(context, route),
       padding: EdgeInsets.zero,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: AppColors.brightBlue, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w900,
-                color: AppColors.white,
-                letterSpacing: 1.0),
-          ),
-        ],
+      child: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppColors.brightBlue, size: 24),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              style: const TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  color: AppColors.white,
+                  letterSpacing: 1.0),
+            ),
+          ],
+        ),
       ),
     );
   }

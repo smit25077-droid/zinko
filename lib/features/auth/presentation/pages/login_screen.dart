@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/widgets/zinko_glass_box.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../password_change/presentation/pages/password_change_screen.dart';
@@ -83,57 +84,67 @@ class _LoginContentState extends State<_LoginContent> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: ZinkoBackground(
+          backgroundColor: Colors.black,
+          image: AssetImage('assets/images/cafe_hotel_bg.png'),
           child: Scaffold(
-            resizeToAvoidBottomInset: false,
+            resizeToAvoidBottomInset: true,
             backgroundColor: Colors.transparent,
-            appBar: const ZinkoAppBar(
-              title: 'Login',
-              showBackButton: true,
-            ),
+
+            // appBar: const ZinkoAppBar(
+            //   title: 'Login',
+            //   showBackButton: true,
+            // ),
             body: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  physics: const ClampingScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 20),
-                        Column(
-                          children: [
-                            const Text(
-                              'Welcome to Zinko',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 34,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                                shadows: [
-                                  Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 20),
+                              Column(
+                                children: [
+                                  const Text(
+                                    'Welcome to Zinko',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 34,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: -0.5,
+                                      shadows: [
+                                        Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
+                                      ],
+                                    ),
+                                  ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Login to continue your journey',
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ).animate(delay: 200.ms).fadeIn(),
                                 ],
                               ),
-                            ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Login to continue your journey',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ).animate(delay: 200.ms).fadeIn(),
-                          ],
+                              const SizedBox(height: 48),
+                              _buildGlassContainer(context),
+                              const SizedBox(height: 32),
+                              const _SignupFooter(),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 48),
-                        _buildGlassContainer(context),
-                        const SizedBox(height: 32),
-                        const _SignupFooter(),
-                        const SizedBox(height: 20),
-                      ],
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),
@@ -147,28 +158,9 @@ class _LoginContentState extends State<_LoginContent> {
       builder: (context, formState) {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            return Container(
+            return ZinkoGlassBox(
+              color: Colors.white.withOpacity(0.2),
               padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 30,
-                    spreadRadius: -5,
-                  )
-                ],
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.18),
-                    Colors.white.withValues(alpha: 0.08),
-                  ],
-                ),
-              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -209,22 +201,22 @@ class _LoginContentState extends State<_LoginContent> {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: Checkbox(
-                            value: formState.rememberMe,
-                            onChanged: (v) => context.read<LoginFormBloc>().add(SetRememberMe(v ?? false)),
-                            side: const BorderSide(color: Colors.white70),
-                            activeColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        const Text(
-                          'Remember me',
-                          style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
-                        ),
+                        // SizedBox(
+                        //   height: 24,
+                        //   width: 24,
+                        //   child: Checkbox(
+                        //     value: formState.rememberMe,
+                        //     onChanged: (v) => context.read<LoginFormBloc>().add(SetRememberMe(v ?? false)),
+                        //     side: const BorderSide(color: Colors.white70),
+                        //     activeColor: AppColors.primary,
+                        //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                        //   ),
+                        // ),
+                        // const SizedBox(width: 10),
+                        // const Text(
+                        //   'Remember me',
+                        //   style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w500),
+                        // ),
                         const Spacer(),
                         TextButton(
                           onPressed: () => Navigator.pushNamed(context, PasswordChangeScreen.routeName),
@@ -255,8 +247,8 @@ class _LoginContentState extends State<_LoginContent> {
     return Text(
       label.toUpperCase(),
       style: const TextStyle(
-        color: Colors.white70,
-        fontSize: 11,
+        color: Colors.white,
+        fontSize: 12,
         fontWeight: FontWeight.w800,
         letterSpacing: 1.2,
       ),
@@ -287,6 +279,7 @@ class _ModernTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       validator: validator,
+      scrollPadding: const EdgeInsets.only(bottom: 120),
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,

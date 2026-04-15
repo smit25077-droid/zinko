@@ -4,8 +4,10 @@ import '../core/theme/app_colors.dart';
 class ZinkoBackground extends StatelessWidget {
   final Widget? child;
   final bool showOverlay;
+  final ImageProvider<Object>? image;
+  final Color? backgroundColor;
 
-  const ZinkoBackground({super.key, this.child, this.showOverlay = true});
+  const ZinkoBackground({super.key, this.child, this.showOverlay = true, this.image, this.backgroundColor});
 
   @override
   Widget build(BuildContext context) {
@@ -21,12 +23,12 @@ class ZinkoBackground extends StatelessWidget {
           width: screenSize.width,
           height: screenSize.height,
           child: Container(
-            decoration: const BoxDecoration(
-              color: AppColors.backgroundDark,
+            decoration: BoxDecoration(
+              color: backgroundColor ?? AppColors.backgroundDark,
               image: DecorationImage(
-                image: AssetImage('assets/images/dark_theme_bg.png'),
+                image: image ?? const AssetImage('assets/images/dark_theme_bg.png'),
                 fit: BoxFit.cover,
-                opacity: 0.2,
+                opacity: backgroundColor != null ? 0.7 : 0.3,
                 alignment: Alignment.topCenter,
               ),
             ),

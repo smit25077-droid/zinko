@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
+import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import '../../../../utils/zinko_flushbar.dart';
 import '../../../../widgets/zinko_success_overlay.dart';
 
@@ -106,23 +107,30 @@ class _RegisterContentState extends State<_RegisterContent> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: ZinkoBackground(
+
+          backgroundColor: Colors.black,
+          image: AssetImage('assets/images/cafe_hotel_bg.png'),
           child: Scaffold(
             resizeToAvoidBottomInset: true,
             backgroundColor: Colors.transparent,
-            appBar: const ZinkoAppBar(
-              title: 'Register',
-              showBackButton: true,
-            ),
+            // appBar: const ZinkoAppBar(
+            //   title: 'Register',
+            //   showBackButton: true,
+            // ),
             body: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 50),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 50),
                         Column(
                           children: [
                             const Text(
@@ -158,11 +166,14 @@ class _RegisterContentState extends State<_RegisterContent> {
                         _buildGlassRegisterCard(context),
                         const SizedBox(height: 32),
                         const _LoginFooter(),
-                        const SizedBox(height: 40),
-                      ],
+                              const SizedBox(height: 40),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
           ),
@@ -176,29 +187,9 @@ class _RegisterContentState extends State<_RegisterContent> {
       builder: (context, formState) {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            return Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(28),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: Colors.white.withValues(alpha: 0.2), width: 1.2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.25),
-                    blurRadius: 35,
-                    spreadRadius: -8,
-                  )
-                ],
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.2),
-                    Colors.white.withValues(alpha: 0.08),
-                  ],
-                ),
-              ),
+            return ZinkoGlassBox(
+              color: Colors.white.withOpacity(0.2),
+              padding: const EdgeInsets.all(32),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -316,8 +307,8 @@ class _RegisterContentState extends State<_RegisterContent> {
     return Text(
       label.toUpperCase(),
       style: const TextStyle(
-        color: Colors.white70,
-        fontSize: 11,
+        color: Colors.white,
+        fontSize: 12,
         fontWeight: FontWeight.w800,
         letterSpacing: 1.2,
       ),
@@ -354,6 +345,7 @@ class _ModernTextField extends StatelessWidget {
       validator: validator,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
+      scrollPadding: const EdgeInsets.only(bottom: 120),
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,
@@ -437,7 +429,7 @@ class _LoginFooter extends StatelessWidget {
             'Sign In',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
               decoration: TextDecoration.underline,
             ),
