@@ -17,4 +17,8 @@ class ApiEndpoints {
   static const String changePassword = 'user/change/password';
   static const String sendPasswordResetOtp = 'alert/send/otp/for/password/reset';
   static const String verifyPasswordResetOtp = 'user/password/reset/otp/verification';
+
+  // Wallet endpoints
+  static const String getWalletBalance = 'userwallet/get/balance';
+  static const String getWalletTransactions = 'userwallet/get/transactions';
 }

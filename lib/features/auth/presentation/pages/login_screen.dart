@@ -3,8 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
-
-import '../../../../core/theme/app_colors.dart';
 import '../../../password_change/presentation/pages/password_change_screen.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -15,7 +13,6 @@ import '../../../booking/presentation/pages/home_screen.dart';
 import './login_form_bloc.dart';
 import '../../data/models/auth_requests.dart';
 import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_app_bar.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';

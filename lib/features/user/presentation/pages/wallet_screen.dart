@@ -2,10 +2,12 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_event.dart';
-import '../bloc/user_state.dart';
-import '../../domain/entities/transaction_entity.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import '../../../../features/wallet/presentation/bloc/wallet_bloc.dart';
+import '../../../../features/wallet/presentation/bloc/wallet_event.dart';
+import '../../../../features/wallet/presentation/bloc/wallet_state.dart';
+import '../../../../features/wallet/domain/entities/wallet_transaction.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/optimized_colors.dart';
@@ -25,41 +27,35 @@ class WalletScreen extends StatelessWidget {
         appBar: const ZinkoAppBar(
           title: 'My Wallet',
         ),
-        body: BlocListener<UserBloc, UserState>(
+        body: BlocListener<WalletBloc, WalletState>(
           listener: (context, state) {
-            if (state is UserLoaded) {
+            if (state is WalletLoaded) {
               // We could check for a flag in state, but assuming a load after redeem is success
               // _showStatusPopup(context, 'Success!', isSuccess: true);
             }
-            if (state is UserError) {
+            if (state is WalletError) {
               _showStatusPopup(context, state.message, isSuccess: false);
             }
           },
-          child: BlocBuilder<UserBloc, UserState>(
+          child: BlocBuilder<WalletBloc, WalletState>(
             builder: (context, state) {
-              if (state is UserLoading) {
+              if (state is WalletInitial) {
+                context.read<WalletBloc>().add(FetchWalletDataEvent());
                 return Center(
                     child: CircularProgressIndicator(
                         color: GlassTheme.textColor(context)));
               }
-              if (state is UserError) {
-                context.read<UserBloc>().add(GetUserProfileEvent());
-                // return Center(
-                //   child: Column(
-                //     mainAxisAlignment: MainAxisAlignment.center,
-                //     children: [
-                //       Text(state.message, style: TextStyle(color: GlassTheme.textColor(context))),
-                //       const SizedBox(height: 16),
-                //       TextButton(
-                //         onPressed: () => context.read<UserBloc>().add(GetUserProfileEvent()),
-                //         child: Text('RETRY', style: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w900)),
-                //       )
-                //     ],
-                //   ),
-                // );
+              if (state is WalletLoading) {
+                return Center(
+                    child: CircularProgressIndicator(
+                        color: GlassTheme.textColor(context)));
               }
-              if (state is UserLoaded) {
-                final user = state.user;
+              if (state is WalletError) {
+                // Return an empty state or show standard error UI snippet. Usually we'd show a retry button.
+              }
+              if (state is WalletLoaded) {
+                final balance = state.balance;
+                final transactions = state.transactions;
                 return CustomScrollView(
                   physics: const BouncingScrollPhysics(),
                   slivers: [
@@ -70,7 +66,7 @@ class WalletScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 20),
-                            _buildWalletCard(context, user.balance),
+                            _buildWalletCard(context, balance.balance),
                             const SizedBox(height: 24),
                             Row(
                               children: [
@@ -117,13 +113,13 @@ class WalletScreen extends StatelessWidget {
                       sliver: SliverList(
                         delegate: SliverChildBuilderDelegate(
                           (context, index) {
-                            final tx = user.transactions[index];
+                            final tx = transactions[index];
                             return _buildTransactionItem(context, tx)
                                 .animate()
                                 .fadeIn(delay: (index * 100 + 600).ms)
                                 ;
                           },
-                          childCount: user.transactions.length,
+                          childCount: transactions.length,
                         ),
                       ),
                     ),
@@ -258,7 +254,7 @@ class WalletScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTransactionItem(BuildContext context, TransactionEntity tx) {
+  Widget _buildTransactionItem(BuildContext context, WalletTransaction tx) {
     final isCredit = tx.isCredit;
     return RepaintBoundary(
       child: Container(
@@ -290,13 +286,15 @@ class WalletScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(tx.title,
+                  Text(tx.remark ?? tx.transactionType,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: GlassTheme.textColor(context))),
                   const SizedBox(height: 2),
-                  Text(tx.date,
+                  Text(tx.dateStr,
                       style: TextStyle(
                           fontSize: 11,
                           color: GlassTheme.secondaryTextColor(context)
@@ -504,6 +502,8 @@ class WalletScreen extends StatelessWidget {
       ),
     );
   }
+// NOTE: AddMoneyEvent & RedeemReferralEvent have to be implemented in WalletBloc if needed.
+// Temporarily leaving them pointing nowhere if we removed UserBloc from scope, or you might need to leave UserBloc provided above it.
 }
 
 // class _GlassHeaderButton extends StatelessWidget {

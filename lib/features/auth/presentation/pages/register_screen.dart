@@ -13,7 +13,6 @@ import '../bloc/auth_state.dart';
 import '../../data/models/auth_requests.dart';
 import './register_form_bloc.dart';
 import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_app_bar.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const String routeName = '/register';

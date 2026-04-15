@@ -6,6 +6,7 @@ import 'package:zinko_app/widgets/zinko_background.dart';
 // Core
 import 'core/di/service_locator.dart';
 import 'core/routes/app_router.dart';
+import 'features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'utils/theme_provider.dart';
 import 'providers/app_provider.dart';
 import 'providers/user_provider.dart';
@@ -47,6 +48,7 @@ void main() async {
           BlocProvider(create: (_) => sl<AuthBloc>()..add(CheckAuthStatus())),
           BlocProvider(create: (_) => sl<CafeBloc>()),
           BlocProvider(create: (_) => sl<CreateBookingBloc>()),
+          BlocProvider(create: (_) => sl<WalletBloc>()),
         ],
         child: const MyApp(),
       ),

@@ -74,6 +74,14 @@ import '../../features/password_change/domain/repositories/password_change_repos
 import '../../features/password_change/domain/usecases/password_change_usecases.dart';
 import '../../features/password_change/presentation/bloc/password_change_bloc.dart';
 
+// Wallet imports
+import '../../features/wallet/data/datasources/wallet_remote_data_source.dart';
+import '../../features/wallet/data/repositories/wallet_repository_impl.dart';
+import '../../features/wallet/domain/repositories/wallet_repository.dart';
+import '../../features/wallet/domain/usecases/get_wallet_balance.dart';
+import '../../features/wallet/domain/usecases/get_wallet_transactions.dart';
+import '../../features/wallet/presentation/bloc/wallet_bloc.dart';
+
 final sl = GetIt.instance;
 
 class ServiceLocator {
@@ -340,6 +348,25 @@ class ServiceLocator {
     );
     sl.registerLazySingleton<PasswordChangeRemoteDataSource>(
       () => PasswordChangeRemoteDataSourceImpl(client: sl()),
+    );
+
+    //! Features - Wallet
+    sl.registerFactory(
+      () => WalletBloc(
+        getWalletBalance: sl(),
+        getWalletTransactions: sl(),
+      ),
+    );
+    sl.registerLazySingleton(() => GetWalletBalance(sl()));
+    sl.registerLazySingleton(() => GetWalletTransactions(sl()));
+    sl.registerLazySingleton<WalletRepository>(
+      () => WalletRepositoryImpl(remoteDataSource: sl()),
+    );
+    sl.registerLazySingleton<WalletRemoteDataSource>(
+      () => WalletRemoteDataSourceImpl(
+        client: sl(),
+        sharedPreferences: sl(),
+      ),
     );
   }
 }
