@@ -4,15 +4,16 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
-import '../../../../features/wallet/presentation/bloc/wallet_bloc.dart';
-import '../../../../features/wallet/presentation/bloc/wallet_event.dart';
-import '../../../../features/wallet/presentation/bloc/wallet_state.dart';
-import '../../../../features/wallet/domain/entities/wallet_transaction.dart';
+import '../bloc/wallet_bloc.dart';
+import '../bloc/wallet_event.dart';
+import '../bloc/wallet_state.dart';
+import '../../domain/entities/wallet_transaction.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_app_bar.dart';
+import '../../../../core/di/service_locator.dart';
 
 class WalletScreen extends StatelessWidget {
   static const String routeName = '/wallet';
@@ -20,8 +21,10 @@ class WalletScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ZinkoBackground(
-      child: Scaffold(
+    return BlocProvider(
+      create: (_) => sl<WalletBloc>(),
+      child: ZinkoBackground(
+        child: Scaffold(
         extendBodyBehindAppBar: true,
         backgroundColor: AppColors.transparent,
         appBar: const ZinkoAppBar(
@@ -133,6 +136,7 @@ class WalletScreen extends StatelessWidget {
             },
           ),
         ),
+      ),
       ),
     );
   }

@@ -24,13 +24,13 @@ class WalletTransaction extends Equatable {
   String get dateStr =>
       "\${transactionDate.day.toString().padLeft(2, '0')} \${_getMonth(transactionDate.month)} \${transactionDate.year}";
 
-  String _getMonth(int month) {
-    const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return months[month - 1];
-  }
+  // String _getMonth(int month) {
+  //   const months = [
+  //     'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+  //     'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+  //   ];
+  //   return months[month - 1];
+  // }
 
   @override
   List<Object?> get props => [

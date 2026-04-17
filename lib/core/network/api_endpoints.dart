@@ -21,4 +21,9 @@ class ApiEndpoints {
   // Wallet endpoints
   static const String getWalletBalance = 'userwallet/get/balance';
   static const String getWalletTransactions = 'userwallet/get/transactions';
+
+  // Cafe interaction endpoints
+  static const String addReview = 'cafe/review';
+  static const String addSuggestion = 'cafe/add/suggestion';
+  static String getCafeReviews(int cafeId) => 'cafe/get/review/$cafeId';
 }

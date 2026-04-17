@@ -42,6 +42,7 @@ import '../../features/booking/presentation/bloc/workspace_bloc.dart';
 import '../../features/booking/domain/usecases/create_booking.dart';
 import '../../features/booking/domain/usecases/get_workspaces.dart';
 import '../../features/booking/domain/usecases/search_workspaces.dart';
+import '../../features/booking/domain/usecases/watch_workspaces.dart';
 import '../../features/booking/domain/repositories/workspace_repository.dart';
 import '../../features/booking/data/repositories/workspace_repository_impl.dart';
 import '../../features/booking/data/datasources/workspace_local_data_source.dart';
@@ -81,6 +82,15 @@ import '../../features/wallet/domain/repositories/wallet_repository.dart';
 import '../../features/wallet/domain/usecases/get_wallet_balance.dart';
 import '../../features/wallet/domain/usecases/get_wallet_transactions.dart';
 import '../../features/wallet/presentation/bloc/wallet_bloc.dart';
+
+// Feedback imports
+import '../../features/feedback/data/datasources/feedback_remote_data_source.dart';
+import '../../features/feedback/data/repositories/feedback_repository_impl.dart';
+import '../../features/feedback/domain/repositories/feedback_repository.dart';
+import '../../features/feedback/domain/usecases/get_cafe_reviews.dart';
+import '../../features/feedback/domain/usecases/submit_review.dart';
+import '../../features/feedback/domain/usecases/submit_suggestion.dart';
+import '../../features/feedback/presentation/bloc/feedback_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -174,6 +184,7 @@ class ServiceLocator {
     sl.registerLazySingleton(() => CompleteBooking(sl()));
     sl.registerLazySingleton(() => GetWorkspaces(sl()));
     sl.registerLazySingleton(() => SearchWorkspaces(sl()));
+    sl.registerLazySingleton(() => WatchWorkspaces(sl()));
     sl.registerLazySingleton(() => CreateBookingUseCase(sl()));
 
     // BLoC
@@ -193,6 +204,7 @@ class ServiceLocator {
       () => WorkspaceBloc(
         getWorkspaces: sl(),
         searchWorkspaces: sl(),
+        watchWorkspaces: sl(),
         repository: sl(),
       ),
     );
@@ -367,6 +379,24 @@ class ServiceLocator {
         client: sl(),
         sharedPreferences: sl(),
       ),
+    );
+
+    //! Features - Feedback
+    sl.registerFactory(
+      () => FeedbackBloc(
+        getCafeReviews: sl(),
+        submitReview: sl(),
+        submitSuggestion: sl(),
+      ),
+    );
+    sl.registerLazySingleton(() => GetCafeReviews(sl()));
+    sl.registerLazySingleton(() => SubmitReview(sl()));
+    sl.registerLazySingleton(() => SubmitSuggestion(sl()));
+    sl.registerLazySingleton<FeedbackRepository>(
+      () => FeedbackRepositoryImpl(remoteDataSource: sl()),
+    );
+    sl.registerLazySingleton<FeedbackRemoteDataSource>(
+      () => FeedbackRemoteDataSourceImpl(client: sl(), sharedPreferences: sl()),
     );
   }
 }

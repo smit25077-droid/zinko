@@ -10,18 +10,33 @@ import '../../../../widgets/zinko_network_image.dart';
 import 'call_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../core/di/service_locator.dart';
 
-class ChatScreen extends StatefulWidget {
+class ChatScreen extends StatelessWidget {
   static const String routeName = '/chat';
   final ZinkoChat chat;
 
   const ChatScreen({super.key, required this.chat});
 
   @override
-  State<ChatScreen> createState() => _ChatScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<ChatBloc>(),
+      child: _ChatScreenContent(chat: chat),
+    );
+  }
 }
 
-class _ChatScreenState extends State<ChatScreen> {
+class _ChatScreenContent extends StatefulWidget {
+  final ZinkoChat chat;
+
+  const _ChatScreenContent({required this.chat});
+
+  @override
+  State<_ChatScreenContent> createState() => _ChatScreenContentState();
+}
+
+class _ChatScreenContentState extends State<_ChatScreenContent> {
   final TextEditingController _messageController = TextEditingController();
 
   @override

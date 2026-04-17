@@ -6,27 +6,17 @@ class WorkspaceModel extends WorkspaceEntity {
     required super.id,
     required super.name,
     required super.location,
-    required super.distance,
-    required super.rating,
     required super.price,
-    required super.priceUnit,
     required super.imageUrl,
     required super.images,
     required super.amenities,
     required super.amenityNames,
-    required super.perkTags,
     required super.description,
     super.phone = '',
     super.email = '',
     required super.tablesLeft,
     required super.totalSlots,
-    super.discount,
-    super.discountDesc,
-    super.promoCode,
-    super.type,
-    super.isFavorite,
-    super.isBookmarked,
-    super.isBooked,
+    super.isFavorite = false,
     super.lat,
     super.lng,
     super.reviews,
@@ -57,10 +47,7 @@ class WorkspaceModel extends WorkspaceEntity {
       id: json['cafe_id'].toString(),
       name: json['cafe_name'] ?? 'Unknown Cafe',
       location: json['address'] ?? '',
-      distance: '',
-      rating: 0.0,
-      price: '',
-      priceUnit: '',
+      price: json['hour_rate']?.toString() ?? '0',
       imageUrl: firstImageUrl,
       images: imagesList.isEmpty ? [firstImageUrl] : imagesList,
       amenities: amenitiesJson.map((a) {
@@ -74,7 +61,6 @@ class WorkspaceModel extends WorkspaceEntity {
       amenityNames: amenitiesJson
           .map((a) => a['amenities_name']?.toString() ?? '')
           .toList(),
-      perkTags: const [],
       description: json['description'] ?? '',
       phone: json['phone_no']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
@@ -84,8 +70,12 @@ class WorkspaceModel extends WorkspaceEntity {
               w['is_active'] == '1'))
           .length,
       totalSlots: (json['cafe_work_space'] as List? ?? []).length,
+      isFavorite: json['is_wishlist'] == true || json['is_wishlist'] == 1,
       lat: double.tryParse(json['latitude']?.toString() ?? '0') ?? 0.0,
       lng: double.tryParse(json['longitude']?.toString() ?? '0') ?? 0.0,
+      reviews: (json['cafe_reviews'] as List? ?? [])
+          .map((r) => WorkspaceReviewModel.fromJson(r))
+          .toList(),
       cafeTimeSlots: (json['cafe_time_slots'] as List? ?? [])
           .map((s) => CafeTimeSlotModel.fromJson(s))
           .toList(),
@@ -103,27 +93,17 @@ class WorkspaceModel extends WorkspaceEntity {
       id: entity.id,
       name: entity.name,
       location: entity.location,
-      distance: entity.distance,
-      rating: entity.rating,
       price: entity.price,
-      priceUnit: entity.priceUnit,
       imageUrl: entity.imageUrl,
       images: entity.images,
       amenities: entity.amenities,
       amenityNames: entity.amenityNames,
-      perkTags: entity.perkTags,
       description: entity.description,
       phone: entity.phone,
       email: entity.email,
       tablesLeft: entity.tablesLeft,
       totalSlots: entity.totalSlots,
-      discount: entity.discount,
-      discountDesc: entity.discountDesc,
-      promoCode: entity.promoCode,
-      type: entity.type,
       isFavorite: entity.isFavorite,
-      isBookmarked: entity.isBookmarked,
-      isBooked: entity.isBooked,
       lat: entity.lat,
       lng: entity.lng,
       reviews: entity.reviews,
@@ -132,6 +112,27 @@ class WorkspaceModel extends WorkspaceEntity {
     );
   }
 }
+
+class WorkspaceReviewModel extends WorkspaceReviewEntity {
+  const WorkspaceReviewModel({
+    required super.userName,
+    required super.avatarUrl,
+    required super.rating,
+    required super.comment,
+    required super.date,
+  });
+
+  factory WorkspaceReviewModel.fromJson(Map<String, dynamic> json) {
+    return WorkspaceReviewModel(
+      userName: json['user_name'] ?? 'Anonymous',
+      avatarUrl: 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(json['user_name'] ?? 'A')}&background=random',
+      rating: double.tryParse(json['review_star']?.toString() ?? '0') ?? 0.0,
+      comment: json['review_text'] ?? '',
+      date: json['review_date'] ?? '',
+    );
+  }
+}
+
 
 class CafeTimeSlotModel extends CafeTimeSlot {
   const CafeTimeSlotModel({

@@ -8,10 +8,7 @@ class CafeMapper {
       id: cafe.cafeId.toString(),
       name: cafe.cafeName,
       location: cafe.address,
-      distance: '',
-      rating: 0.0,
       price: cafe.hourRate.toStringAsFixed(0),
-      priceUnit: '/hr',
       imageUrl: cafe.images.isNotEmpty
           ? cafe.images.first.filePath
           : 'https://images.unsplash.com/photo-1554118811-1e0d58224f24',
@@ -22,13 +19,11 @@ class CafeMapper {
           .map((a) => _mapAmenityToIcon(a.amenitiesName))
           .toList(),
       amenityNames: cafe.amenities.map((a) => a.amenitiesName).toList(),
-      perkTags: const [],
       description: cafe.description,
       phone: cafe.phoneNo,
       email: cafe.email,
       tablesLeft: cafe.workspace.where((w) => w.isActive).length,
       totalSlots: cafe.workspace.length,
-      type: booking.WorkspaceType.cafe,
       lat: double.tryParse(cafe.latitude) ?? 0.0,
       lng: double.tryParse(cafe.longitude) ?? 0.0,
       cafeWorkSpaces: cafe.workspace
@@ -52,6 +47,7 @@ class CafeMapper {
               ))
           .toList(),
     );
+
   }
 
   static IconData _mapAmenityToIcon(String name) {

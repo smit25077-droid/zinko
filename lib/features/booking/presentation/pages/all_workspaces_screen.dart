@@ -329,7 +329,6 @@ class _WorkspaceCard extends StatelessWidget {
                                     fontWeight: FontWeight.w900,
                                     color: GlassTheme.textColor(context),
                                     letterSpacing: -0.5))),
-                        _RatingBadge(rating: workspace.rating),
                       ],
                     ),
                     const SizedBox(height: 6),
@@ -340,7 +339,7 @@ class _WorkspaceCard extends StatelessWidget {
                             color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4)),
                         const SizedBox(width: 4),
                         Expanded(
-                          child: Text('${workspace.location} • ${workspace.distance}',
+                          child: Text(workspace.location,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -369,7 +368,7 @@ class _WorkspaceCard extends StatelessWidget {
                               .toList(),
                         ),
                         Text(
-                          '${workspace.price}${workspace.priceUnit}',
+                          '£${workspace.price}',
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
@@ -415,34 +414,7 @@ class _GlassFavButton extends StatelessWidget {
   }
 }
 
-class _RatingBadge extends StatelessWidget {
-  final double rating;
-  const _RatingBadge({required this.rating});
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: GlassTheme.glassColor(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: GlassTheme.glassBorder(context)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.star_rounded, color: Colors.amberAccent, size: 14),
-          const SizedBox(width: 4),
-          Text(
-            rating.toStringAsFixed(1),
-            style: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w800, color: GlassTheme.textColor(context)),
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _GlassHeaderButton extends StatelessWidget {
   final IconData icon;

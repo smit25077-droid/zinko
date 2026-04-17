@@ -17,7 +17,7 @@ import '../bloc/user_event.dart';
 import '../bloc/user_state.dart';
 import 'edit_profile_screen.dart';
 import 'subscription_plans_screen.dart';
-import 'wallet_screen.dart';
+import '../../../wallet/presentation/pages/wallet_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 

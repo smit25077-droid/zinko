@@ -51,14 +51,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     // Filter workspaces
     if (filter == 'All' || filter == 'Cafes' || filter == 'Workspaces') {
       for (final workspace in _workspaces) {
-        final isCafe = workspace.type == WorkspaceType.cafe;
-        if (filter == 'Cafes' && !isCafe) continue;
-        if (filter == 'Workspaces' && isCafe) continue;
-
         try {
           final icon = await _getMarkerIcon(workspace.imageUrl,
-              borderColor:
-                  isCafe ? const Color(0xFFE53935) : const Color(0xFF43A047));
+              borderColor: const Color(0xFF1E88E5));
           newMarkers.add(
             Marker(
               markerId: MarkerId('place_${workspace.id}'),
@@ -70,6 +65,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         } catch (e) {}
       }
     }
+
 
     // Filter people
     if (filter == 'All' || filter == 'People') {

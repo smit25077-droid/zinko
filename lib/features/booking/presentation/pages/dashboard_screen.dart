@@ -34,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final ScrollController _scrollController = ScrollController();
   final bool _isLoadingMore = false;
 
-  final List<String> _categories = const [
+  final List<String> _defaultCategories = const [
     'All',
     'Cafes',
     'Coworking',
@@ -125,14 +125,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
 
                     SliverToBoxAdapter(
-                      child: _CategoryChips(
-                        categories: _categories,
-                        selected: selectedCategory,
-                        onSelect: (cat) {
-                          context.read<WorkspaceBloc>().add(FilterWorkspacesByCategoryEvent(cat));
-                          if (cat == 'Cafes' || cat == 'All') {
-                            context.read<CafeBloc>().add(const SearchCafesEvent(keyword: ''));
+                      child: BlocBuilder<CafeBloc, CafeState>(
+                        builder: (context, cafeState) {
+                          List<String> displayCategories = _defaultCategories;
+                          
+                          if (cafeState is CafeLoaded) {
+                            final dynamicTypes = cafeState.cafes
+                                .map((c) => c.venueType)
+                                .where((t) => t.trim().isNotEmpty)
+                                .toSet()
+                                .toList();
+                                
+                            if (dynamicTypes.isNotEmpty) {
+                              displayCategories = ['All', ...dynamicTypes];
+                            }
                           }
+
+                          return _CategoryChips(
+                            categories: displayCategories,
+                            selected: selectedCategory,
+                            onSelect: (cat) {
+                              context.read<WorkspaceBloc>().add(FilterWorkspacesByCategoryEvent(cat));
+                              if (cat == 'Cafes' || cat == 'All') {
+                                context.read<CafeBloc>().add(const SearchCafesEvent(keyword: ''));
+                              }
+                            },
+                          );
                         },
                       ),
                     ),
@@ -173,8 +191,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     else
                       _SliverNearbyList(
                         nearby: workspaces
-                            .where((w) => w.type.name.toLowerCase().startsWith(
-                                selectedCategory.toLowerCase().substring(0, 3)))
                             .toList(),
                       ),
 
@@ -431,24 +447,7 @@ class _RecommendedList extends StatelessWidget {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: w.discount != null
-                      ? Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              color: AppColors.error,
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Text(w.discount!,
-                              style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900)),
-                        )
-                      : const SizedBox(),
-                ),
+                const SizedBox(),
                 Positioned(
                   bottom: 20,
                   left: 20,
@@ -464,25 +463,22 @@ class _RecommendedList extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.location_on_rounded,
-                              color: AppColors.white.withValues(alpha: 0.7), size: 12),
+                          const Icon(Icons.location_on_rounded,
+                              color: AppColors.white, size: 12),
                           const SizedBox(width: 4),
                           Expanded(
                               child: Text(w.location,
-                                  style: TextStyle(
-                                      color: AppColors.white.withValues(alpha: 0.7),
+                                  style: const TextStyle(
+                                      color: AppColors.white,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600),
                                   overflow: TextOverflow.ellipsis)),
                           const SizedBox(width: 8),
-                          const Icon(Icons.star_rounded,
-                              color: AppColors.gold, size: 14),
-                          const SizedBox(width: 4),
-                          Text(w.rating.toStringAsFixed(1),
+                          Text('£${w.price}',
                               style: const TextStyle(
                                   color: AppColors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w800)),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w900)),
                         ],
                       ),
                     ],
@@ -593,23 +589,7 @@ class _NearbyCard extends StatelessWidget {
                   child: _GlassFavButton(
                       isFavorite: workspace.isFavorite, onTap: onFavTap),
                 ),
-                if (workspace.isBooked)
-                  Positioned(
-                    top: 12,
-                    left: 12,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.8),
-                          borderRadius: BorderRadius.circular(8)),
-                      child: const Text('BOOKED',
-                          style: TextStyle(
-                              color: AppColors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w900)),
-                    ),
-                  ),
+                const SizedBox(),
               ],
             ),
           ),
@@ -633,7 +613,7 @@ class _NearbyCard extends StatelessWidget {
                       ),
                       Flexible(
                         child: Text(
-                            '${workspace.price}${workspace.priceUnit}',
+                            '£${workspace.price}',
                             style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
@@ -658,7 +638,7 @@ class _NearbyCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                          '${workspace.location}${workspace.distance.isNotEmpty ? ' • ${workspace.distance}' : ''}',
+                          workspace.location,
                           style: const TextStyle(
                               fontSize: 13,
                               color: OptimizedColors.white70,

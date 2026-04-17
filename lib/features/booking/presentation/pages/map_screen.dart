@@ -610,31 +610,10 @@ class _PlaceDetailsSheet extends StatelessWidget {
                         ),
                         const SizedBox(height: 16),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: AppColors.gold.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: AppColors.gold.withValues(alpha: 0.2)),
-                              ),
-                              child: Row(
-                                children: [
-                                  const Icon(Icons.star_rounded,
-                                      color: AppColors.gold, size: 16),
-                                  const SizedBox(width: 4),
-                                  Text(workspace.rating.toStringAsFixed(1),
-                                      style: const TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w900,
-                                          color: AppColors.gold)),
-                                ],
-                              ),
-                            ),
-                            const Spacer(),
-                            Text('${workspace.price}${workspace.priceUnit}',
+                            const SizedBox(), // Placeholder since rating is removed
+                            Text('£${workspace.price}',
                                 style: TextStyle(
                                     color: GlassTheme.textColor(context),
                                     fontWeight: FontWeight.w900,

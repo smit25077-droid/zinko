@@ -214,20 +214,9 @@ class _WishlistCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.star_rounded,
-                                  color: Colors.amberAccent, size: 14),
-                              const SizedBox(width: 4),
-                              Text(workspace.rating.toString(),
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.white,
-                                      fontSize: 12)),
-                            ],
-                          ),
+                          const SizedBox(), // Placeholder since rating is removed
                           Text(
-                            '${workspace.price}${workspace.priceUnit}',
+                            '£${workspace.price}',
                             style: const TextStyle(
                                 color: AppColors.white,
                                 fontWeight: FontWeight.w900,

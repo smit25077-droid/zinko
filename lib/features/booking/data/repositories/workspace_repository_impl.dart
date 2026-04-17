@@ -20,6 +20,11 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
   }
 
   @override
+  Stream<List<WorkspaceEntity>> watchWorkspaces() {
+    return localDataSource.watchWorkspaces();
+  }
+
+  @override
   Future<void> toggleFavorite(String id) async {
     await localDataSource.toggleFavorite(id);
   }

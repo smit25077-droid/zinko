@@ -6,7 +6,6 @@ import 'package:zinko_app/widgets/zinko_background.dart';
 // Core
 import 'core/di/service_locator.dart';
 import 'core/routes/app_router.dart';
-import 'features/wallet/presentation/bloc/wallet_bloc.dart';
 import 'utils/theme_provider.dart';
 import 'providers/app_provider.dart';
 import 'providers/user_provider.dart';
@@ -17,13 +16,14 @@ import 'features/onboarding/presentation/pages/splash_screen.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/bloc/auth_event.dart';
 import 'features/user/presentation/bloc/user_bloc.dart';
-import 'features/booking/presentation/bloc/booking_bloc.dart';
 import 'features/community/presentation/bloc/community_bloc.dart';
 import 'features/booking/presentation/bloc/workspace_bloc.dart';
 import 'features/event/presentation/bloc/event_bloc.dart';
-import 'features/chat/presentation/bloc/chat_bloc.dart';
 import 'features/cafe/presentation/bloc/cafe_bloc.dart';
-import 'features/booking/presentation/bloc/create_booking/create_booking_bloc.dart';
+import 'features/chat/presentation/bloc/chat_bloc.dart';
+import 'features/booking/presentation/bloc/booking_bloc.dart';
+import 'features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'features/password_change/presentation/bloc/password_change_bloc.dart';
 
 // Final GlobalKey is imported from widgets/global_network_overlay.dart
 
@@ -40,15 +40,15 @@ void main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => sl<UserBloc>()),
-          BlocProvider(create: (_) => sl<BookingBloc>()),
           BlocProvider(create: (_) => sl<CommunityBloc>()),
           BlocProvider(create: (_) => sl<WorkspaceBloc>()),
           BlocProvider(create: (_) => sl<EventBloc>()),
-          BlocProvider(create: (_) => sl<ChatBloc>()),
           BlocProvider(create: (_) => sl<AuthBloc>()..add(CheckAuthStatus())),
           BlocProvider(create: (_) => sl<CafeBloc>()),
-          BlocProvider(create: (_) => sl<CreateBookingBloc>()),
+          BlocProvider(create: (_) => sl<ChatBloc>()),
+          BlocProvider(create: (_) => sl<BookingBloc>()),
           BlocProvider(create: (_) => sl<WalletBloc>()),
+          BlocProvider(create: (_) => sl<PasswordChangeBloc>()),
         ],
         child: const MyApp(),
       ),

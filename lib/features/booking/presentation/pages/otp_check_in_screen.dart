@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:pinput/pinput.dart';
 import 'package:another_flushbar/flushbar.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
@@ -34,10 +36,9 @@ class _OTPCheckInScreenState extends State<OTPCheckInScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
-    final bookingId = args?['bookingId'] as String?;
-    final bookingCode = args?['bookingCode'] as String?;
+    final args = ModalRoute.of(context)?.settings.arguments as List<dynamic>?;
+    final bookingId = args?[0] as String?;
+    final bookingCode = args?[1] as String?;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -45,28 +46,23 @@ class _OTPCheckInScreenState extends State<OTPCheckInScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded,
-              color: GlassTheme.textColor(context)),
+          icon: Icon(Icons.arrow_back_ios_new_rounded, color: GlassTheme.textColor(context)),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: ZinkoBackground(
         child: BlocListener<BookingBloc, BookingState>(
           listener: (context, state) {
-            if (state is CheckInSuccess) {
+            if (state is BookingOperationSuccess) {
               ZinkoSuccessOverlay.show(
                 context,
                 title: 'CHECKED IN!',
-                subtitle: 'Welcome to your workspace!',
+                subtitle: state.message,
                 onFinish: () {
                   Navigator.pushReplacementNamed(
                     context,
                     CafeMenuScreen.routeName,
-                    arguments: {
-                      'bookingId': bookingId,
-                      'bookingCode': bookingCode,
-                      'isCheckIn': true
-                    },
+                    arguments: {'bookingId': bookingId, 'bookingCode': bookingCode, 'isCheckIn': true},
                   );
                 },
               );
@@ -84,143 +80,145 @@ class _OTPCheckInScreenState extends State<OTPCheckInScreen> {
             }
           },
           child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 40),
-                  Icon(
-                    Icons.lock_person_rounded,
-                    size: 80,
-                    color: GlassTheme.textColor(context).withValues(alpha: 0.8),
-                  )
-                      .animate()
-                      .scale(duration: 600.ms, curve: Curves.easeOutBack),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Verification Required',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: GlassTheme.textColor(context),
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Ask the cafe owner for the 6-digit OTP\nto confirm your check-in.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: GlassTheme.secondaryTextColor(context)
-                          .withValues(alpha: 0.6),
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 48),
-                  Pinput(
-                    length: 6,
-                    controller: _otpController,
-                    focusNode: _focusNode,
-                    defaultPinTheme: PinTheme(
-                      width: 50,
-                      height: 60,
-                      textStyle: TextStyle(
-                        fontSize: 22,
-                        color: GlassTheme.textColor(context),
-                        fontWeight: FontWeight.w700,
-                      ),
-                      decoration: BoxDecoration(
-                        color: GlassTheme.glassColor(context),
-                        borderRadius: BorderRadius.circular(12),
-                        border:
-                            Border.all(color: GlassTheme.glassBorder(context)),
-                      ),
-                    ),
-                    focusedPinTheme: PinTheme(
-                      width: 50,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: GlassTheme.glassColor(context),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color: GlassTheme.textColor(context), width: 2),
-                      ),
-                    ),
-                    onCompleted: (pin) {
-                      if (bookingCode != null) {
-                        context.read<BookingBloc>().add(
-                              UserCheckInEvent(
-                                  bookingCode: bookingCode, otp: pin),
-                            );
-                      }
-                    },
-                  ).animate().fadeIn(delay: 200.ms),
-                  const SizedBox(height: 40),
-                  BlocBuilder<BookingBloc, BookingState>(
-                    builder: (context, state) {
-                      final isLoading = state is BookingCheckInLoading;
-                      return SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  if (_otpController.text.length == 6 &&
-                                      bookingCode != null) {
-                                    context.read<BookingBloc>().add(
-                                          UserCheckInEvent(
-                                            bookingCode: bookingCode,
-                                            otp: _otpController.text,
-                                          ),
-                                        );
-                                  }
-                                },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: isLoading
-                              ? const SizedBox(
-                                  height: 24,
-                                  width: 24,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.black,
-                                  ),
-                                )
-                              : const Text(
-                                  'VERIFY & CHECK IN',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 14,
-                                    letterSpacing: 1,
-                                  ),
-                                ),
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'CANCEL',
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 40),
+                    Icon(
+                      Icons.lock_person_rounded,
+                      size: 80,
+                      color: GlassTheme.textColor(context).withValues(alpha: 0.8),
+                    ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Verification Required',
                       style: TextStyle(
-                        color: GlassTheme.textColor(context).withValues(alpha: 0.5),
-                        fontWeight: FontWeight.w800,
-                        fontSize: 12,
-                        letterSpacing: 1,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w900,
+                        color: GlassTheme.textColor(context),
+                        letterSpacing: -0.5,
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 8),
+                    Text(
+                      'Ask the cafe owner for the 6-digit OTP\nto confirm your check-in.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.6),
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 48),
+                    Pinput(
+                      length: 6,
+                      controller: _otpController,
+                      focusNode: _focusNode,
+                      defaultPinTheme: PinTheme(
+                        width: 50,
+                        height: 60,
+                        textStyle: TextStyle(
+                          fontSize: 22,
+                          color: GlassTheme.textColor(context),
+                          fontWeight: FontWeight.w700,
+                        ),
+                        decoration: BoxDecoration(
+                          color: GlassTheme.glassColor(context),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: GlassTheme.glassBorder(context)),
+                        ),
+                      ),
+                      focusedPinTheme: PinTheme(
+                        width: 50,
+                        height: 60,
+                        decoration: BoxDecoration(
+                          color: GlassTheme.glassColor(context),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: GlassTheme.textColor(context), width: 2),
+                        ),
+                      ),
+                      onCompleted: (pin) {
+                        if (bookingCode != null) {
+                          context.read<BookingBloc>().add(
+                                UserCheckInEvent(bookingCode: bookingCode, otp: pin),
+                              );
+                        }
+                      },
+                    ).animate().fadeIn(delay: 200.ms),
+                    const SizedBox(height: 40),
+                    BlocBuilder<BookingBloc, BookingState>(
+                      builder: (context, state) {
+                        final isLoading = state is BookingCheckInLoading;
+                        return SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: isLoading
+                                ? null
+                                : () {
+                                    if (_otpController.text.length != 6) {
+                                      ZinkoFlushbar.showError(
+                                          context: context, message: 'Please enter the 6-digit OTP');
+                                    } else if (bookingCode == null) {
+                                      ZinkoFlushbar.showError(context: context, message: 'Invalid booking information');
+                                    } else if (_otpController.text.length == 6 && bookingCode != null) {
+                                      context.read<BookingBloc>().add(
+                                            UserCheckInEvent(
+                                              bookingCode: bookingCode ?? '',
+                                              otp: _otpController.text,
+                                            ),
+                                          );
+                                    }
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              elevation: 0,
+                            ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.black,
+                                    ),
+                                  )
+                                : const Text(
+                                    'VERIFY & CHECK IN',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 14,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'CANCEL',
+                        style: TextStyle(
+                          color: GlassTheme.textColor(context).withValues(alpha: 0.5),
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 40), // Extra space for keyboard
+                  ],
+                ),
               ),
             ),
           ),

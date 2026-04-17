@@ -113,10 +113,6 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                                 const SizedBox(height: 12),
                                 _buildGlassDescription(),
                               ],
-                              if (workspace.perkTags.isNotEmpty) ...[
-                                const SizedBox(height: 12),
-                                _buildGlassPerks(),
-                              ],
                               if (workspace.amenities.isNotEmpty) ...[
                                 const SizedBox(height: 12),
                                 _buildGlassAmenities(),
@@ -181,7 +177,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
-                        '${workspace.location}${workspace.distance.isNotEmpty ? ' • ${workspace.distance}' : ''}',
+                        workspace.location,
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.white50,
@@ -194,7 +190,6 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
               ],
             ),
           ),
-          if (workspace.rating > 0) _buildCompactRatingBadge(workspace.rating),
         ],
       ),
     );
@@ -215,35 +210,6 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-  Widget _buildGlassPerks() {
-    final workspace = widget.workspace;
-    return _buildSectionCard(
-      title: 'SPECIAL PERKS',
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: workspace.perkTags
-            .map((perk) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.flash_on_rounded, size: 12, color: Colors.orange),
-                      const SizedBox(width: 4),
-                      Text(perk,
-                          style: const TextStyle(color: Colors.orange, fontWeight: FontWeight.w800, fontSize: 10)),
-                    ],
-                  ),
-                ))
-            .toList(),
-      ),
-    );
-  }
 
   Widget _buildGlassAmenities() {
     final workspace = widget.workspace;
@@ -371,56 +337,202 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
   Widget _buildGlassReviews() {
     final workspace = widget.workspace;
     if (workspace.reviews.isEmpty) return const SizedBox.shrink();
+    final reviewsToShow = workspace.reviews.take(3).toList();
+    final hasMore = workspace.reviews.length > 3;
+
     return _buildSectionCard(
       title: 'REVIEWS',
       child: Column(
-        children: workspace.reviews
-            .map((r) => Container(
-                  margin: const EdgeInsets.only(bottom: 10),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: GlassTheme.textColor(context).withValues(alpha: 0.03),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: GlassTheme.glassBorder(context)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          CircleAvatar(radius: 14, backgroundImage: NetworkImage(r.avatarUrl)),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(r.userName,
-                                    style: TextStyle(
-                                        color: GlassTheme.textColor(context),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w800)),
-                                Text(r.timeAgo,
-                                    style: TextStyle(
-                                        color: GlassTheme.tertiaryTextColor(context),
-                                        fontSize: 9,
-                                        fontWeight: FontWeight.w600)),
-                              ],
-                            ),
+        children: [
+          ...reviewsToShow.map((r) => Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: GlassTheme.textColor(context).withValues(alpha: 0.03),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: GlassTheme.glassBorder(context)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 14,
+                          backgroundImage: NetworkImage(r.avatarUrl),
+                          backgroundColor: AppColors.midnightNavy,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(r.userName,
+                                  style: TextStyle(
+                                      color: GlassTheme.textColor(context),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w800)),
+                              Text(r.date,
+                                  style: TextStyle(
+                                      color: GlassTheme.tertiaryTextColor(context),
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w600)),
+                            ],
                           ),
-                          _buildCompactRatingBadge(r.rating, isSmall: true),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(r.comment,
-                          style: TextStyle(
-                              color: GlassTheme.textColor(context).withValues(alpha: 0.8),
-                              fontSize: 12,
-                              height: 1.4,
-                              fontWeight: FontWeight.w500)),
-                    ],
+                        ),
+                        _buildCompactRatingBadge(r.rating, isSmall: true),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(r.comment,
+                        style: TextStyle(
+                            color: GlassTheme.textColor(context).withValues(alpha: 0.8),
+                            fontSize: 12,
+                            height: 1.4,
+                            fontWeight: FontWeight.w500)),
+                  ],
+                ),
+              )),
+          if (hasMore) ...[
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () => _showAllReviews(context, workspace.reviews),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.brightBlue.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.brightBlue.withValues(alpha: 0.2)),
+                ),
+                child: Center(
+                  child: Text(
+                    'SEE ALL ${workspace.reviews.length} REVIEWS',
+                    style: const TextStyle(
+                      color: AppColors.brightBlue,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.0,
+                    ),
                   ),
-                ))
-            .toList(),
+                ),
+              ),
+            ).animate().fadeIn(),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showAllReviews(BuildContext context, List<WorkspaceReviewEntity> reviews) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.75,
+        decoration: BoxDecoration(
+          color: AppColors.midnightNavy.withValues(alpha: 0.98),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+        ),
+        child: Column(
+          children: [
+            const SizedBox(height: 12),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                children: [
+                  Text(
+                    'ALL REVIEWS',
+                    style: TextStyle(
+                      color: GlassTheme.textColor(context),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${reviews.length} total',
+                    style: TextStyle(
+                      color: AppColors.white50,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                physics: const BouncingScrollPhysics(),
+                itemCount: reviews.length,
+                itemBuilder: (context, index) {
+                  final r = reviews[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.white.withValues(alpha: 0.03),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 16,
+                              backgroundImage: NetworkImage(r.avatarUrl),
+                              backgroundColor: AppColors.midnightNavy,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(r.userName,
+                                      style: TextStyle(
+                                          color: AppColors.white,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w800)),
+                                  Text(r.date,
+                                      style: TextStyle(
+                                          color: OptimizedColors.white50,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+                            ),
+                            _buildCompactRatingBadge(r.rating, isSmall: true),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(r.comment,
+                            style: TextStyle(
+                                color: AppColors.white.withValues(alpha: 0.8),
+                                fontSize: 13,
+                                height: 1.5,
+                                fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -586,11 +698,11 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                     text: TextSpan(
                       children: [
                         TextSpan(
-                            text: workspace.price,
-                            style: const TextStyle(
+                            text: '£${workspace.price}',
+                            style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.white)),
                         TextSpan(
-                            text: ' ${workspace.priceUnit}',
+                            text: ' /h',
                             style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,

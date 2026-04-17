@@ -33,8 +33,7 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<UserCheckInEvent>(_onUserCheckIn);
   }
 
-  Future<void> _onUserCheckIn(
-      UserCheckInEvent event, Emitter<BookingState> emit) async {
+  Future<void> _onUserCheckIn(UserCheckInEvent event, Emitter<BookingState> emit) async {
     emit(BookingCheckInLoading());
     final result = await userCheckIn(UserCheckInParams(
       bookingCode: event.bookingCode,
@@ -42,33 +41,32 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     ));
     result.fold(
       (failure) => emit(CheckInError(failure.message)),
-      (_) => emit(CheckInSuccess()),
+      (_) {
+        emit(const BookingOperationSuccess('Checked in successfully!'));
+        add(GetBookingsEvent());
+      },
     );
   }
 
-  Future<void> _onGetBookings(
-      GetBookingsEvent event, Emitter<BookingState> emit) async {
+  Future<void> _onGetBookings(GetBookingsEvent event, Emitter<BookingState> emit) async {
     emit(BookingLoading());
     final result = await getUserBookings(NoParams());
     result.fold(
       (failure) => emit(BookingError(failure.message)),
       (bookings) {
-        final currentTabIndex =
-            state is BookingsLoaded ? (state as BookingsLoaded).tabIndex : 0;
+        final currentTabIndex = state is BookingsLoaded ? (state as BookingsLoaded).tabIndex : 0;
         emit(BookingsLoaded(bookings, tabIndex: currentTabIndex));
       },
     );
   }
 
-  void _onFilterByTab(
-      FilterBookingsByTabEvent event, Emitter<BookingState> emit) {
+  void _onFilterByTab(FilterBookingsByTabEvent event, Emitter<BookingState> emit) {
     if (state is BookingsLoaded) {
       emit((state as BookingsLoaded).copyWith(tabIndex: event.tabIndex));
     }
   }
 
-  Future<void> _onAddBooking(
-      AddBookingEvent event, Emitter<BookingState> emit) async {
+  Future<void> _onAddBooking(AddBookingEvent event, Emitter<BookingState> emit) async {
     emit(BookingLoading());
     final result = await addBooking(event.booking);
     result.fold(
@@ -77,23 +75,27 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     );
   }
 
-  Future<void> _onCancelBooking(
-      CancelBookingEvent event, Emitter<BookingState> emit) async {
+  Future<void> _onCancelBooking(CancelBookingEvent event, Emitter<BookingState> emit) async {
     emit(BookingLoading());
     final result = await repository.cancelBooking(event.bookingCode);
     result.fold(
       (failure) => emit(BookingError(failure.message)),
-      (_) => add(GetBookingsEvent()),
+      (_) {
+        emit(const BookingOperationSuccess('Booking cancelled successfully'));
+        add(GetBookingsEvent());
+      },
     );
   }
 
-  Future<void> _onCompleteBooking(
-      CompleteBookingEvent event, Emitter<BookingState> emit) async {
+  Future<void> _onCompleteBooking(CompleteBookingEvent event, Emitter<BookingState> emit) async {
     emit(BookingLoading());
     final result = await completeBooking(event.id);
     result.fold(
       (failure) => emit(BookingError(failure.message)),
-      (_) => add(GetBookingsEvent()),
+      (_) {
+        emit(const BookingOperationSuccess('Booking completed successfully'));
+        add(GetBookingsEvent());
+      },
     );
   }
 }

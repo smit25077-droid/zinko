@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/booking_details_screen.dart';
+import '../../features/feedback/presentation/pages/cafe_reviews_screen.dart';
+import '../../features/feedback/presentation/bloc/feedback_bloc.dart';
 import '../../features/onboarding/presentation/pages/splash_screen.dart';
 import '../../features/onboarding/presentation/pages/onboarding_screen.dart';
 import '../../features/auth/presentation/pages/login_screen.dart';
@@ -22,7 +27,7 @@ import '../../features/chat/presentation/pages/call_screen.dart';
 import '../../features/community/presentation/pages/connection_requests_screen.dart';
 import '../../features/booking/presentation/pages/all_workspaces_screen.dart';
 import '../../features/notifications/presentation/pages/notifications_screen.dart';
-import '../../features/user/presentation/pages/wallet_screen.dart';
+import '../../features/wallet/presentation/pages/wallet_screen.dart';
 import '../../features/user/presentation/pages/verification_screen.dart';
 import '../../features/settings/presentation/pages/settings_screen.dart';
 import '../../features/settings/presentation/pages/reset_password_screen.dart';
@@ -151,11 +156,35 @@ class AppRouter {
       case PasswordChangeScreen.routeName:
         return MaterialPageRoute(builder: (_) => const PasswordChangeScreen());
       case OTPCheckInScreen.routeName:
-        return MaterialPageRoute(builder: (_) => const OTPCheckInScreen());
+        return MaterialPageRoute(builder: (_) => const OTPCheckInScreen(),settings: settings);
       case CafeMenuScreen.routeName:
         return MaterialPageRoute(builder: (_) => const CafeMenuScreen());
-        case CompleteCafeListScreen.routeName:
-        return MaterialPageRoute(builder: (_) => const CompleteCafeListScreen());
+      case CompleteCafeListScreen.routeName:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => GetIt.instance<FeedbackBloc>(),
+            child: const CompleteCafeListScreen(),
+          ),
+        );
+      case CafeReviewsScreen.routeName:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => GetIt.instance<FeedbackBloc>(),
+            child: CafeReviewsScreen(
+              cafeId: args['cafeId'] as int,
+              cafeName: args['cafeName'] as String,
+            ),
+          ),
+        );
+      case BookingDetailsScreen.routeName:
+        final booking = settings.arguments as UserBookingEntity;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => GetIt.instance<FeedbackBloc>(),
+            child: BookingDetailsScreen(booking: booking),
+          ),
+        );
       default:
         final prefs = GetIt.instance<SharedPreferences>();
         final hasToken = prefs.containsKey('CACHED_USER_DATA');

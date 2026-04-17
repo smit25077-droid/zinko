@@ -41,7 +41,6 @@ class BookingError extends BookingState {
 
 class BookingCheckInLoading extends BookingState {}
 
-class CheckInSuccess extends BookingState {}
 
 class CheckInError extends BookingState {
   final String message;
@@ -50,3 +49,12 @@ class CheckInError extends BookingState {
   @override
   List<Object?> get props => [message];
 }
+
+class BookingOperationSuccess extends BookingState {
+  final String message;
+  const BookingOperationSuccess(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}
+

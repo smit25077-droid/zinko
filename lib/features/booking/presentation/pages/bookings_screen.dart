@@ -11,21 +11,31 @@ import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
 import '../bloc/booking_state.dart';
 import '../../domain/entities/user_booking_entity.dart';
+import 'package:zinko_app/features/booking/presentation/pages/booking_details_screen.dart';
 import 'otp_check_in_screen.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';
 
-class BookingsScreen extends StatefulWidget {
+class BookingsScreen extends StatelessWidget {
   static const String routeName = '/bookings';
 
   const BookingsScreen({super.key});
 
   @override
-  State<BookingsScreen> createState() => _BookingsScreenState();
+  Widget build(BuildContext context) {
+    return const _BookingsScreenContent();
+  }
 }
 
-class _BookingsScreenState extends State<BookingsScreen> {
+class _BookingsScreenContent extends StatefulWidget {
+  const _BookingsScreenContent();
+
+  @override
+  State<_BookingsScreenContent> createState() => _BookingsScreenContentState();
+}
+
+class _BookingsScreenContentState extends State<_BookingsScreenContent> {
   @override
   void initState() {
     super.initState();
@@ -71,15 +81,24 @@ class _BookingsScreenState extends State<BookingsScreen> {
                 borderRadius: BorderRadius.circular(12),
                 margin: const EdgeInsets.all(12),
               ).show(context);
+            } else if (state is BookingOperationSuccess) {
+              Flushbar(
+                title: "Success",
+                message: state.message,
+                duration: const Duration(seconds: 3),
+                flushbarPosition: FlushbarPosition.TOP,
+                backgroundColor: AppColors.success.withValues(alpha: 0.9),
+                icon: const Icon(Icons.check_circle_outline, color: Colors.white),
+                borderRadius: BorderRadius.circular(12),
+                margin: const EdgeInsets.all(12),
+              ).show(context);
             }
           },
           child: SafeArea(
             child: BlocBuilder<BookingBloc, BookingState>(
               builder: (context, state) {
                 if (state is BookingLoading) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          color: GlassTheme.textColor(context)));
+                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
                 } else if (state is BookingsLoaded) {
                   final filteredBookings = state.bookings.where((b) {
                     final status = b.bookingStatus.toUpperCase();
@@ -102,18 +121,13 @@ class _BookingsScreenState extends State<BookingsScreen> {
                           child: filteredBookings.isEmpty
                               ? _buildEmptyState(context)
                               : ListView.builder(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                                  physics: const AlwaysScrollableScrollPhysics(
-                                      parent: BouncingScrollPhysics()),
+                                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                                   itemCount: filteredBookings.length,
                                   itemBuilder: (context, index) {
                                     return _BookingCard(
                                       booking: filteredBookings[index],
-                                    )
-                                        .animate()
-                                        .fadeIn(delay: (index * 80).ms)
-                                        ;
+                                    ).animate().fadeIn(delay: (index * 80).ms);
                                   },
                                 ),
                         ),
@@ -140,21 +154,15 @@ class _BookingsScreenState extends State<BookingsScreen> {
             _TabItem(
                 title: 'UPCOMING',
                 isSelected: selectedTab == 0,
-                onTap: () => context
-                    .read<BookingBloc>()
-                    .add(FilterBookingsByTabEvent(0))),
+                onTap: () => context.read<BookingBloc>().add(FilterBookingsByTabEvent(0))),
             _TabItem(
                 title: 'PENDING',
                 isSelected: selectedTab == 1,
-                onTap: () => context
-                    .read<BookingBloc>()
-                    .add(FilterBookingsByTabEvent(1))),
+                onTap: () => context.read<BookingBloc>().add(FilterBookingsByTabEvent(1))),
             _TabItem(
                 title: 'CONFIRMED',
                 isSelected: selectedTab == 2,
-                onTap: () => context
-                    .read<BookingBloc>()
-                    .add(FilterBookingsByTabEvent(2))),
+                onTap: () => context.read<BookingBloc>().add(FilterBookingsByTabEvent(2))),
           ],
         ),
       ),
@@ -220,8 +228,7 @@ class _TabItem extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _TabItem(
-      {required this.title, required this.isSelected, required this.onTap});
+  const _TabItem({required this.title, required this.isSelected, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -240,9 +247,7 @@ class _TabItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: isSelected
-                  ? Colors.black
-                  : AppColors.white.withValues(alpha: 0.4),
+              color: isSelected ? Colors.black : AppColors.white.withValues(alpha: 0.4),
               letterSpacing: 1.0,
             ),
           ),
@@ -265,127 +270,108 @@ class _BookingCard extends StatelessWidget {
     final isUpcoming = status == 'UPCOMING';
     final isPending = status == 'PENDING';
 
-    // Fallback UI data
-    final String cafeName = 'Cafe #${booking.cafeId}';
-    final String location = 'Workspace #${booking.cafeWorkspacesId}';
-    const String imageUrl =
-        'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=200';
+    // Real UI data from API
+    final String cafeName = booking.cafeName;
+    final String location = booking.address;
+    final String imageUrl = booking.venueImage;
 
-    return ZinkoCommonCard(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    border:
-                        Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+    return GestureDetector(
+      onTap: () => Navigator.pushNamed(context, BookingDetailsScreen.routeName, arguments: booking),
+      child: ZinkoCommonCard(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: EdgeInsets.zero,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Row(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+                    ),
+                    child: ZinkoNetworkImage(
+                      imageUrl: imageUrl,
+                      width: 70,
+                      height: 70,
+                      borderRadius: 16,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  child: ZinkoNetworkImage(
-                    imageUrl: imageUrl,
-                    width: 70,
-                    height: 70,
-                    borderRadius: 16,
-                    fit: BoxFit.cover,
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          cafeName,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on_rounded, size: 10, color: AppColors.white.withValues(alpha: 0.4)),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                location,
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    color: AppColors.white.withValues(alpha: 0.5),
+                                    fontWeight: FontWeight.w600),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: (isConfirmed ? AppColors.success : AppColors.white).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            status,
+                            style: TextStyle(
+                              color: isConfirmed ? AppColors.success : AppColors.white50,
+                              fontSize: 9,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
+                ],
+              ),
+            ),
+            Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
+            Padding(
+              padding: const EdgeInsets.all(14.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        cafeName,
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.white,
-                            letterSpacing: -0.5),
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Icon(Icons.location_on_rounded,
-                              size: 10,
-                              color: AppColors.white.withValues(alpha: 0.4)),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              location,
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.white.withValues(alpha: 0.5),
-                                  fontWeight: FontWeight.w600),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: (isConfirmed ? AppColors.success : AppColors.white).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                            color: isConfirmed ? AppColors.success : AppColors.white50,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
+                        booking.bookingDate != null
+                            ? '${DateFormat('d MMM').format(booking.bookingDate!).toUpperCase()} • ${booking.tentativeCheckInDatetime.split('T').last.substring(0, 5)}'
+                            : 'DATE TBD',
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.white),
                       ),
                     ],
                   ),
-                ),
-              ],
+                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.white.withValues(alpha: 0.3)),
+                ],
+              ),
             ),
-          ),
-          Divider(
-              height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
-          Padding(
-            padding: const EdgeInsets.all(14.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('CODE: ${booking.bookingCode}',
-                        style: TextStyle(
-                            fontSize: 8,
-                            color: AppColors.white.withValues(alpha: 0.4),
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0)),
-                    const SizedBox(height: 2),
-                    Text(
-                      booking.bookingDate != null
-                          ? '${DateFormat('MMM d').format(booking.bookingDate!).toUpperCase()} • ${booking.tentativeCheckInDatetime.split('T').last.substring(0, 5)}'
-                          : 'DATE TBD',
-                      style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.white),
-                    ),
-                  ],
-                ),
-                if (isConfirmed) _CheckInButton(booking: booking),
-                if (isUpcoming || isPending)
-                  _CancelButton(booking: booking),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -433,8 +419,7 @@ class _CancelButton extends StatelessWidget {
                             color: Colors.redAccent.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.cancel_rounded,
-                              color: Colors.redAccent, size: 32),
+                          child: const Icon(Icons.cancel_rounded, color: Colors.redAccent, size: 32),
                         ),
                         const SizedBox(height: 20),
                         Text(
@@ -451,8 +436,7 @@ class _CancelButton extends StatelessWidget {
                           'Are you sure you want to cancel this booking? This action cannot be undone.',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: GlassTheme.secondaryTextColor(context)
-                                .withValues(alpha: 0.7),
+                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.7),
                             fontSize: 13,
                             height: 1.5,
                           ),
@@ -465,8 +449,7 @@ class _CancelButton extends StatelessWidget {
                                 onPressed: () => Navigator.pop(context),
                                 child: Text('KEEP IT',
                                     style: TextStyle(
-                                        color: GlassTheme.textColor(context)
-                                            .withValues(alpha: 0.5),
+                                        color: GlassTheme.textColor(context).withValues(alpha: 0.5),
                                         fontWeight: FontWeight.w800)),
                               ),
                             ),
@@ -474,20 +457,16 @@ class _CancelButton extends StatelessWidget {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  context.read<BookingBloc>().add(
-                                      CancelBookingEvent(booking.bookingCode));
+                                  context.read<BookingBloc>().add(CancelBookingEvent(booking.bookingCode));
                                   Navigator.pop(context);
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.redAccent,
                                   foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12)),
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                   elevation: 0,
                                 ),
-                                child: const Text('CANCEL',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.w900)),
+                                child: const Text('CANCEL', style: TextStyle(fontWeight: FontWeight.w900)),
                               ),
                             ),
                           ],
@@ -517,11 +496,7 @@ class _CancelButton extends StatelessWidget {
         ),
         child: const Text(
           'CANCEL',
-          style: TextStyle(
-              color: Colors.redAccent,
-              fontWeight: FontWeight.w900,
-              fontSize: 11,
-              letterSpacing: 0.5),
+          style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
         ),
       ),
     );
@@ -537,10 +512,14 @@ class _CheckInButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, OTPCheckInScreen.routeName, arguments: {
-          'bookingId': booking.bookingId.toString(),
-          'bookingCode': booking.bookingCode,
-        });
+        Navigator.pushNamed(context, OTPCheckInScreen.routeName, arguments: [
+          booking.bookingCode, // Use code as ID if ID is missing
+          booking.bookingCode,
+        ]);
+        //     ]{
+        //   'bookingId': booking.bookingId.toString(),
+        //   'bookingCode': booking.bookingCode,
+        // });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -550,16 +529,11 @@ class _CheckInButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.lock_person_rounded,
-                size: 16, color: Colors.black),
+            const Icon(Icons.lock_person_rounded, size: 16, color: Colors.black),
             const SizedBox(width: 8),
             const Text(
               'CHECK IN',
-              style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 11,
-                  letterSpacing: 0.5),
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, fontSize: 11, letterSpacing: 0.5),
             ),
           ],
         ),
@@ -591,4 +565,3 @@ class _GlassHeaderButton extends StatelessWidget {
     );
   }
 }
-

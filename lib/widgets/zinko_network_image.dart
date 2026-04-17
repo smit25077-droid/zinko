@@ -26,8 +26,6 @@ class ZinkoNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       width: width,
       height: height,
@@ -43,7 +41,7 @@ class ZinkoNetworkImage extends StatelessWidget {
           width: width,
           height: height,
           fit: fit,
-          placeholder: (context, url) => _buildPlaceholder(isDark),
+          placeholder: (context, url) => _buildPlaceholder(),
           errorWidget: (context, url, error) => _buildErrorWidget(fit),
           fadeInDuration: 300.ms,
           fadeOutDuration: 300.ms,
@@ -52,14 +50,14 @@ class ZinkoNetworkImage extends StatelessWidget {
     );
   }
 
-  Widget _buildPlaceholder(bool isDark) {
+  Widget _buildPlaceholder() {
     return Container(
       width: width,
       height: height,
-      color: isDark ? const Color(0xFF1E1E2C) : const Color(0xFFF2F4F7),
+      color: const Color(0xFF1E1E2C),
     ).animate(onPlay: (controller) => controller.repeat()).shimmer(
           duration: 1200.ms,
-          color: isDark ? Colors.white.withAlpha(20) : Colors.white.withAlpha(255),
+          color: Colors.white.withAlpha(20),
         );
   }
 
@@ -85,7 +83,7 @@ class ZinkoNetworkImage extends StatelessWidget {
               ),
               SizedBox(height: 4),
               Text(
-               'Tap to retry',
+                'Tap to retry',
                 style: TextStyle(
                   fontSize: 10,
                   color: Colors.white70,

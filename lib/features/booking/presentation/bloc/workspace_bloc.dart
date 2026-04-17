@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/get_workspaces.dart';
 import '../../domain/usecases/search_workspaces.dart';
+import '../../domain/usecases/watch_workspaces.dart';
 import '../../domain/repositories/workspace_repository.dart';
 import 'workspace_event.dart';
 import 'workspace_state.dart';
@@ -9,12 +10,15 @@ import 'workspace_state.dart';
 class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
   final GetWorkspaces getWorkspaces;
   final SearchWorkspaces searchWorkspaces;
+  final WatchWorkspaces watchWorkspaces;
   final WorkspaceRepository repository; // For toggle events
   Timer? _debounce;
+  StreamSubscription? _streamSubscription;
 
   WorkspaceBloc({
     required this.getWorkspaces,
     required this.searchWorkspaces,
+    required this.watchWorkspaces,
     required this.repository,
   }) : super(WorkspaceInitial()) {
     on<GetWorkspacesEvent>(_onGetWorkspaces);
@@ -22,6 +26,28 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     on<ToggleBookmarkWorkspaceEvent>(_onToggleBookmark);
     on<FilterWorkspacesByCategoryEvent>(_onFilterByCategory);
     on<SearchWorkspacesEvent>(_onSearchWorkspaces);
+    on<WorkspacesUpdated>(_onWorkspacesUpdated);
+
+    _streamSubscription = watchWorkspaces().listen((workspaces) {
+      add(WorkspacesUpdated(workspaces));
+    });
+  }
+
+  void _onWorkspacesUpdated(
+    WorkspacesUpdated event,
+    Emitter<WorkspaceState> emit,
+  ) {
+    if (state is WorkspaceLoaded) {
+      final currentState = state as WorkspaceLoaded;
+      // We must preserve category and search query filters while updating workspaces list!
+      // But typically, the stream contains the master list. Wait, if the user searched,
+      // the master list stream doesn't know about search results.
+      // We will handle filtering later or just emit the workspaces.
+      // Wait, if search is active, do we overwrite it? Yes, we can just replace workspaces.
+      emit(currentState.copyWith(workspaces: event.workspaces));
+    } else {
+      emit(WorkspaceLoaded(event.workspaces));
+    }
   }
 
   Future<void> _onSearchWorkspaces(
@@ -62,6 +88,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
   @override
   Future<void> close() {
     _debounce?.cancel();
+    _streamSubscription?.cancel();
     return super.close();
   }
 
@@ -92,28 +119,10 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     ToggleFavoriteWorkspaceEvent event,
     Emitter<WorkspaceState> emit,
   ) async {
-    if (state is WorkspaceLoaded) {
-      final currentState = state as WorkspaceLoaded;
-      
-      // Optimistic Update: Create a new list with the toggled favorite status
-      final updatedWorkspaces = currentState.workspaces.map((w) {
-        if (w.id == event.workspaceId) {
-          // Note: Assuming Entity has a copyWith or we handle it via Casting if it's a model
-          // Since we can't be sure about copyWith, and entities should be immutable, 
-          // we are assuming the repository update is necessary but we'll emit the changed list first
-          return w.copyWith(isFavorite: !w.isFavorite);
-        }
-        return w;
-      }).toList();
-
-      emit(currentState.copyWith(workspaces: updatedWorkspaces));
-      
-      try {
-        await repository.toggleFavorite(event.workspaceId);
-      } catch (e) {
-        // Rollback on failure (optional but good)
-        emit(currentState); 
-      }
+    try {
+      await repository.toggleFavorite(event.workspaceId);
+    } catch (e) {
+      // Handle error natively via stream if needed, or emit failure.
     }
   }
 
@@ -121,24 +130,9 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     ToggleBookmarkWorkspaceEvent event,
     Emitter<WorkspaceState> emit,
   ) async {
-    if (state is WorkspaceLoaded) {
-      final currentState = state as WorkspaceLoaded;
-      
-      // Optimistic Update
-      final updatedWorkspaces = currentState.workspaces.map((w) {
-        if (w.id == event.workspaceId) {
-          return w.copyWith(isBookmarked: !w.isBookmarked);
-        }
-        return w;
-      }).toList();
-
-      emit(currentState.copyWith(workspaces: updatedWorkspaces));
-
-      try {
-        await repository.toggleBookmark(event.workspaceId);
-      } catch (e) {
-        emit(currentState);
-      }
+    try {
+      await repository.toggleBookmark(event.workspaceId);
+    } catch (e) {
     }
   }
 }

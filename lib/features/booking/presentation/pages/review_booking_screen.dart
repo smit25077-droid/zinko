@@ -19,12 +19,27 @@ import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../../../../utils/zinko_flushbar.dart';
+import '../../../../core/di/service_locator.dart';
 
 class ReviewBookingScreen extends StatelessWidget {
   static const String routeName = '/review-booking';
   final Map<String, dynamic> bookingData;
 
   const ReviewBookingScreen({super.key, required this.bookingData});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => sl<CreateBookingBloc>(),
+      child: _ReviewBookingScreenContent(bookingData: bookingData),
+    );
+  }
+}
+
+class _ReviewBookingScreenContent extends StatelessWidget {
+  final Map<String, dynamic> bookingData;
+
+  const _ReviewBookingScreenContent({required this.bookingData});
 
   void _handleConfirm(
       BuildContext context,

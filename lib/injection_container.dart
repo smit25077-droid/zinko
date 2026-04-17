@@ -178,6 +178,7 @@ Future<void> init() async {
       getWorkspaces: sl(),
       searchWorkspaces: sl(),
       repository: sl(),
+      watchWorkspaces: sl()
     ),
   );
   sl.registerFactory(() => CreateBookingBloc(createBookingUseCase: sl()));

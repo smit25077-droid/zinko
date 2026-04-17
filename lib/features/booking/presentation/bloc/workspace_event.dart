@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../domain/entities/workspace_entity.dart';
 
 abstract class WorkspaceEvent extends Equatable {
   const WorkspaceEvent();
@@ -39,4 +40,12 @@ class SearchWorkspacesEvent extends WorkspaceEvent {
 
   @override
   List<Object> get props => [query];
+}
+
+class WorkspacesUpdated extends WorkspaceEvent {
+  final List<WorkspaceEntity> workspaces;
+  const WorkspacesUpdated(this.workspaces);
+
+  @override
+  List<Object> get props => [workspaces];
 }
