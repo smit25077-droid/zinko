@@ -4,8 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:pinput/pinput.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
-import 'package:zinko_app/widgets/zinko_common_card.dart';
-
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
 import '../bloc/booking_state.dart';

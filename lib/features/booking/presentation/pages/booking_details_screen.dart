@@ -1,15 +1,13 @@
-import 'dart:ui' show ImageFilter, BackdropFilter;
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:zinko_app/core/theme/optimized_colors.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_glass_box.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -115,30 +113,30 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildClassicHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _CircleIconButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => Navigator.pop(context),
-          ),
-          Text(
-            'RESERVATION',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.5),
-              fontWeight: FontWeight.w900,
-              fontSize: 12,
-              letterSpacing: 4.0,
-            ),
-          ),
-          const SizedBox(width: 44), // Alignment balancer
-        ],
-      ),
-    ).animate().fadeIn(duration: 400.ms);
-  }
+  // Widget _buildClassicHeader(BuildContext context) {
+  //   return Padding(
+  //     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         _CircleIconButton(
+  //           icon: Icons.arrow_back_ios_new_rounded,
+  //           onTap: () => Navigator.pop(context),
+  //         ),
+  //         Text(
+  //           'RESERVATION',
+  //           style: TextStyle(
+  //             color: Colors.white.withValues(alpha: 0.5),
+  //             fontWeight: FontWeight.w900,
+  //             fontSize: 12,
+  //             letterSpacing: 4.0,
+  //           ),
+  //         ),
+  //         const SizedBox(width: 44), // Alignment balancer
+  //       ],
+  //     ),
+  //   ).animate().fadeIn(duration: 400.ms);
+  // }
 
   Widget _buildPremiumBadge(BuildContext context) {
     final status = booking.bookingStatus.toUpperCase();
@@ -300,13 +298,13 @@ class BookingDetailsScreen extends StatelessWidget {
       return datetime;
     }}
 
-  Widget _buildDivider() {
-    return Container(
-      height: 1,
-      width: double.infinity,
-      color: Colors.white.withValues(alpha: 0.05),
-    );
-  }
+  // Widget _buildDivider() {
+  //   return Container(
+  //     height: 1,
+  //     width: double.infinity,
+  //     color: Colors.white.withValues(alpha: 0.05),
+  //   );
+  // }
 
   Widget _buildUKActionButtonBar(BuildContext context) {
     final status = booking.bookingStatus.toUpperCase();
