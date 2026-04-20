@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/usecases/get_workspaces.dart';
 import '../../domain/usecases/search_workspaces.dart';
@@ -133,6 +134,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     try {
       await repository.toggleBookmark(event.workspaceId);
     } catch (e) {
+      debugPrint('Error toggling bookmark: $e');
     }
   }
 }

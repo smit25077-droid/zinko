@@ -676,7 +676,7 @@ class _DetailsCard extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               fontSize: 10,
               fontWeight: FontWeight.w900,
               letterSpacing: 1.0,
@@ -692,7 +692,7 @@ class _DetailsCard extends StatelessWidget {
                 if (!isLast)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Divider(color: Colors.white.withOpacity(0.05), height: 1),
+                    child: Divider(color: Colors.white.withValues(alpha: 0.05), height: 1),
                   ),
               ],
             );
@@ -723,7 +723,7 @@ class _InfoRow extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.05),
+            color: Colors.white.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(icon, size: 16, color: Colors.white70),
@@ -736,7 +736,7 @@ class _InfoRow extends StatelessWidget {
               Text(
                 label,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.4),
+                  color: Colors.white.withValues(alpha: 0.4),
                   fontSize: 8,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 0.5,
@@ -746,7 +746,7 @@ class _InfoRow extends StatelessWidget {
               Text(
                 value,
                 style: TextStyle(
-                  color: isPrice ? Colors.white : Colors.white.withOpacity(0.9),
+                  color: isPrice ? Colors.white : Colors.white.withValues(alpha: 0.9),
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),

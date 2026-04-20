@@ -62,7 +62,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
               onTap: () => add(SelectWorkspaceEvent(workspace)),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          debugPrint('Error loading workspace icon: $e');
+          }
       }
     }
 
@@ -81,7 +83,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
               onTap: () => add(SelectPersonEvent(person)),
             ),
           );
-        } catch (e) {}
+        } catch (e) {
+          debugPrint('Error loading person icon: $e');
+          }
       }
     }
 
@@ -127,7 +131,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             border * 2, border * 2, size - border * 4, size - border * 4)));
       canvas.drawImage(fi.image, const Offset(border * 2, border * 2), Paint());
       canvas.restore();
-    } catch (e) {}
+    } catch (e) {
+      debugPrint('Error loading marker icon: $e');
+      }
 
     final ui.Image markerAsImage = await pictureRecorder
         .endRecording()

@@ -156,7 +156,7 @@ class _LoginContentState extends State<_LoginContent> {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             return ZinkoGlassBox(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
               padding: const EdgeInsets.all(32),
               child: Form(
                 key: _formKey,

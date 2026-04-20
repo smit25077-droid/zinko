@@ -66,7 +66,6 @@ class _SearchBarWidgetState extends State<SearchBarWidget>
             suffixIcon: IconButton(
               icon: Icon(Icons.tune),
               onPressed: () {
-                // TODO: Show filters
               },
             ),
             border: OutlineInputBorder(

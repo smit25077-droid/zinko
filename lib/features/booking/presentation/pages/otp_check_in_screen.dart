@@ -163,10 +163,10 @@ class _OTPCheckInScreenState extends State<OTPCheckInScreen> {
                                           context: context, message: 'Please enter the 6-digit OTP');
                                     } else if (bookingCode == null) {
                                       ZinkoFlushbar.showError(context: context, message: 'Invalid booking information');
-                                    } else if (_otpController.text.length == 6 && bookingCode != null) {
+                                    } else if (_otpController.text.length == 6 && bookingCode.isNotEmpty) {
                                       context.read<BookingBloc>().add(
                                             UserCheckInEvent(
-                                              bookingCode: bookingCode ?? '',
+                                              bookingCode: bookingCode,
                                               otp: _otpController.text,
                                             ),
                                           );
