@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:zinko_app/features/feedback/domain/entities/cafe_review_entity.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import '../bloc/feedback_bloc.dart';
 import '../bloc/feedback_event.dart';
@@ -41,7 +43,7 @@ class _CafeReviewsScreenState extends State<CafeReviewsScreen> {
         title: Column(
           children: [
             Text(
-              'CAFE REVIEWS',
+              'REVIEWS',
               style: TextStyle(
                 color: GlassTheme.textColor(context),
                 fontWeight: FontWeight.w900,
@@ -135,20 +137,14 @@ class _CafeReviewsScreenState extends State<CafeReviewsScreen> {
 }
 
 class _ReviewCard extends StatelessWidget {
-  final dynamic review;
+  final CafeReviewEntity review;
 
   const _ReviewCard({required this.review});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: GlassTheme.glassColor(context).withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: GlassTheme.glassBorder(context).withValues(alpha: 0.1)),
-      ),
+    return ZinkoCommonCard(
+      margin: EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -164,11 +160,11 @@ class _ReviewCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'User #${review.userId}',
+                    review.userName.isNotEmpty ? review.userName : 'Anonymous',
                     style: TextStyle(
                       color: GlassTheme.textColor(context),
                       fontWeight: FontWeight.w800,
-                      fontSize: 12,
+                      fontSize: 13,
                     ),
                   ),
                 ],

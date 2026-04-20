@@ -5,6 +5,7 @@ import 'package:zinko_app/widgets/zinko_background.dart';
 
 // Core
 import 'core/di/service_locator.dart';
+import 'core/bloc/app_bloc_observer.dart';
 import 'core/routes/app_router.dart';
 import 'utils/theme_provider.dart';
 import 'providers/app_provider.dart';
@@ -30,6 +31,7 @@ import 'features/password_change/presentation/bloc/password_change_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ServiceLocator.init();
+  Bloc.observer = AppBlocObserver();
   runApp(
     MultiProvider(
       providers: [

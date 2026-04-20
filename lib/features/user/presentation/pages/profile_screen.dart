@@ -23,6 +23,7 @@ import '../../../../core/theme/app_colors.dart';
 
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_app_bar.dart';
+import '../../../../widgets/zinko_common_dialog.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../../domain/entities/user_entity.dart';
 
@@ -526,76 +527,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _showLogoutConfirmation(BuildContext context) {
-    showDialog(
+    ZinkoCommonDialog.show(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.8),
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: AlertDialog(
-          backgroundColor: GlassTheme.glassColor(context),
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(32),
-              side: BorderSide(color: GlassTheme.glassBorder(context))),
-          title: Text(
-            'Confirm Logout',
-            style: TextStyle(
-                color: GlassTheme.textColor(context),
-                fontWeight: FontWeight.w900,
-                fontSize: 22),
-          ),
-          content: Text(
-            'Are you sure you want to sign out from Zinko? All session data will be cleared.',
-            style: TextStyle(
-                color: GlassTheme.secondaryTextColor(context),
-                fontSize: 16,
-                fontWeight: FontWeight.w500),
-          ),
-          actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'CANCEL',
-                style: TextStyle(
-                    color: GlassTheme.tertiaryTextColor(context),
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2),
-              ),
-            ),
-            Container(
-              decoration: BoxDecoration(
-                boxShadow: [
-                  BoxShadow(
-                      color: AppColors.error.withValues(alpha: 0.3),
-                      blurRadius: 20,
-                      spreadRadius: -5)
-                ],
-              ),
-              child: ElevatedButton(
-                onPressed: () {
-                  context.read<AuthBloc>().add(LogoutRequested());
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, SplashScreen.routeName, (route) => false);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16)),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  elevation: 0,
-                ),
-                child: const Text(
-                  'LOGOUT',
-                  style:
-                      TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      title: 'CONFIRM LOGOUT',
+      message: 'Are you sure you want to sign out from Zinko? All session data will be cleared.',
+      icon: Icons.logout_rounded,
+      iconColor: AppColors.error,
+      actionLabel: 'LOGOUT',
+      actionColor: AppColors.error,
+      onAction: () {
+        context.read<AuthBloc>().add(LogoutRequested());
+        Navigator.pushNamedAndRemoveUntil(context, SplashScreen.routeName, (route) => false);
+      },
     );
   }
 

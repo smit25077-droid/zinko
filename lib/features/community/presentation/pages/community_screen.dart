@@ -22,6 +22,7 @@ import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_common_bottom_sheet.dart';
 
 class CommunityScreen extends StatefulWidget {
   static const String routeName = '/community';
@@ -63,98 +64,62 @@ class _CommunityScreenState extends State<CommunityScreen>
   void _showPremiumBottomSheet(BuildContext context) {
     final userState = context.read<UserBloc>().state;
     if (userState is UserLoaded && userState.user.isPremium) return;
-    showModalBottomSheet(
+    ZinkoCommonBottomSheet.show(
       context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      barrierColor: Colors.black.withValues(alpha: 0.55),
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: EdgeInsets.fromLTRB(
-              28, 12, 28, 32 + MediaQuery.of(context).padding.bottom),
-          decoration: BoxDecoration(
-            color: GlassTheme.backgroundOverlay(context),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(40)),
-            border:
-                Border.all(color: GlassTheme.glassBorder(context), width: 1.5),
+      title: 'PREMIUM ACCESS',
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 68,
+            height: 68,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.gold, Color(0xFFFF8F00)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                    color: AppColors.gold.withValues(alpha: 0.4),
+                    blurRadius: 20,
+                    offset: const Offset(0, 10))
+              ],
+            ),
+            child: const Icon(Icons.workspace_premium_rounded, color: Colors.white, size: 34),
+          ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
+          const SizedBox(height: 24),
+          Text(
+            'Unlock exclusive connections, group access, and direct messaging.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: GlassTheme.secondaryTextColor(context),
+                fontSize: 14,
+                height: 1.5,
+                fontWeight: FontWeight.w600),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                      color: OptimizedColors.white12,
-                      borderRadius: BorderRadius.circular(2))),
-              const SizedBox(height: 24),
-              Container(
-                width: 68,
-                height: 68,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.gold, Color(0xFFFF8F00)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                        color: AppColors.gold.withValues(alpha: 0.4),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10))
-                  ],
-                ),
-                child: const Icon(Icons.workspace_premium_rounded,
-                    color: Colors.white, size: 34),
-              ).animate().scale(duration: 600.ms, curve: Curves.elasticOut),
-              const SizedBox(height: 24),
-              Text('PREMIUM ACCESS',
-                  style: TextStyle(
-                      color: GlassTheme.secondaryTextColor(context),
-                      fontSize: 8,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.5)),
-              const SizedBox(height: 12),
-              Text(
-                'Unlock exclusive connections, group access, and direct messaging.',
-                textAlign: TextAlign.center,
+          const SizedBox(height: 32),
+          _GlassButton(
+            label: 'UPGRADE NOW',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, SubscriptionPlansScreen.routeName);
+            },
+            isFullWidth: true,
+            isPrimary: true,
+          ),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('MAYBE LATER',
                 style: TextStyle(
-                    color: GlassTheme.secondaryTextColor(context),
-                    fontSize: 13,
-                    height: 1.5,
-                    fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 32),
-              _GlassButton(
-                label: 'UPGRADE NOW',
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(
-                      context, SubscriptionPlansScreen.routeName);
-                },
-                isFullWidth: true,
-                isPrimary: true,
-              ).animate().slideY(
-                  begin: 0.3,
-                  end: 0,
-                  duration: 400.ms,
-                  curve: Curves.easeOutCubic),
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('MAYBE LATER',
-                    style: TextStyle(
-                        color: GlassTheme.secondaryTextColor(context)
-                            .withValues(alpha: 0.5),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.2)),
-              ),
-            ],
+                    color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.5),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.2)),
           ),
-        ),
+        ],
       ),
     );
   }

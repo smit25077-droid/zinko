@@ -9,6 +9,7 @@ class CafeReviewEntity extends Equatable {
   final String reviewStar;
   final int userId;
   final bool isPublish;
+  final String userName;
 
   const CafeReviewEntity({
     required this.cafeReviewId,
@@ -19,6 +20,7 @@ class CafeReviewEntity extends Equatable {
     required this.reviewStar,
     required this.userId,
     required this.isPublish,
+    required this.userName,
   });
 
   @override
@@ -31,5 +33,6 @@ class CafeReviewEntity extends Equatable {
         reviewStar,
         userId,
         isPublish,
+        userName,
       ];
 }

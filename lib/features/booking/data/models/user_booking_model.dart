@@ -39,8 +39,8 @@ class UserBookingModel extends UserBookingEntity {
       cafeTimeSlotsId: json['cafe_time_slots_id'],
       cafeWorkspacesId: json['cafe_workspaces_id'],
       bookingStatus: json['booking_status'] ?? '',
-      tentativeToken: (json['tentative_token'] ?? 0).toDouble(),
-      durationHours: json['duration_hours'] ?? 0,
+      tentativeToken: double.tryParse(json['tentative_token']?.toString() ?? '0') ?? 0.0,
+      durationHours: int.tryParse(json['duration_hours']?.toString() ?? '0') ?? 0,
       tentativeCheckInDatetime: json['tentative_check_in_datetime'] ?? '',
       tentativeCheckOutDatetime: json['tentative_check_out_datetime'] ?? '',
       checkInDatetime: json['check_in_datetime'],
@@ -51,9 +51,9 @@ class UserBookingModel extends UserBookingEntity {
       timeSlot: json['time_slot'] ?? '',
       venueImage: json['venue_image'] ?? '',
       seatType: json['seat_type'] ?? '',
-      totalHours: json['total_hours'] ?? 0,
-      totalAmount: (json['total_amount'] ?? 0).toDouble(),
-      noOfPersons: json['no_of_persons'] ?? 0,
+      totalHours: int.tryParse(json['total_hours']?.toString() ?? '0') ?? 0,
+      totalAmount: double.tryParse(json['total_amount']?.toString() ?? '0') ?? 0.0,
+      noOfPersons: int.tryParse(json['no_of_persons']?.toString() ?? '0') ?? 0,
     );
   }
 }

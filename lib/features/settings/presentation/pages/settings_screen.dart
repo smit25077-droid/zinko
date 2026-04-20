@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import '../../../onboarding/presentation/pages/splash_screen.dart';
 import './reset_password_screen.dart';
 import '../bloc/settings_bloc.dart';
 import '../../../../utils/zinko_flushbar.dart';
+import '../../../../widgets/zinko_common_dialog.dart';
 
 
 class SettingsScreen extends StatelessWidget {
@@ -381,56 +383,21 @@ class _SettingsContent extends StatelessWidget {
   }
 
   void _showDeleteConfirmation(BuildContext context) {
-    showDialog(
+    ZinkoCommonDialog.show(
       context: context,
-      builder: (dialogContext) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: AlertDialog(
-          backgroundColor: GlassTheme.glassColor(context),
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          title: Text(
-            'Delete Account?',
-            style: TextStyle(
-                color: GlassTheme.textColor(context),
-                fontWeight: FontWeight.w900),
-          ),
-          content: Text(
-            'Are you sure you want to delete your account? This action cannot be undone.',
-            style: TextStyle(
-                color: GlassTheme.secondaryTextColor(context),
-                height: 1.5,
-                fontSize: 14),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(
-                'CANCEL',
-                style: TextStyle(
-                    color: GlassTheme.secondaryTextColor(context),
-                    fontWeight: FontWeight.w700),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                final userState = context.read<UserBloc>().state;
-                if (userState is UserLoaded) {
-                  context
-                      .read<UserBloc>()
-                      .add(DeleteUserEvent(userState.user.userCode));
-                }
-                Navigator.pop(dialogContext);
-              },
-              child: const Text(
-                'DELETE',
-                style: TextStyle(
-                    color: Colors.redAccent, fontWeight: FontWeight.w900),
-              ),
-            ),
-          ],
-        ),
-      ),
+      title: 'DELETE ACCOUNT?',
+      message: 'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
+      icon: Icons.delete_forever_rounded,
+      iconColor: AppColors.error,
+      actionLabel: 'DELETE',
+      actionColor: AppColors.error,
+      onAction: () {
+        final userState = context.read<UserBloc>().state;
+        if (userState is UserLoaded) {
+          context.read<UserBloc>().add(DeleteUserEvent(userState.user.userCode));
+        }
+        Navigator.pop(context);
+      },
     );
   }
 }

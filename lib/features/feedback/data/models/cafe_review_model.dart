@@ -11,6 +11,7 @@ class CafeReviewModel extends CafeReviewEntity {
     required super.reviewStar,
     required super.userId,
     required super.isPublish,
+    required super.userName,
   });
 
   factory CafeReviewModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +24,7 @@ class CafeReviewModel extends CafeReviewEntity {
       reviewStar: json['review_star']?.toString() ?? '0',
       userId: json['user_id'] is String ? int.tryParse(json['user_id']) ?? 0 : (json['user_id'] ?? 0),
       isPublish: json['is_publish'] ?? false,
+      userName: json['user_name'] ?? '',
     );
   }
 }

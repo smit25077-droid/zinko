@@ -13,7 +13,6 @@ class UserBookingEntity extends Equatable {
   final int durationHours;
   final String tentativeCheckInDatetime;
   final String tentativeCheckOutDatetime;
-  // New fields from API
   final String? checkInDatetime;
   final String? checkOutDatetime;
   final String cafeName;

@@ -22,7 +22,9 @@ class BookingRepositoryImpl implements BookingRepository {
           e.message ??
           'Failed to load bookings';
       return Left(ServerFailure(message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('BookingRepository: Error in getBookings: $e');
+      print('Stack trace: $stackTrace');
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -52,7 +54,9 @@ class BookingRepositoryImpl implements BookingRepository {
       final message =
           e.response?.data?['message'] ?? e.message ?? 'Failed to add booking';
       return Left(ServerFailure(message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('BookingRepository: Error in getBookings: $e');
+      print('Stack trace: $stackTrace');
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -66,7 +70,9 @@ class BookingRepositoryImpl implements BookingRepository {
       final message =
           e.response?.data?['message'] ?? e.message ?? 'Cancellation failed';
       return Left(ServerFailure(message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('BookingRepository: Error in getBookings: $e');
+      print('Stack trace: $stackTrace');
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -81,7 +87,9 @@ class BookingRepositoryImpl implements BookingRepository {
           e.message ??
           'Failed to complete booking';
       return Left(ServerFailure(message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('BookingRepository: Error in getBookings: $e');
+      print('Stack trace: $stackTrace');
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -97,7 +105,9 @@ class BookingRepositoryImpl implements BookingRepository {
           e.message ??
           'Failed to load booking details';
       return Left(ServerFailure(message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('BookingRepository: Error in getBookings: $e');
+      print('Stack trace: $stackTrace');
       return Left(ServerFailure(e.toString()));
     }
   }
@@ -112,7 +122,9 @@ class BookingRepositoryImpl implements BookingRepository {
       final message =
           e.response?.data?['message'] ?? e.message ?? 'Check-in failed';
       return Left(ServerFailure(message));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('BookingRepository: Error in getBookings: $e');
+      print('Stack trace: $stackTrace');
       return Left(ServerFailure(e.toString()));
     }
   }

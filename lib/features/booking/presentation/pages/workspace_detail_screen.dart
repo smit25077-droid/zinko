@@ -17,6 +17,9 @@ import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../../user/presentation/bloc/user_state.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
+import '../../../../widgets/zinko_common_card.dart';
+import '../../../../widgets/zinko_common_dialog.dart';
+import '../../../../widgets/zinko_common_bottom_sheet.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../bloc/workspace_detail_bloc.dart';
 
@@ -425,114 +428,86 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
   }
 
   void _showAllReviews(BuildContext context, List<WorkspaceReviewEntity> reviews) {
-    showModalBottomSheet(
+    ZinkoCommonBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        height: MediaQuery.of(context).size.height * 0.75,
-        decoration: BoxDecoration(
-          color: AppColors.midnightNavy.withValues(alpha: 0.98),
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(2),
+      title: 'ALL REVIEWS',
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text(
+                '${reviews.length} total',
+                style: TextStyle(
+                  color: AppColors.white50,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Row(
-                children: [
-                  Text(
-                    'ALL REVIEWS',
-                    style: TextStyle(
-                      color: GlassTheme.textColor(context),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
-                    ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: ListView.builder(
+              padding: const EdgeInsets.only(bottom: 40),
+              physics: const BouncingScrollPhysics(),
+              itemCount: reviews.length,
+              itemBuilder: (context, index) {
+                final r = reviews[index];
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.03),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
                   ),
-                  const Spacer(),
-                  Text(
-                    '${reviews.length} total',
-                    style: TextStyle(
-                      color: AppColors.white50,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 16,
+                            backgroundImage: NetworkImage(r.avatarUrl),
+                            backgroundColor: AppColors.midnightNavy,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(r.userName,
+                                    style: TextStyle(
+                                        color: AppColors.white,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800)),
+                                Text(r.date,
+                                    style: TextStyle(
+                                        color: OptimizedColors.white50,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                          ),
+                          _buildCompactRatingBadge(r.rating, isSmall: true),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(r.comment,
+                          style: TextStyle(
+                              color: AppColors.white.withValues(alpha: 0.8),
+                              fontSize: 13,
+                              height: 1.5,
+                              fontWeight: FontWeight.w500)),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
-            Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                physics: const BouncingScrollPhysics(),
-                itemCount: reviews.length,
-                itemBuilder: (context, index) {
-                  final r = reviews[index];
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.white.withValues(alpha: 0.03),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 16,
-                              backgroundImage: NetworkImage(r.avatarUrl),
-                              backgroundColor: AppColors.midnightNavy,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(r.userName,
-                                      style: TextStyle(
-                                          color: AppColors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w800)),
-                                  Text(r.date,
-                                      style: TextStyle(
-                                          color: OptimizedColors.white50,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.w600)),
-                                ],
-                              ),
-                            ),
-                            _buildCompactRatingBadge(r.rating, isSmall: true),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(r.comment,
-                            style: TextStyle(
-                                color: AppColors.white.withValues(alpha: 0.8),
-                                fontSize: 13,
-                                height: 1.5,
-                                fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -813,52 +788,34 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
   }
 
   void _showProfileIncompleteDialog(BuildContext context, double percentage) {
-    showDialog(
+    ZinkoCommonDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF121212),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Text('PROFILE INCOMPLETE',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 1.0)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'To ensure a secure community, Zinko requires a 100% complete profile before making any bookings.',
-              style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500),
-            ),
-            const SizedBox(height: 20),
-            LinearProgressIndicator(
-              value: percentage,
-              backgroundColor: Colors.white12,
-              valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
-              minHeight: 6,
-            ),
-            const SizedBox(height: 8),
-            Text('${(percentage * 100).toInt()}% Complete',
-                style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, fontSize: 12)),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('LATER', style: TextStyle(color: OptimizedColors.white50, fontWeight: FontWeight.w700)),
+      title: 'PROFILE INCOMPLETE',
+      customContent: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text(
+            'To ensure a secure community, Zinko requires a 100% complete profile before making any bookings.',
+            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500),
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pushNamed(context, '/profile');
-              },
-              child: const Text('COMPLETE NOW', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900)),
-            ),
+          const SizedBox(height: 20),
+          LinearProgressIndicator(
+            value: percentage,
+            backgroundColor: Colors.white12,
+            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
+            minHeight: 6,
           ),
+          const SizedBox(height: 8),
+          Text('${(percentage * 100).toInt()}% Complete',
+              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, fontSize: 12)),
         ],
       ),
+      actionLabel: 'COMPLETE NOW',
+      cancelLabel: 'LATER',
+      onAction: () {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, '/profile');
+      },
     );
   }
 }
