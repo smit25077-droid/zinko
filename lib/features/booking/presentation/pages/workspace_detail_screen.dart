@@ -17,7 +17,6 @@ import '../../../user/presentation/bloc/user_bloc.dart';
 import '../../../user/presentation/bloc/user_state.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_common_card.dart';
 import '../../../../widgets/zinko_common_dialog.dart';
 import '../../../../widgets/zinko_common_bottom_sheet.dart';
 import '../../../../widgets/zinko_network_image.dart';

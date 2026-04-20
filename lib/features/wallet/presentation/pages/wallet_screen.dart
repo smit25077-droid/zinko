@@ -12,7 +12,6 @@ import '../bloc/wallet_state.dart';
 import '../../domain/entities/wallet_transaction.dart';
 import '../../../../utils/glass_theme.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_app_bar.dart';
 import '../../../../widgets/zinko_common_dialog.dart';
