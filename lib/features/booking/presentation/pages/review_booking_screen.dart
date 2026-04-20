@@ -14,12 +14,17 @@ import '../../../user/presentation/bloc/user_state.dart';
 import '../bloc/create_booking/create_booking_bloc.dart';
 import '../../domain/entities/booking_request_entity.dart';
 import '../../../../widgets/zinko_success_overlay.dart';
+import '../../../../widgets/zinko_common_dialog.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/optimized_colors.dart';
 import '../../../../widgets/zinko_background.dart';
 import '../../../../widgets/zinko_network_image.dart';
 import '../../../../utils/zinko_flushbar.dart';
 import '../../../../core/di/service_locator.dart';
+import '../../../../features/wallet/presentation/bloc/wallet_bloc.dart';
+import '../../../../features/wallet/presentation/bloc/wallet_event.dart';
+import '../../../../features/wallet/presentation/bloc/wallet_state.dart';
+import '../../../../features/wallet/presentation/pages/wallet_screen.dart';
 
 class ReviewBookingScreen extends StatelessWidget {
   static const String routeName = '/review-booking';
@@ -29,8 +34,11 @@ class ReviewBookingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<CreateBookingBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<CreateBookingBloc>()),
+        BlocProvider(create: (_) => sl<WalletBloc>()..add(FetchWalletDataEvent())),
+      ],
       child: _ReviewBookingScreenContent(bookingData: bookingData),
     );
   }
@@ -53,6 +61,35 @@ class _ReviewBookingScreenContent extends StatelessWidget {
       double subtotal,
       double tax,
       double total) {
+    
+    // 1. Check Wallet Balance first
+    final walletState = context.read<WalletBloc>().state;
+    double currentBalance = 0;
+    
+    if (walletState is WalletLoaded) {
+      currentBalance = walletState.balance.balance;
+    } else if (context.read<UserBloc>().state is UserLoaded) {
+      currentBalance = (context.read<UserBloc>().state as UserLoaded).user.balance;
+    }
+
+    if (currentBalance < total) {
+      ZinkoCommonDialog.show(
+        context: context,
+        title: 'INSUFFICIENT BALANCE',
+        message: 'Your current balance (£${currentBalance.toStringAsFixed(2)}) is lower than the booking total (£${total.toStringAsFixed(0)}). Please add funds to continue.',
+        icon: Icons.account_balance_wallet_rounded,
+        iconColor: AppColors.error,
+        actionLabel: 'ADD BALANCE',
+        onAction: () {
+          Navigator.pop(context); // Close dialog
+          Navigator.pushNamed(context, WalletScreen.routeName);
+        },
+        cancelLabel: 'MAYBE LATER',
+      );
+      return;
+    }
+
+    // 2. Proceed with booking if balance is sufficient
     final authState = context.read<AuthBloc>().state;
     if (authState is AuthAuthenticated) {
       final dateStr = DateFormat('yyyy-MM-dd').format(date);
@@ -294,49 +331,66 @@ class _ReviewBookingScreenContent extends StatelessWidget {
   }
 
   Widget _buildGlassWalletInfo(BuildContext context) {
-    return BlocBuilder<UserBloc, UserState>(
-      builder: (context, state) {
-        double balance = 0;
-        if (state is UserLoaded) balance = state.user.balance;
-        return _buildGlassContainer(
-          context: context,
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                      color: AppColors.white.withValues(alpha: 0.1)),
-                ),
-                child: const Icon(Icons.account_balance_wallet_rounded,
-                    color: AppColors.white, size: 20),
+    return BlocBuilder<WalletBloc, WalletState>(
+      builder: (context, walletState) {
+        return BlocBuilder<UserBloc, UserState>(
+          builder: (context, userState) {
+            double balance = 0;
+            bool isLoading = walletState is WalletLoading;
+            
+            if (walletState is WalletLoaded) {
+              balance = walletState.balance.balance;
+            } else if (userState is UserLoaded) {
+              balance = userState.user.balance;
+            }
+            
+            return _buildGlassContainer(
+              context: context,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.white.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.1)),
+                    ),
+                    child: isLoading 
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
+                      : const Icon(Icons.account_balance_wallet_rounded,
+                        color: AppColors.white, size: 20),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('AVAILABLE BALANCE',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                color: OptimizedColors.white50,
+                                letterSpacing: 1.2)),
+                        Text('£${balance.toStringAsFixed(2)}',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                                color: AppColors.white,
+                                letterSpacing: -0.5)),
+                      ],
+                    ),
+                  ),
+                  if (!isLoading)
+                    Icon(
+                      balance >= 0 ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
+                      color: balance >= 0 ? AppColors.success : AppColors.error, 
+                      size: 22
+                    ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('AVAILABLE BALANCE',
-                        style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.w900,
-                            color: OptimizedColors.white50,
-                            letterSpacing: 1.2)),
-                    Text('£${balance.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.white,
-                            letterSpacing: -0.5)),
-                  ],
-                ),
-              ),
-              const Icon(Icons.check_circle_rounded,
-                  color: AppColors.success, size: 22),
-            ],
-          ),
+            );
+          },
         );
       },
     ).animate().fadeIn(delay: 300.ms);
@@ -431,7 +485,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
                   height: 24,
                   child: CircularProgressIndicator(
                       color: AppColors.white, strokeWidth: 2.5))
-              : const Text('CONFIRM & PAY',
+              : const Text('CONFIRM',
                   style: TextStyle(
                       color: AppColors.white,
                       fontSize: 15,
