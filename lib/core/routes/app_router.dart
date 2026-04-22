@@ -80,10 +80,18 @@ class AppRouter {
           builder: (_) => EventDetailScreen(event: event),
         );
       case WorkspaceDetailScreen.routeName:
+        if (settings.arguments is Map<String, dynamic>) {
+          final args = settings.arguments as Map<String, dynamic>;
+          return _createPremiumRoute(
+            WorkspaceDetailScreen(
+              workspace: args['workspace'] as WorkspaceEntity?,
+              heroTag: args['heroTag'] as String?,
+            ),
+            settings: settings,
+          );
+        }
         final workspace = settings.arguments as WorkspaceEntity;
-        return MaterialPageRoute(
-          builder: (_) => WorkspaceDetailScreen(workspace: workspace),
-        );
+        return _createPremiumRoute(WorkspaceDetailScreen(workspace: workspace), settings: settings);
       case BookingScreen.routeName:
         final args = settings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
@@ -137,7 +145,7 @@ class AppRouter {
         return MaterialPageRoute(
             builder: (_) => const ConnectionRequestsScreen());
       case AllWorkspacesScreen.routeName:
-        return MaterialPageRoute(builder: (_) => const AllWorkspacesScreen());
+        return _createPremiumRoute(const AllWorkspacesScreen(), settings: settings);
       case NotificationsScreen.routeName:
         return MaterialPageRoute(builder: (_) => const NotificationsScreen());
       case WishlistScreen.routeName:
@@ -219,4 +227,30 @@ class AppRouter {
         // You can still keep static routes here if needed,
         // but generateRoute handles everything now.
       };
+
+  static Route<dynamic> _createPremiumRoute(Widget page, {RouteSettings? settings}) {
+    return PageRouteBuilder(
+      settings: settings,
+      pageBuilder: (context, animation, secondaryAnimation) => page,
+      transitionDuration: const Duration(milliseconds: 600),
+      reverseTransitionDuration: const Duration(milliseconds: 400),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        final fadeAnimation = CurvedAnimation(
+          parent: animation,
+          curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+        );
+        final scaleAnimation = Tween<double>(begin: 0.96, end: 1.0).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+        );
+
+        return FadeTransition(
+          opacity: fadeAnimation,
+          child: ScaleTransition(
+            scale: scaleAnimation,
+            child: child,
+          ),
+        );
+      },
+    );
+  }
 }

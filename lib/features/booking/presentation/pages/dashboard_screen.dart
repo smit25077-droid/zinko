@@ -23,6 +23,7 @@ import 'package:zinko_app/features/cafe/data/mappers/cafe_mapper.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_empty_state.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
+import 'package:zinko_app/widgets/zinko_glass_box.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -166,6 +167,40 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             color: GlassTheme.textColor(context),
                             height: 1.1,
                             letterSpacing: -1,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: Hero(
+                          tag: 'search_bar',
+                          child: Material(
+                            color: Colors.transparent,
+                            child: GestureDetector(
+                              onTap: _goSeeAll,
+                              child: ZinkoGlassBox(
+                                blur: 15,
+                                borderRadius: 18,
+                                child: Container(
+                                  height: 52,
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.search_rounded,
+                                          color: GlassTheme.iconColor(context).withValues(alpha: 0.4), size: 20),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Search office, cafe, location...',
+                                        style: TextStyle(
+                                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
+                                            fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -387,10 +422,23 @@ class _RecommendedList extends StatelessWidget {
             width: 280,
             margin: const EdgeInsets.only(right: 20),
             padding: EdgeInsets.zero,
-            onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: w),
-            child: Stack(
-              children: [
-                ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 24),
+          onTap: () {
+            final tag = 'hero_rec_${w.id}';
+            Navigator.pushNamed(
+              context,
+              WorkspaceDetailScreen.routeName,
+              arguments: {
+                'workspace': w,
+                'heroTag': tag,
+              },
+            );
+          },
+          child: Stack(
+            children: [
+              Hero(
+                tag: 'hero_rec_${w.id}',
+                child: ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 24),
+              ),
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -411,8 +459,14 @@ class _RecommendedList extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(w.name,
-                          style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                      Hero(
+                        tag: 'hero_rec_${w.id}_name',
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Text(w.name,
+                              style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                        ),
+                      ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
@@ -453,7 +507,17 @@ class _NearbyCard extends StatelessWidget {
     return ZinkoCommonCard(
       margin: const EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.zero,
-      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: workspace),
+      onTap: () {
+        final tag = 'hero_nearby_${workspace.id}';
+        Navigator.pushNamed(
+          context,
+          WorkspaceDetailScreen.routeName,
+          arguments: {
+            'workspace': workspace,
+            'heroTag': tag,
+          },
+        );
+      },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -463,15 +527,17 @@ class _NearbyCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                  child: ZinkoNetworkImage(
-                      imageUrl: workspace.imageUrl, width: double.infinity, height: 140, fit: BoxFit.cover),
+                  child: Hero(
+                    tag: 'hero_nearby_${workspace.id}',
+                    child: ZinkoNetworkImage(
+                        imageUrl: workspace.imageUrl, width: double.infinity, height: 140, fit: BoxFit.cover),
+                  ),
                 ),
                 Positioned(
                   top: 12,
                   right: 12,
                   child: _GlassFavButton(isFavorite: workspace.isFavorite, onTap: onFavTap),
                 ),
-                const SizedBox(),
               ],
             ),
           ),
@@ -485,10 +551,16 @@ class _NearbyCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
-                        child: Text(workspace.name,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
-                            overflow: TextOverflow.ellipsis),
+                        child: Hero(
+                          tag: 'hero_nearby_${workspace.id}_name',
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Text(workspace.name,
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
+                                overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
                       ),
                       Flexible(
                         child: Text('£${workspace.price}',
@@ -499,10 +571,16 @@ class _NearbyCard extends StatelessWidget {
                     ],
                   )
                 else
-                  Text(workspace.name,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
-                      overflow: TextOverflow.ellipsis),
+                  Hero(
+                    tag: 'hero_nearby_${workspace.id}_name',
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Text(workspace.name,
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                  ),
                 const SizedBox(height: 6),
                 Row(
                   children: [

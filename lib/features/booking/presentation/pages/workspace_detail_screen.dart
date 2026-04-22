@@ -30,10 +30,12 @@ import 'package:collection/collection.dart';
 class WorkspaceDetailScreen extends StatelessWidget {
   static const String routeName = '/workspace-detail';
   final WorkspaceEntity? workspace;
+  final String? heroTag;
 
   const WorkspaceDetailScreen({
     super.key,
     this.workspace,
+    this.heroTag,
   });
 
   @override
@@ -47,15 +49,16 @@ class WorkspaceDetailScreen extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => WorkspaceDetailBloc(),
-      child: _DetailContent(workspace: workspace!),
+      child: _DetailContent(workspace: workspace!, heroTag: heroTag),
     );
   }
 }
 
 class _DetailContent extends StatefulWidget {
   final WorkspaceEntity workspace;
+  final String? heroTag;
 
-  const _DetailContent({required this.workspace});
+  const _DetailContent({required this.workspace, this.heroTag});
 
   @override
   State<_DetailContent> createState() => _DetailContentState();
@@ -211,13 +214,19 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  workspace.name,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -0.5,
+                Hero(
+                  tag: '${widget.heroTag ?? 'workspace_image_${workspace.id}'}_name',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Text(
+                      workspace.name,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        color: AppColors.white,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
                   ),
                 ).animate().fadeIn(),
                 const SizedBox(height: 4),
@@ -590,11 +599,14 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                 .add(UpdatePageIndex(index)),
             itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
             itemBuilder: (context, index) {
-              return ZinkoNetworkImage(
-                imageUrl: workspace.images.isEmpty
-                    ? workspace.imageUrl
-                    : workspace.images[index],
-                fit: BoxFit.cover,
+              return Hero(
+                tag: widget.heroTag ?? 'workspace_image_${workspace.id}',
+                child: ZinkoNetworkImage(
+                  imageUrl: workspace.images.isEmpty
+                      ? workspace.imageUrl
+                      : workspace.images[index],
+                  fit: BoxFit.cover,
+                ),
               );
             },
           ),

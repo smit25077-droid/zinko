@@ -71,44 +71,50 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                child: ZinkoGlassBox(
-                  blur: 15,
-                  borderRadius: 18,
-                  child: SizedBox(
-                    height: 52,
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (val) => context.read<WorkspaceBloc>().add(SearchWorkspacesEvent(val)),
-                      style: TextStyle(
-                          color: GlassTheme.textColor(context),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600),
-                      decoration: InputDecoration(
-                        hintText: 'Search office, cafe, location...',
-                        hintStyle: TextStyle(
-                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
-                            fontSize: 13),
-                        prefixIcon: Icon(Icons.search_rounded,
-                            color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
-                            size: 20),
-                        suffixIcon: ValueListenableBuilder(
-                          valueListenable: _searchController,
-                          builder: (context, value, _) {
-                            return value.text.isNotEmpty
-                                ? IconButton(
-                                    icon: Icon(Icons.clear_rounded,
-                                        color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
-                                        size: 18),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
-                                    },
-                                  )
-                                : const SizedBox.shrink();
-                          },
+                child: Hero(
+                  tag: 'search_bar',
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ZinkoGlassBox(
+                      blur: 15,
+                      borderRadius: 18,
+                      child: SizedBox(
+                        height: 52,
+                        child: TextField(
+                          controller: _searchController,
+                          onChanged: (val) => context.read<WorkspaceBloc>().add(SearchWorkspacesEvent(val)),
+                          style: TextStyle(
+                              color: GlassTheme.textColor(context),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600),
+                          decoration: InputDecoration(
+                            hintText: 'Search office, cafe, location...',
+                            hintStyle: TextStyle(
+                                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
+                                fontSize: 13),
+                            prefixIcon: Icon(Icons.search_rounded,
+                                color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
+                                size: 20),
+                            suffixIcon: ValueListenableBuilder(
+                              valueListenable: _searchController,
+                              builder: (context, value, _) {
+                                return value.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear_rounded,
+                                            color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
+                                            size: 18),
+                                        onPressed: () {
+                                          _searchController.clear();
+                                          context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
+                                        },
+                                      )
+                                    : const SizedBox.shrink();
+                              },
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                          ),
                         ),
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
                   ),
@@ -288,7 +294,17 @@ class _WorkspaceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: workspace),
+      onTap: () {
+        final tag = 'hero_all_${workspace.id}';
+        Navigator.pushNamed(
+          context,
+          WorkspaceDetailScreen.routeName,
+          arguments: {
+            'workspace': workspace,
+            'heroTag': tag,
+          },
+        );
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         child: ZinkoGlassBox.light(
@@ -300,11 +316,14 @@ class _WorkspaceCard extends StatelessWidget {
                 height: 160,
                 child: Stack(
                   children: [
-                    ZinkoNetworkImage(
-                      imageUrl: workspace.imageUrl,
-                      width: double.infinity,
-                      height: 160,
-                      borderRadius: 24,
+                    Hero(
+                      tag: 'hero_all_${workspace.id}',
+                      child: ZinkoNetworkImage(
+                        imageUrl: workspace.imageUrl,
+                        width: double.infinity,
+                        height: 160,
+                        borderRadius: 24,
+                      ),
                     ),
                     Positioned(
                       top: 12,
@@ -323,12 +342,18 @@ class _WorkspaceCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
+                            child: Hero(
+                          tag: 'hero_all_${workspace.id}_name',
+                          child: Material(
+                            color: Colors.transparent,
                             child: Text(workspace.name,
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w900,
                                     color: GlassTheme.textColor(context),
-                                    letterSpacing: -0.5))),
+                                    letterSpacing: -0.5)),
+                          ),
+                        )),
                       ],
                     ),
                     const SizedBox(height: 6),
