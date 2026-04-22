@@ -411,7 +411,6 @@ class _RecommendedList extends StatelessWidget {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.symmetric(horizontal: 24),
         itemCount: workspaces.length,
         itemExtent: 300,

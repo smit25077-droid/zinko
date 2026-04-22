@@ -150,7 +150,6 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
 
                       return ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                        physics: const BouncingScrollPhysics(),
                         itemCount: filtered.length,
                         itemBuilder: (ctx, i) {
                           final workspace = filtered[i];

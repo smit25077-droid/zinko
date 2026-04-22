@@ -7,6 +7,7 @@ class ZinkoScrollBody extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final ScrollPhysics? physics;
   final ScrollController? controller;
+  final Axis scrollDirection;
 
   const ZinkoScrollBody({
     super.key,
@@ -14,13 +15,15 @@ class ZinkoScrollBody extends StatelessWidget {
     this.padding,
     this.physics,
     this.controller,
+    this.scrollDirection = Axis.vertical,
   });
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      scrollDirection: scrollDirection,
       controller: controller,
-      physics: physics ?? const BouncingScrollPhysics(),
+      physics: physics,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 20),
       child: child,
     );
