@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/booking/domain/repositories/workspace_repository.dart';
@@ -15,8 +17,13 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
   });
 
   @override
-  Future<List<WorkspaceEntity>> getWorkspaces() async {
-    return await localDataSource.getWorkspaces();
+  Future<Either<Failure, List<WorkspaceEntity>>> getWorkspaces() async {
+    try {
+      final result = await localDataSource.getWorkspaces();
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
@@ -25,32 +32,52 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
   }
 
   @override
-  Future<void> toggleFavorite(String id) async {
-    await localDataSource.toggleFavorite(id);
+  Future<Either<Failure, void>> toggleFavorite(String id) async {
+    try {
+      await localDataSource.toggleFavorite(id);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
-  Future<void> toggleBookmark(String id) async {
-    await localDataSource.toggleBookmark(id);
+  Future<Either<Failure, void>> toggleBookmark(String id) async {
+    try {
+      await localDataSource.toggleBookmark(id);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
-  Future<BookingResponseEntity> createBooking(
+  Future<Either<Failure, BookingResponseEntity>> createBooking(
       BookingRequestEntity request) async {
-    final model = CreateBookingRequestModel(
-      userId: request.userId,
-      cafeId: request.cafeId,
-      bookingDate: request.bookingDate,
-      cafeTimeSlotsId: request.cafeTimeSlotsId,
-      cafeWorkspacesId: request.cafeWorkspacesId,
-      durationHours: request.durationHours,
-      tentativeCheckInDatetime: request.tentativeCheckInDatetime,
-    );
-    return await remoteDataSource.createBooking(model);
+    try {
+      final model = CreateBookingRequestModel(
+        userId: request.userId,
+        cafeId: request.cafeId,
+        bookingDate: request.bookingDate,
+        cafeTimeSlotsId: request.cafeTimeSlotsId,
+        cafeWorkspacesId: request.cafeWorkspacesId,
+        durationHours: request.durationHours,
+        tentativeCheckInDatetime: request.tentativeCheckInDatetime,
+      );
+      final result = await remoteDataSource.createBooking(model);
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
-  Future<List<WorkspaceEntity>> searchWorkspaces(String keyword) async {
-    return await remoteDataSource.searchWorkspaces(keyword);
+  Future<Either<Failure, List<WorkspaceEntity>>> searchWorkspaces(String keyword) async {
+    try {
+      final result = await remoteDataSource.searchWorkspaces(keyword);
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

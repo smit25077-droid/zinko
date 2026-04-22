@@ -81,8 +81,8 @@ class _ZinkoSuccessOverlayState extends State<ZinkoSuccessOverlay> {
                   duration: 600.ms,
                   builder: (context, value, child) => Container(
                     color: Color.lerp(
-                      AppColors.midnightNavy.withValues(alpha: 0.95),
-                      AppColors.royalBlue.withValues(alpha: 0.98),
+                      AppColors.backgroundDark.withValues(alpha: 0.95),
+                      AppColors.primaryDark.withValues(alpha: 0.98),
                       value,
                     ),
                   ),
@@ -164,7 +164,7 @@ class _ZinkoSuccessOverlayState extends State<ZinkoSuccessOverlay> {
       child: Center(
         child: Icon(
           Icons.check_rounded,
-          color: AppColors.primaryBlue,
+          color: AppColors.primary,
           size: 90,
         )
             .animate()
@@ -197,7 +197,7 @@ class _ZinkoSuccessOverlayState extends State<ZinkoSuccessOverlay> {
         width: 8,
         height: 8,
         decoration: BoxDecoration(
-          color: index % 2 == 0 ? Colors.white : AppColors.brightBlue,
+          color: index % 2 == 0 ? Colors.white : AppColors.secondary,
           shape: index % 3 == 0 ? BoxShape.circle : BoxShape.rectangle,
           borderRadius: index % 3 == 0 ? null : BorderRadius.circular(2),
         ),

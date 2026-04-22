@@ -43,13 +43,13 @@ class ZinkoCommonCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
         boxShadow: [
           BoxShadow(
-            color: AppColors.midnightNavy.withValues(alpha: 0.3),
+            color: AppColors.backgroundDark.withValues(alpha: 0.3),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
           if (isSelected)
             BoxShadow(
-              color: AppColors.brightBlue.withValues(alpha: 0.2),
+              color: AppColors.secondary.withValues(alpha: 0.2),
               blurRadius: 15,
               spreadRadius: 2,
             ),
@@ -62,8 +62,8 @@ class ZinkoCommonCard extends StatelessWidget {
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(borderRadius),
-            splashColor: AppColors.brightBlue.withValues(alpha: 0.1),
-            highlightColor: AppColors.brightBlue.withValues(alpha: 0.05),
+            splashColor: AppColors.secondary.withValues(alpha: 0.1),
+            highlightColor: AppColors.secondary.withValues(alpha: 0.05),
             child: Container(
               padding: padding,
               decoration: BoxDecoration(
@@ -71,7 +71,7 @@ class ZinkoCommonCard extends StatelessWidget {
                 border: showBorder
                     ? Border.all(
                         color: borderColor ?? (isSelected 
-                            ? AppColors.brightBlue.withValues(alpha: 0.5)
+                            ? AppColors.secondary.withValues(alpha: 0.5)
                             : Colors.white.withValues(alpha: 0.1)),
                         width: 1.5,
                       )
@@ -80,8 +80,8 @@ class ZinkoCommonCard extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: gradientColors ?? [
-                    (backgroundColor ?? AppColors.midnightNavy).withValues(alpha: 0.8),
-                    (backgroundColor ?? AppColors.midnightNavy).withValues(alpha: 0.4),
+                    (backgroundColor ?? AppColors.backgroundDark).withValues(alpha: 0.8),
+                    (backgroundColor ?? AppColors.backgroundDark).withValues(alpha: 0.4),
                   ],
                 ),
               ),
@@ -98,7 +98,7 @@ class ZinkoCommonCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            AppColors.royalBlue.withValues(alpha: 0.1),
+                            AppColors.primaryDark.withValues(alpha: 0.1),
                             Colors.transparent,
                           ],
                         ),

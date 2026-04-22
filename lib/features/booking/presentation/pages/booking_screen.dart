@@ -341,7 +341,7 @@ class _BookingScreenContent extends StatelessWidget {
             margin: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.brightBlue
+                ? AppColors.secondary
                 : (selectable
                     ? AppColors.white.withValues(alpha: 0.08)
                     : Colors.transparent),
@@ -430,12 +430,12 @@ class _BookingScreenContent extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: selected
-                        ? AppColors.brightBlue
+                        ? AppColors.secondary
                         : AppColors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                         color: selected
-                            ? AppColors.brightBlue
+                            ? AppColors.secondary
                             : AppColors.white.withValues(alpha: 0.1)),
                   ),
                   alignment: Alignment.center,
@@ -512,12 +512,12 @@ class _BookingScreenContent extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
                     color: selected
-                        ? AppColors.brightBlue
+                        ? AppColors.secondary
                         : AppColors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                         color: selected
-                            ? AppColors.brightBlue
+                            ? AppColors.secondary
                             : AppColors.white.withValues(alpha: 0.1)),
                   ),
                   alignment: Alignment.center,
@@ -571,11 +571,11 @@ class _BookingScreenContent extends StatelessWidget {
           const SizedBox(height: 16),
           SliderTheme(
             data: SliderThemeData(
-              activeTrackColor: AppColors.brightBlue,
+              activeTrackColor: AppColors.secondary,
               inactiveTrackColor:
                   AppColors.white.withValues(alpha: 0.1),
               thumbColor: AppColors.white,
-              overlayColor: AppColors.brightBlue.withValues(alpha: 0.2),
+              overlayColor: AppColors.secondary.withValues(alpha: 0.2),
               trackHeight: 4,
               valueIndicatorTextStyle: const TextStyle(
                 color: Colors.white,
@@ -650,12 +650,12 @@ class _BookingScreenContent extends StatelessWidget {
                       color: occupied
                           ? AppColors.white.withValues(alpha: 0.04)
                           : (selected
-                              ? AppColors.brightBlue
+                              ? AppColors.secondary
                               : AppColors.white.withValues(alpha: 0.08)),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
                           color: selected
-                              ? AppColors.brightBlue
+                              ? AppColors.secondary
                               : AppColors.white.withValues(alpha: 0.1)),
                     ),
                     child: Column(
@@ -767,7 +767,7 @@ class _BookingScreenContent extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: AppColors.midnightNavy.withValues(alpha: 0.95),
+        color: AppColors.backgroundDark.withValues(alpha: 0.95),
         border: Border(
             top: BorderSide(
                 color: AppColors.white.withValues(alpha: 0.1))),
@@ -797,12 +797,12 @@ class _BookingScreenContent extends StatelessWidget {
           height: 52,
           decoration: BoxDecoration(
             color: active
-                ? AppColors.primaryBlue
+                ? AppColors.primary
                 : AppColors.white.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(16),
             boxShadow: active ? [
               BoxShadow(
-                color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                color: AppColors.primary.withValues(alpha: 0.3),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               )

@@ -7,12 +7,15 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/widgets/zinko_common_bottom_sheet.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:zinko_app/features/feedback/presentation/bloc/feedback_bloc.dart';
@@ -55,81 +58,54 @@ class BookingDetailsScreen extends StatelessWidget {
         ),
       ],
       child: Scaffold(
-        extendBodyBehindAppBar: true,
         backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _GlassHeaderButton(
-              icon: Icons.arrow_back_ios_new_rounded,
-              onTap: () => Navigator.pop(context),
-            ),
-          ),
-          centerTitle: true,
-          title: Text(
-            'RESERVATION DETAILS',
-            style: TextStyle(
-              color: GlassTheme.textColor(context),
-              fontWeight: FontWeight.w900,
-              fontSize: 14,
-              letterSpacing: 2.0,
-            ),
-          ),
+        appBar: const ZinkoAppBar(
+          title: 'RESERVATION DETAILS',
         ),
         body: ZinkoBackground(
           child: Stack(
             children: [
-              CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 100, 20, 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildPremiumHeader(context),
-                          const SizedBox(height: 24),
-                          _buildStatusCard(context),
-                          const SizedBox(height: 24),
-                          _buildInfoSection(context, 'MAIN INFORMATION', [
-                            _DetailItem(label: 'BOOKING CODE', value: booking.bookingCode, icon: Icons.qr_code_2_rounded),
-                            _DetailItem(label: 'WORKSPACE', value: booking.seatType, icon: Icons.work_outline_rounded),
-                            _DetailItem(label: 'PERSONS', value: '${booking.noOfPersons} Persons', icon: Icons.person_outline_rounded),
-                          ]),
-                          const SizedBox(height: 16),
-                          _buildInfoSection(context, 'SCHEDULE & TIME', [
-                            _DetailItem(
-                              label: 'DATE',
-                              value: booking.bookingDate != null 
-                                ? DateFormat('EEEE, d MMMM yyyy').format(booking.bookingDate!)
-                                : 'TBD',
-                              icon: Icons.calendar_today_rounded,
-                            ),
-                            _DetailItem(label: 'TIME SLOT', value: booking.timeSlot, icon: Icons.access_time_rounded),
-                            _DetailItem(label: 'TOTAL DURATION', value: '${booking.totalHours} Hours', icon: Icons.timelapse_rounded),
-                          ]),
-                          const SizedBox(height: 16),
-                          _buildInfoSection(context, 'CHECK-IN/OUT LOGS', [
-                            _DetailItem(label: 'TENTATIVE IN', value: _formatTime(booking.tentativeCheckInDatetime), icon: Icons.login_rounded),
-                            _DetailItem(label: 'TENTATIVE OUT', value: _formatTime(booking.tentativeCheckOutDatetime), icon: Icons.logout_rounded),
-                            _DetailItem(
-                              label: 'ACTUAL IN', 
-                              value: (booking.checkInDatetime?.isNotEmpty ?? false) ? _formatTime(booking.checkInDatetime!) : '--:--', 
-                              icon: Icons.check_circle_outline_rounded,
-                              valueColor: (booking.checkInDatetime?.isNotEmpty ?? false) ? AppColors.success : null,
-                            ),
-                          ]),
-                          const SizedBox(height: 16),
-                          _buildPriceCard(context),
-                          const SizedBox(height: 140), // Bottom padding for action bar
-                        ],
+              ZinkoScrollBody(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 140),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPremiumHeader(context),
+                    const SizedBox(height: 24),
+                    _buildStatusCard(context),
+                    const SizedBox(height: 24),
+                    _buildInfoSection(context, 'MAIN INFORMATION', [
+                      _DetailItem(label: 'BOOKING CODE', value: booking.bookingCode, icon: Icons.qr_code_2_rounded),
+                      _DetailItem(label: 'WORKSPACE', value: booking.seatType, icon: Icons.work_outline_rounded),
+                      _DetailItem(label: 'PERSONS', value: '${booking.noOfPersons} Persons', icon: Icons.person_outline_rounded),
+                    ]),
+                    const SizedBox(height: 16),
+                    _buildInfoSection(context, 'SCHEDULE & TIME', [
+                      _DetailItem(
+                        label: 'DATE',
+                        value: booking.bookingDate != null 
+                          ? DateFormat('EEEE, d MMMM yyyy').format(booking.bookingDate!)
+                          : 'TBD',
+                        icon: Icons.calendar_today_rounded,
                       ),
-                    ),
-                  ),
-                ],
+                      _DetailItem(label: 'TIME SLOT', value: booking.timeSlot, icon: Icons.access_time_rounded),
+                      _DetailItem(label: 'TOTAL DURATION', value: '${booking.totalHours} Hours', icon: Icons.timelapse_rounded),
+                    ]),
+                    const SizedBox(height: 16),
+                    _buildInfoSection(context, 'CHECK-IN/OUT LOGS', [
+                      _DetailItem(label: 'TENTATIVE IN', value: _formatTime(booking.tentativeCheckInDatetime), icon: Icons.login_rounded),
+                      _DetailItem(label: 'TENTATIVE OUT', value: _formatTime(booking.tentativeCheckOutDatetime), icon: Icons.logout_rounded),
+                      _DetailItem(
+                        label: 'ACTUAL IN', 
+                        value: (booking.checkInDatetime?.isNotEmpty ?? false) ? _formatTime(booking.checkInDatetime!) : '--:--', 
+                        icon: Icons.check_circle_outline_rounded,
+                        valueColor: (booking.checkInDatetime?.isNotEmpty ?? false) ? AppColors.success : null,
+                      ),
+                    ]),
+                    const SizedBox(height: 16),
+                    _buildPriceCard(context),
+                  ],
+                ),
               ),
               Positioned(
                 bottom: 0,
@@ -170,13 +146,13 @@ class BookingDetailsScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            Icon(Icons.location_on_rounded, size: 14, color: GlassTheme.textColor(context).withValues(alpha: 0.5)),
+            Icon(Icons.location_on_rounded, size: 14, color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.5)),
             const SizedBox(width: 4),
             Expanded(
               child: Text(
                 booking.address,
                 style: TextStyle(
-                  color: GlassTheme.textColor(context).withValues(alpha: 0.6),
+                  color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.6),
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
                 ),
@@ -203,7 +179,7 @@ class BookingDetailsScreen extends StatelessWidget {
         statusIcon = Icons.pending_rounded;
         break;
       case 'CHECKIN':
-        statusColor = AppColors.primaryBlue;
+        statusColor = AppColors.primary;
         statusIcon = Icons.login_rounded;
         break;
       case 'CANCELLED':
@@ -222,7 +198,7 @@ class BookingDetailsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: statusColor.withValues(alpha: 0.1),
+              color: OptimizedColors.applyAlpha(statusColor, 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(statusIcon, color: statusColor, size: 20),
@@ -265,7 +241,7 @@ class BookingDetailsScreen extends StatelessWidget {
           child: Text(
             title,
             style: TextStyle(
-              color: GlassTheme.textColor(context).withValues(alpha: 0.4),
+              color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.4),
               fontSize: 11,
               fontWeight: FontWeight.w900,
               letterSpacing: 1.5,
@@ -281,7 +257,7 @@ class BookingDetailsScreen extends StatelessWidget {
                 children: [
                   _buildDetailRow(context, entry.value),
                   if (!isLast)
-                    Divider(height: 32, color: Colors.white.withValues(alpha: 0.05)),
+                    Divider(height: 32, color: OptimizedColors.white05),
                 ],
               );
             }).toList(),
@@ -294,7 +270,7 @@ class BookingDetailsScreen extends StatelessWidget {
   Widget _buildDetailRow(BuildContext context, _DetailItem item) {
     return Row(
       children: [
-        Icon(item.icon, size: 18, color: GlassTheme.textColor(context).withValues(alpha: 0.4)),
+        Icon(item.icon, size: 18, color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.4)),
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -313,7 +289,7 @@ class BookingDetailsScreen extends StatelessWidget {
               Text(
                 item.value,
                 style: TextStyle(
-                  color: item.valueColor ?? GlassTheme.textColor(context).withValues(alpha: 0.9),
+                  color: item.valueColor ?? OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.9),
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                 ),
@@ -328,7 +304,7 @@ class BookingDetailsScreen extends StatelessWidget {
   Widget _buildPriceCard(BuildContext context) {
     return ZinkoCommonCard(
       padding: const EdgeInsets.all(20),
-      backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.1),
+      backgroundColor: OptimizedColors.applyAlpha(AppColors.primary, 0.1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -338,7 +314,7 @@ class BookingDetailsScreen extends StatelessWidget {
               Text(
                 'TOTAL INVESTMENT',
                 style: TextStyle(
-                  color: GlassTheme.textColor(context).withValues(alpha: 0.4),
+                  color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.4),
                   fontSize: 10,
                   fontWeight: FontWeight.w900,
                 ),
@@ -357,7 +333,7 @@ class BookingDetailsScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.white10,
+              color: OptimizedColors.white10,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -389,8 +365,8 @@ class BookingDetailsScreen extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.5),
-            border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.1))),
+            color: OptimizedColors.applyAlpha(Colors.black, 0.5),
+            border: Border(top: BorderSide(color: OptimizedColors.white10)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -412,7 +388,7 @@ class BookingDetailsScreen extends StatelessWidget {
               if (isCompleted) ...[
                 _SecondaryButton(
                   label: 'VIEW REVIEWS',
-                  color: AppColors.primaryBlue,
+                  color: AppColors.primary,
                   onTap: () => Navigator.pushNamed(
                     context,
                     CafeReviewsScreen.routeName,
@@ -436,7 +412,7 @@ class BookingDetailsScreen extends StatelessWidget {
                     Expanded(
                       child: _SecondaryButton(
                         label: 'SUGGESTION',
-                        color: Colors.white.withValues(alpha: 0.1),
+                        color: OptimizedColors.white10,
                         onTap: () => _showSuggestionBottomSheet(context, booking),
                       ),
                     ),
@@ -456,7 +432,7 @@ class BookingDetailsScreen extends StatelessWidget {
       message: message,
       duration: const Duration(seconds: 4),
       flushbarPosition: FlushbarPosition.TOP,
-      backgroundColor: color.withValues(alpha: 0.9),
+      backgroundColor: OptimizedColors.applyAlpha(color, 0.9),
       borderRadius: BorderRadius.circular(12),
       margin: const EdgeInsets.all(12),
     ).show(context);
@@ -523,7 +499,7 @@ class BookingDetailsScreen extends StatelessWidget {
                 itemCount: 5,
                 itemSize: 46,
                 glow: true,
-                glowColor: Colors.amber.withValues(alpha: 0.3),
+                glowColor: OptimizedColors.applyAlpha(Colors.amber, 0.3),
                 itemPadding: const EdgeInsets.symmetric(horizontal: 6.0),
                 itemBuilder: (context, _) => const Icon(Icons.star_rounded, color: Colors.amber),
                 onRatingUpdate: (val) {
@@ -537,14 +513,14 @@ class BookingDetailsScreen extends StatelessWidget {
                 style: const TextStyle(color: Colors.white, fontSize: 14),
                 decoration: InputDecoration(
                   hintText: 'Tell us more about your visit...',
-                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
+                  hintStyle: TextStyle(color: OptimizedColors.white20),
                   filled: true,
-                  fillColor: Colors.white.withValues(alpha: 0.05),
+                  fillColor: OptimizedColors.white05,
                   contentPadding: const EdgeInsets.all(20),
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                    borderSide: BorderSide(color: OptimizedColors.white10),
                   ),
                 ),
               ),
@@ -584,7 +560,7 @@ class BookingDetailsScreen extends StatelessWidget {
           Text(
             'Your feedback helps us improve the service for everyone.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13, height: 1.5),
+            style: TextStyle(color: OptimizedColors.white50, fontSize: 13, height: 1.5),
           ),
           const SizedBox(height: 24),
           TextField(
@@ -593,14 +569,14 @@ class BookingDetailsScreen extends StatelessWidget {
             style: const TextStyle(color: Colors.white, fontSize: 14),
             decoration: InputDecoration(
               hintText: 'Share your thoughts here...',
-              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
+              hintStyle: TextStyle(color: OptimizedColors.white20),
               filled: true,
-              fillColor: Colors.white.withValues(alpha: 0.05),
+              fillColor: OptimizedColors.white05,
               contentPadding: const EdgeInsets.all(20),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
-                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+                borderSide: BorderSide(color: OptimizedColors.white10),
               ),
             ),
           ),
@@ -672,9 +648,9 @@ class _SecondaryButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: OptimizedColors.applyAlpha(color, 0.1),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withValues(alpha: 0.2)),
+            border: Border.all(color: OptimizedColors.applyAlpha(color, 0.2)),
           ),
           child: Center(
             child: Text(
@@ -688,23 +664,4 @@ class _SecondaryButton extends StatelessWidget {
   }
 }
 
-class _GlassHeaderButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassHeaderButton({required this.icon, required this.onTap});
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.05),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1)),
-        ),
-        child: Icon(icon, color: Colors.white, size: 18),
-      ),
-    );
-  }
-}

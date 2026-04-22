@@ -52,7 +52,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
         return cafe;
       }).toList();
 
-      emit(CafeLoaded(cafes: updatedCafes));
+      emit(CafeLoaded(cafes: updatedCafes,categories: currentState.categories));
 
       try {
         await toggleWishlist(event.cafeId, event.userCode);
@@ -87,12 +87,15 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
     try {
       final cafes = await searchCafes(event.keyword);
       
-      // Dynamic category selection
+      // Dynamic category selection from venue_type
       final dynamicCategories = cafes
-          .map((c) => c.venueType)
-          .where((t) => t.trim().isNotEmpty)
+          .map((c) => c.venueType.trim())
+          .where((t) => t.isNotEmpty)
           .toSet()
           .toList();
+      
+      // Sort alphabetically for a better UI experience
+      dynamicCategories.sort((a, b) => a.compareTo(b));
       
       final finalCategories = ['All', ...dynamicCategories];
       

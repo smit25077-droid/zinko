@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:zinko_app/features/user/domain/entities/transaction_entity.dart';
 
-class UserEntity {
+class UserEntity extends Equatable {
   final String name;
   final String email;
   final String phone;
@@ -44,6 +45,29 @@ class UserEntity {
     this.birthdate = '',
     this.companyName = '',
   });
+
+  @override
+  List<Object?> get props => [
+        name,
+        email,
+        phone,
+        profileImage,
+        role,
+        bio,
+        membership,
+        balance,
+        transactions,
+        isEmailVerified,
+        isPhoneVerified,
+        userCode,
+        userVisibility,
+        referralCode,
+        city,
+        state,
+        gender,
+        birthdate,
+        companyName,
+      ];
 
   UserEntity copyWith({
     String? name,

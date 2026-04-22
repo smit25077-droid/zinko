@@ -1,4 +1,6 @@
-class BookingRequestEntity {
+import 'package:equatable/equatable.dart';
+
+class BookingRequestEntity extends Equatable {
   final int userId;
   final int cafeId;
   final String bookingDate;
@@ -29,10 +31,24 @@ class BookingRequestEntity {
       'tentative_check_in_datetime': tentativeCheckInDatetime,
     };
   }
+
+  @override
+  List<Object?> get props => [
+        userId,
+        cafeId,
+        bookingDate,
+        cafeTimeSlotsId,
+        cafeWorkspacesId,
+        durationHours,
+        tentativeCheckInDatetime,
+      ];
 }
 
-class BookingResponseEntity {
+class BookingResponseEntity extends Equatable {
   final String bookingCode;
 
   const BookingResponseEntity({required this.bookingCode});
+
+  @override
+  List<Object?> get props => [bookingCode];
 }

@@ -1,4 +1,6 @@
-class TransactionEntity {
+import 'package:equatable/equatable.dart';
+
+class TransactionEntity extends Equatable {
   final String title;
   final String date;
   final double amount;
@@ -10,4 +12,7 @@ class TransactionEntity {
     required this.amount,
     required this.isCredit,
   });
+
+  @override
+  List<Object?> get props => [title, date, amount, isCredit];
 }

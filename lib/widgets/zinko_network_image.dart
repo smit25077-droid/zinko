@@ -26,6 +26,10 @@ class ZinkoNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (imageUrl.isEmpty) {
+      return _buildErrorWidget(fit);
+    }
+
     return Container(
       width: width,
       height: height,

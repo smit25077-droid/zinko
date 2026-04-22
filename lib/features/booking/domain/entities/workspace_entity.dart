@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class WorkspaceEntity {
+class WorkspaceEntity extends Equatable {
   final String id;
   final String name;
   final String location;
@@ -42,6 +43,29 @@ class WorkspaceEntity {
     this.cafeTimeSlots = const [],
     this.cafeWorkSpaces = const [],
   });
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        location,
+        price,
+        imageUrl,
+        images,
+        amenities,
+        amenityNames,
+        description,
+        phone,
+        email,
+        tablesLeft,
+        totalSlots,
+        isFavorite,
+        lat,
+        lng,
+        reviews,
+        cafeTimeSlots,
+        cafeWorkSpaces,
+      ];
 
   WorkspaceEntity copyWith({
     String? id,
@@ -88,7 +112,7 @@ class WorkspaceEntity {
   }
 }
 
-class CafeTimeSlot {
+class CafeTimeSlot extends Equatable {
   final int id;
   final int cafeId;
   final String? cafeName;
@@ -104,9 +128,12 @@ class CafeTimeSlot {
     required this.endTime,
     required this.weekDay,
   });
+
+  @override
+  List<Object?> get props => [id, cafeId, cafeName, startTime, endTime, weekDay];
 }
 
-class CafeWorkSpace {
+class CafeWorkSpace extends Equatable {
   final int id;
   final int cafeId;
   final String? cafeName;
@@ -122,9 +149,12 @@ class CafeWorkSpace {
     required this.totalSeats,
     required this.isActive,
   });
+
+  @override
+  List<Object?> get props => [id, cafeId, cafeName, tableName, totalSeats, isActive];
 }
 
-class WorkspaceReviewEntity {
+class WorkspaceReviewEntity extends Equatable {
   final String userName;
   final String avatarUrl;
   final double rating;
@@ -138,5 +168,8 @@ class WorkspaceReviewEntity {
     required this.comment,
     required this.date,
   });
+
+  @override
+  List<Object?> get props => [userName, avatarUrl, rating, comment, date];
 }
 

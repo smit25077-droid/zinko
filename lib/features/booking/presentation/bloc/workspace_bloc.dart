@@ -77,13 +77,11 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     await completer.future;
 
     emit(WorkspaceLoading());
-    try {
-      final workspaces = await searchWorkspaces(query);
-      emit(WorkspaceLoaded(workspaces, searchQuery: query));
-    } catch (e) {
-      // If fails but was a valid search, we show empty results as requested
-      emit(WorkspaceLoaded(const [], searchQuery: query));
-    }
+    final result = await searchWorkspaces(query);
+    result.fold(
+      (failure) => emit(WorkspaceError(failure.message)),
+      (workspaces) => emit(WorkspaceLoaded(workspaces, searchQuery: query)),
+    );
   }
 
   @override
@@ -98,12 +96,11 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     Emitter<WorkspaceState> emit,
   ) async {
     emit(WorkspaceLoading());
-    try {
-      final workspaces = await getWorkspaces();
-      emit(WorkspaceLoaded(workspaces));
-    } catch (e) {
-      emit(WorkspaceError(e.toString()));
-    }
+    final result = await getWorkspaces();
+    result.fold(
+      (failure) => emit(WorkspaceError(failure.message)),
+      (workspaces) => emit(WorkspaceLoaded(workspaces)),
+    );
   }
 
   void _onFilterByCategory(
@@ -120,21 +117,21 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     ToggleFavoriteWorkspaceEvent event,
     Emitter<WorkspaceState> emit,
   ) async {
-    try {
-      await repository.toggleFavorite(event.workspaceId);
-    } catch (e) {
-      // Handle error natively via stream if needed, or emit failure.
-    }
+    final result = await repository.toggleFavorite(event.workspaceId);
+    result.fold(
+      (failure) => emit(WorkspaceError(failure.message)),
+      (_) => null, // Success is handled via the stream listener
+    );
   }
 
   Future<void> _onToggleBookmark(
     ToggleBookmarkWorkspaceEvent event,
     Emitter<WorkspaceState> emit,
   ) async {
-    try {
-      await repository.toggleBookmark(event.workspaceId);
-    } catch (e) {
-      debugPrint('Error toggling bookmark: $e');
-    }
+    final result = await repository.toggleBookmark(event.workspaceId);
+    result.fold(
+      (failure) => debugPrint('Error toggling bookmark: ${failure.message}'),
+      (_) => null,
+    );
   }
 }

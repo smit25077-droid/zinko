@@ -11,6 +11,7 @@ import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart'
 import 'package:zinko_app/features/booking/presentation/bloc/booking_state.dart';
 import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 import 'package:zinko_app/features/booking/presentation/pages/booking_details_screen.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
@@ -74,7 +75,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                 message: state.message,
                 duration: const Duration(seconds: 4),
                 flushbarPosition: FlushbarPosition.TOP,
-                backgroundColor: Colors.redAccent.withValues(alpha: 0.9),
+                backgroundColor: OptimizedColors.applyAlpha(Colors.redAccent, 0.9),
                 icon: const Icon(Icons.error_outline, color: Colors.white),
                 borderRadius: BorderRadius.circular(12),
                 margin: const EdgeInsets.all(12),
@@ -85,7 +86,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                 message: state.message,
                 duration: const Duration(seconds: 3),
                 flushbarPosition: FlushbarPosition.TOP,
-                backgroundColor: AppColors.success.withValues(alpha: 0.9),
+                backgroundColor: OptimizedColors.applyAlpha(AppColors.success, 0.9),
                 icon: const Icon(Icons.check_circle_outline, color: Colors.white),
                 borderRadius: BorderRadius.circular(12),
                 margin: const EdgeInsets.all(12),
@@ -94,6 +95,10 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
           },
           child: SafeArea(
             child: BlocBuilder<BookingBloc, BookingState>(
+              buildWhen: (previous, current) =>
+                  current is BookingLoading ||
+                  current is BookingsLoaded ||
+                  current is BookingError,
               builder: (context, state) {
                 if (state is BookingLoading) {
                   return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
@@ -122,6 +127,8 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                                   physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                                   itemCount: filteredBookings.length,
+                                  itemExtent: 180, // Fixed height for booking cards
+                                  addAutomaticKeepAlives: false,
                                   itemBuilder: (context, index) {
                                     return _BookingCard(
                                       booking: filteredBookings[index],
@@ -175,14 +182,14 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.midnightNavy,
+              color: AppColors.backgroundDark,
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+              border: Border.all(color: OptimizedColors.white10),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.brightBlue.withValues(alpha: 0.1),
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
+                    color: OptimizedColors.applyAlpha(AppColors.secondary, 0.1),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
                 )
               ],
             ),
@@ -245,7 +252,7 @@ class _TabItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: isSelected ? Colors.black : AppColors.white.withValues(alpha: 0.4),
+              color: isSelected ? Colors.black : OptimizedColors.white40,
               letterSpacing: 1.0,
             ),
           ),
@@ -287,7 +294,7 @@ class _BookingCard extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+                      border: Border.all(color: OptimizedColors.white10),
                     ),
                     child: ZinkoNetworkImage(
                       imageUrl: imageUrl,
@@ -310,14 +317,14 @@ class _BookingCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(Icons.location_on_rounded, size: 10, color: AppColors.white.withValues(alpha: 0.4)),
+                            Icon(Icons.location_on_rounded, size: 10, color: OptimizedColors.white40),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 location,
                                 style: TextStyle(
                                     fontSize: 11,
-                                    color: AppColors.white.withValues(alpha: 0.5),
+                                    color: OptimizedColors.white50,
                                     fontWeight: FontWeight.w600),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -328,7 +335,7 @@ class _BookingCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: (isConfirmed ? AppColors.success : AppColors.white).withValues(alpha: 0.1),
+                            color: OptimizedColors.applyAlpha(isConfirmed ? AppColors.success : AppColors.white, 0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -347,7 +354,7 @@ class _BookingCard extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
+            Divider(height: 1, color: OptimizedColors.white05),
             Padding(
               padding: const EdgeInsets.all(14.0),
               child: Row(
@@ -364,7 +371,7 @@ class _BookingCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.white.withValues(alpha: 0.3)),
+                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: OptimizedColors.white30),
                 ],
               ),
             ),
@@ -554,9 +561,9 @@ class _GlassHeaderButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.05),
+          color: OptimizedColors.white05,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: OptimizedColors.white10),
         ),
         child: Icon(icon, color: AppColors.white, size: 18),
       ),

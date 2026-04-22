@@ -296,13 +296,13 @@ class _BookingCard extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: (isCompleted ? AppColors.success : AppColors.primaryBlue).withValues(alpha: 0.1),
+                              color: (isCompleted ? AppColors.success : AppColors.primary).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
                               status,
                               style: TextStyle(
-                                color: isCompleted ? AppColors.success : AppColors.primaryBlue,
+                                color: isCompleted ? AppColors.success : AppColors.primary,
                                 fontSize: 8,
                                 fontWeight: FontWeight.w900,
                               ),

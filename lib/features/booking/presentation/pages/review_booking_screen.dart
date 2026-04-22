@@ -160,6 +160,11 @@ class _ReviewBookingScreenContent extends StatelessWidget {
         ),
       ],
       child: BlocBuilder<CreateBookingBloc, CreateBookingState>(
+        buildWhen: (previous, current) =>
+            current is CreateBookingInitial ||
+            current is CreateBookingLoading ||
+            current is CreateBookingError ||
+            current is CreateBookingSuccess,
         builder: (context, state) {
           return Scaffold(
             extendBodyBehindAppBar: true,
@@ -332,6 +337,10 @@ class _ReviewBookingScreenContent extends StatelessWidget {
 
   Widget _buildGlassWalletInfo(BuildContext context) {
     return BlocBuilder<WalletBloc, WalletState>(
+      buildWhen: (previous, current) =>
+          current is WalletLoading ||
+          current is WalletLoaded ||
+          current is WalletError,
       builder: (context, walletState) {
         return BlocBuilder<UserBloc, UserState>(
           builder: (context, userState) {
@@ -351,10 +360,10 @@ class _ReviewBookingScreenContent extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: AppColors.white.withValues(alpha: 0.1),
+                      color: OptimizedColors.white10,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                          color: AppColors.white.withValues(alpha: 0.1)),
+                          color: OptimizedColors.white10),
                     ),
                     child: isLoading 
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
@@ -458,8 +467,8 @@ class _ReviewBookingScreenContent extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(
           28, 20, 28, 28 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
-        color: AppColors.midnightNavy.withValues(alpha: 0.95),
-        border: Border(top: BorderSide(color: AppColors.white.withValues(alpha: 0.1))),
+        color: OptimizedColors.applyAlpha(AppColors.backgroundDark, 0.95),
+        border: Border(top: BorderSide(color: OptimizedColors.white10)),
       ),
       child: GestureDetector(
         onTap: loading
@@ -470,11 +479,11 @@ class _ReviewBookingScreenContent extends StatelessWidget {
           duration: 300.ms,
           height: 64,
           decoration: BoxDecoration(
-              color: loading ? AppColors.white.withValues(alpha: 0.2) : AppColors.primaryBlue,
+              color: loading ? OptimizedColors.white20 : AppColors.primary,
               borderRadius: BorderRadius.circular(22),
               boxShadow: loading ? null : [
                 BoxShadow(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                    color: OptimizedColors.applyAlpha(AppColors.primary, 0.3),
                     blurRadius: 20,
                     offset: const Offset(0, 10))
               ]),

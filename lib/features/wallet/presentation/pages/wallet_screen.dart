@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
@@ -14,6 +15,7 @@ import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
 
@@ -42,6 +44,7 @@ class WalletScreen extends StatelessWidget {
               }
             },
             child: BlocBuilder<WalletBloc, WalletState>(
+              buildWhen: (p, c) => c is WalletLoading || c is WalletLoaded || c is WalletError,
               builder: (context, state) {
                 if (state is WalletInitial) {
                   context.read<WalletBloc>().add(FetchWalletDataEvent());
@@ -56,53 +59,40 @@ class WalletScreen extends StatelessWidget {
                 if (state is WalletLoaded) {
                   final balance = state.balance;
                   final transactions = state.transactions;
-                  return CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 20),
-                              _buildWalletCard(context, balance.balance),
-                              const SizedBox(height: 24),
-                              _buildActionButton(
-                                context,
-                                Icons.add_circle_outline_rounded,
-                                'ADD MONEY',
-                                () => _showAddMoneyDialog(context),
-                                highlight: true,
-                              ).animate(delay: 400.ms).fadeIn().slideX(begin: 0.1, end: 0),
-                              const SizedBox(height: 32),
-                              Text(
-                                'RECENT TRANSACTIONS',
-                                style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w900,
-                                    color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.5),
-                                    letterSpacing: 1.5),
-                              ).animate(delay: 500.ms).fadeIn(),
-                              const SizedBox(height: 16),
-                            ],
-                          ),
-                        ),
-                      ),
-                      SliverPadding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        sliver: SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              final tx = transactions[index];
-                              return _buildTransactionItem(context, tx).animate().fadeIn(delay: (index * 100 + 600).ms);
-                            },
-                            childCount: transactions.length,
-                          ),
-                        ),
-                      ),
-                      const SliverToBoxAdapter(child: SizedBox(height: 120)),
-                    ],
+                  return ZinkoScrollBody(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        _buildWalletCard(context, balance.balance),
+                        const SizedBox(height: 24),
+                        _buildActionButton(
+                          context,
+                          Icons.add_circle_outline_rounded,
+                          'ADD MONEY',
+                          () => _showAddMoneyDialog(context),
+                          highlight: true,
+                        ).animate(delay: 400.ms).fadeIn().slideX(begin: 0.1, end: 0),
+                        const SizedBox(height: 32),
+                        Text(
+                          'RECENT TRANSACTIONS',
+                          style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w900,
+                              color: OptimizedColors.white50,
+                              letterSpacing: 1.5),
+                        ).animate(delay: 500.ms).fadeIn(),
+                        const SizedBox(height: 16),
+                        ...transactions.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final tx = entry.value;
+                          return _buildTransactionItem(context, tx)
+                              .animate()
+                              .fadeIn(delay: (index * 50 + 300).ms);
+                        }),
+                        const SizedBox(height: 120),
+                      ],
+                    ),
                   );
                 }
                 return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
@@ -122,19 +112,19 @@ class WalletScreen extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Colors.white.withValues(alpha: 0.15),
-            Colors.white.withValues(alpha: 0.05),
-          ],
-        ),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 30,
-            offset: const Offset(0, 15),
-          )
+        colors: [
+          OptimizedColors.white16,
+          OptimizedColors.white04,
         ],
+      ),
+      border: Border.all(color: OptimizedColors.white16, width: 1.5),
+      boxShadow: [
+        BoxShadow(
+          color: OptimizedColors.black20,
+          blurRadius: 30,
+          offset: const Offset(0, 15),
+        )
+      ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
@@ -153,14 +143,14 @@ class WalletScreen extends StatelessWidget {
                       children: [
                         Text('ZINKO',
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.9),
+                                color: OptimizedColors.white90,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 1.5)),
                         const SizedBox(height: 4),
                         Text('VIRTUAL CARD',
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.4),
+                                color: OptimizedColors.white40,
                                 fontSize: 9,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1.2)),
@@ -172,7 +162,7 @@ class WalletScreen extends StatelessWidget {
                 const SizedBox(height: 25),
                 Text('AVAILABLE BALANCE',
                     style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.4),
+                        color: OptimizedColors.white40,
                         fontSize: 9,
                         fontWeight: FontWeight.w900,
                         letterSpacing: 1.5)),
@@ -202,7 +192,7 @@ class WalletScreen extends StatelessWidget {
                                 color: Colors.white.withValues(alpha: 0.3), fontSize: 8, fontWeight: FontWeight.w800)),
                         Text('12/28',
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w900)),
+                                color: OptimizedColors.white80, fontSize: 12, fontWeight: FontWeight.w900)),
                       ],
                     ),
                   ],
@@ -212,7 +202,7 @@ class WalletScreen extends StatelessWidget {
           ),
         ),
       ),
-    ).animate().scale(duration: 800.ms, curve: Curves.elasticOut).fadeIn();
+    ).animate().scale(duration: 300.ms, curve: Curves.easeOut).fadeIn();
   }
 
   Widget _buildActionButton(BuildContext context, IconData icon, String label, VoidCallback onTap,

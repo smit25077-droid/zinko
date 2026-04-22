@@ -56,9 +56,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         appBar: const ZinkoAppBar(
           title: 'Profile',
           showBackButton: false,
+          leading: SizedBox.shrink(),
         ),
         body: SafeArea(
           child: BlocBuilder<UserBloc, UserState>(
+            buildWhen: (previous, current) =>
+                current is UserLoading ||
+                current is UserLoaded ||
+                current is UserError,
             builder: (context, state) {
               final user = state is UserLoaded ? state.user : null;
               final isLoading = state is UserLoading;
@@ -118,9 +123,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.1),
+        color: OptimizedColors.error08,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+        border: Border.all(color: OptimizedColors.error25),
       ),
       child: Row(
         children: [
@@ -161,10 +166,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                  color: AppColors.brightBlue.withValues(alpha: 0.5), width: 3.5),
+                  color: OptimizedColors.applyAlpha(AppColors.secondary, 0.5), width: 3.5),
               boxShadow: [
                 BoxShadow(
-                    color: AppColors.brightBlue.withValues(alpha: 0.2),
+                    color: OptimizedColors.applyAlpha(AppColors.secondary, 0.2),
                     blurRadius: 20,
                     spreadRadius: 1)
               ],
@@ -185,7 +190,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         )
             .animate()
-            .scale(curve: Curves.elasticOut, duration: 1000.ms)
+            .scale(curve: Curves.easeOutBack, duration: 300.ms)
             .rotate(begin: -0.05, end: 0),
         const SizedBox(height: 12),
         Text(
@@ -244,12 +249,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               context, 'Email', user?.email ?? '--', Icons.email_outlined),
           Divider(
               height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
+              color: OptimizedColors.white05),
           _buildAccountTile(context, 'Phone', user?.phone ?? '--',
               Icons.phone_android_rounded),
           Divider(
               height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
+              color: OptimizedColors.white05),
           _buildAccountTile(
               context,
               'Bio',
@@ -269,7 +274,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: GlassTheme.textColor(context).withValues(alpha: 0.08),
+                color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08),
                 shape: BoxShape.circle),
             child: Icon(icon,
                 color: GlassTheme.secondaryTextColor(context), size: 18),
@@ -308,18 +313,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Navigator.pushNamed(context, SubscriptionPlansScreen.routeName);
         }
       },
-      backgroundColor: AppColors.royalBlue,
+      backgroundColor: AppColors.primaryDark,
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               gradient: LinearGradient(colors: [
-                AppColors.gold.withValues(alpha: 0.2),
-                AppColors.gold.withValues(alpha: 0.05)
+                OptimizedColors.applyAlpha(AppColors.gold, 0.2),
+                OptimizedColors.applyAlpha(AppColors.gold, 0.05)
               ]),
               shape: BoxShape.circle,
-              border: Border.all(color: AppColors.gold.withValues(alpha: 0.3)),
+              border: Border.all(color: OptimizedColors.applyAlpha(AppColors.gold, 0.3)),
             ),
             child: const Icon(Icons.stars_rounded,
                 color: AppColors.gold, size: 28),
@@ -347,7 +352,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: TextStyle(
                           color: user != null
                               ? AppColors.success
-                              : AppColors.white.withValues(alpha: 0.7),
+                              : OptimizedColors.white70,
                           fontSize: 12,
                           fontWeight: FontWeight.w700),
                     ),
@@ -400,7 +405,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.brightBlue, size: 24),
+            Icon(icon, color: AppColors.secondary, size: 24),
             const SizedBox(height: 8),
             Text(
               title,
@@ -430,22 +435,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
           }),
           Divider(
               height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
+              color: OptimizedColors.white05),
           _buildListTile(context, 'Edit Profile', Icons.person_rounded,
               EditProfileScreen.routeName),
           Divider(
               height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
+              color: OptimizedColors.white05),
           _buildListTile(context, 'Account Settings',
               Icons.settings_rounded, SettingsScreen.routeName),
           Divider(
               height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
+              color: OptimizedColors.white05),
           _buildListTile(
               context, 'Security & Privacy', Icons.shield_rounded, ''),
           Divider(
               height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
+              color: OptimizedColors.white05),
           _buildListTile(
               context, 'Help & Support', Icons.help_center_rounded, ''),
           Divider(
@@ -466,7 +471,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: GlassTheme.textColor(context).withValues(alpha: 0.08),
+            color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08),
             borderRadius: BorderRadius.circular(10)),
         child: Icon(icon, color: GlassTheme.textColor(context), size: 18),
       ),
@@ -481,7 +486,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         value: value,
         onChanged: onChanged,
         activeThumbColor: GlassTheme.textColor(context),
-        activeTrackColor: GlassTheme.textColor(context).withValues(alpha: 0.3),
+        activeTrackColor: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.3),
       ),
     );
   }
@@ -509,7 +514,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             color: GlassTheme.textColor(context)),
       ),
       trailing: Icon(Icons.chevron_right_rounded,
-          color: GlassTheme.tertiaryTextColor(context).withValues(alpha: 0.3),
+          color: OptimizedColors.applyAlpha(GlassTheme.tertiaryTextColor(context), 0.3),
           size: 18),
     );
   }
@@ -544,10 +549,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       width: double.infinity,
       height: 54,
       decoration: BoxDecoration(
-        color: AppColors.error.withValues(alpha: 0.08),
+        color: OptimizedColors.error08,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-            color: AppColors.error.withValues(alpha: 0.25), width: 1.5),
+            color: OptimizedColors.error25, width: 1.5),
       ),
       child: TextButton(
         onPressed: () => _showLogoutConfirmation(context),
@@ -610,7 +615,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: GlassTheme.textColor(context).withValues(alpha: 0.7),
+                      color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.7),
                     ),
                   ),
                 ],
@@ -618,7 +623,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: (isComplete ? AppColors.success : theme.primaryColor).withValues(alpha: 0.1),
+                  color: OptimizedColors.applyAlpha(isComplete ? AppColors.success : theme.primaryColor, 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -656,7 +661,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: theme.primaryColor.withValues(alpha: 0.3),
+                      color: OptimizedColors.applyAlpha(theme.primaryColor, 0.3),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     )

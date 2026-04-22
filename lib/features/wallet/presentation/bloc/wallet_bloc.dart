@@ -25,12 +25,18 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     Emitter<WalletState> emit,
   ) async {
     emit(WalletLoading());
-    try {
-      final balance = await getWalletBalance();
-      final transactions = await getWalletTransactions();
-      emit(WalletLoaded(balance: balance, transactions: transactions));
-    } catch (e) {
-      emit(WalletError(message: e.toString()));
-    }
+    
+    final balanceResult = await getWalletBalance();
+    final transactionsResult = await getWalletTransactions();
+
+    balanceResult.fold(
+      (failure) => emit(WalletError(message: failure.message)),
+      (balance) {
+        transactionsResult.fold(
+          (failure) => emit(WalletError(message: failure.message)),
+          (transactions) => emit(WalletLoaded(balance: balance, transactions: transactions)),
+        );
+      },
+    );
   }
 }

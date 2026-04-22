@@ -286,7 +286,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
             ),
             child: Row(
               children: [
-                Icon(workspace.amenities[index], size: 14, color: AppColors.brightBlue),
+                Icon(workspace.amenities[index], size: 14, color: AppColors.secondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(workspace.amenityNames[index],
@@ -365,7 +365,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
           const SizedBox(height: 12),
           const Row(
             children: [
-              Icon(Icons.directions_rounded, size: 16, color: AppColors.brightBlue),
+              Icon(Icons.directions_rounded, size: 16, color: AppColors.secondary),
               SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -410,7 +410,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                         CircleAvatar(
                           radius: 14,
                           backgroundImage: NetworkImage(r.avatarUrl),
-                          backgroundColor: AppColors.midnightNavy,
+                          backgroundColor: AppColors.backgroundDark,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -451,15 +451,15 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppColors.brightBlue.withValues(alpha: 0.1),
+                  color: AppColors.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.brightBlue.withValues(alpha: 0.2)),
+                  border: Border.all(color: AppColors.secondary.withValues(alpha: 0.2)),
                 ),
                 child: Center(
                   child: Text(
                     'SEE ALL ${workspace.reviews.length} REVIEWS',
                     style: const TextStyle(
-                      color: AppColors.brightBlue,
+                      color: AppColors.secondary,
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 1.0,
@@ -518,7 +518,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                           CircleAvatar(
                             radius: 16,
                             backgroundImage: NetworkImage(r.avatarUrl),
-                            backgroundColor: AppColors.midnightNavy,
+                            backgroundColor: AppColors.backgroundDark,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -655,9 +655,9 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     return Container(
       padding: EdgeInsets.symmetric(horizontal: isSmall ? 6 : 8, vertical: isSmall ? 3 : 5),
       decoration: BoxDecoration(
-        color: AppColors.brightBlue.withValues(alpha: 0.1),
+        color: AppColors.secondary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.brightBlue.withValues(alpha: 0.3)),
+        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -680,7 +680,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
       decoration: BoxDecoration(
-        color: AppColors.midnightNavy.withValues(alpha: 0.95),
+        color: AppColors.backgroundDark.withValues(alpha: 0.95),
         border: Border(top: BorderSide(color: AppColors.white.withValues(alpha: 0.1))),
       ),
       child: Row(
@@ -737,11 +737,11 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
               height: 50,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue,
+                color: AppColors.primary,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primaryBlue.withValues(alpha: 0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   )

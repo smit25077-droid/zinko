@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Brand / Primary (From user image)
-  static const Color royalBlue = Color(0xFF1D4ED8);
-  static const Color primaryBlue = Color(0xFF1A73E8);
-  static const Color brightBlue = Color(0xFF2F80ED);
-  static const Color midnightNavy = Color(0xFF0F172A);
+  static const Color primaryDark = Color(0xFF1D4ED8);
+  static const Color primary = Color(0xFF1A73E8);
+  static const Color secondary = Color(0xFF2F80ED);
+  static const Color backgroundDark = Color(0xFF0F172A);
 
-  static const Color primary = primaryBlue;
-  static const Color primaryDark = royalBlue;
-  static const Color secondary = brightBlue;
+  // static const Color primary = primaryBlue;
+  // static const Color primaryDark = royalBlue;
+  // static const Color secondary = brightBlue;
 
   // Zinko Premium Accents
   static const Color elite = Color(0xFF9C27B0);
-  static const Color pro = primaryBlue;
   static const Color gold = Color(0xFFFFB300);
 
   // Glass Neutral Colors
@@ -24,7 +23,7 @@ class AppColors {
 
   // Backgrounds
   static const Color backgroundLight = Color(0xFFF4F6F8); 
-  static const Color backgroundDark = midnightNavy;
+  // static const Color backgroundDark = midnightNavy;
   static const Color surfaceLight = Color(0xFFFFFFFF);
   static const Color surfaceDark = Color(0xFF1E1E1E);
   static const Color cardDark = Color(0xFF1A1D1E);

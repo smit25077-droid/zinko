@@ -127,7 +127,7 @@ class ZinkoCommonDialog extends StatelessWidget {
                     child: ElevatedButton(
                       onPressed: onAction,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: actionColor ?? AppColors.primaryBlue,
+                        backgroundColor: actionColor ?? AppColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         elevation: 0,

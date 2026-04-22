@@ -21,8 +21,9 @@ class OptimizedColors {
   static const Color white90 = Color(0xE6FFFFFF);
 
   // Legacy mappings for compatibility
-  static const Color glassWhite40 = white40;
-  static const Color glassWhite60 = white60;
+  // static const Color glassWhite40 = white40;
+  // static const Color glassWhite60 = white60;
+  static const Color white05 = Color(0x0DFFFFFF);
 
   // --- PERFECTED GLASS BLACKS (Light mode depth) ---
   static const Color black04 = Color(0x0A000000);
@@ -80,24 +81,30 @@ class OptimizedColors {
   static const Color success40 = Color(0x6643A047);
   static const Color success50 = Color(0x8043A047);
   static const Color success80 = Color(0xCC43A047);
+  static const Color error08 = Color(0x14E53935);
+  static const Color error20 = Color(0x33E53935);
+  static const Color error25 = Color(0x40E53935);
   static const Color red90 = Color(0xE6E53935);
 
-  /// Helper method to get the perfect glass surface color
-  /// Forced to Dark Mode for consistent Zinko premium aesthetic
+  /// Helper to apply alpha to any color in an optimized way
+  static Color applyAlpha(Color color, double alpha) {
+    return color.withValues(alpha: alpha);
+  }
+
   /// Helper method to get the perfect glass surface color
   /// Forced to Dark Mode for consistent Zinko premium aesthetic
   /// Uses Midnight Navy as the deep base
   static Color glassColor(BuildContext context, {bool isSelected = false}) {
     if (isSelected) {
-      return AppColors.brightBlue.withValues(alpha: 0.3); // Vibrant blue for selection
+      return applyAlpha(AppColors.secondary, 0.3); // Vibrant blue for selection
     }
-    return AppColors.midnightNavy.withValues(alpha: 0.7); // Deep navy base for glass
+    return applyAlpha(AppColors.backgroundDark, 0.7); // Deep navy base for glass
   }
 
   /// Helper method to get high-definition glass border
   /// Uses a subtle blue-white mix
   static Color glassBorder(BuildContext context) {
-    return AppColors.brightBlue.withValues(alpha: 0.2);
+    return applyAlpha(AppColors.secondary, 0.2);
   }
 
   /// Helper method to get vibrant secondary text color
@@ -109,8 +116,8 @@ class OptimizedColors {
   /// Uses brand colors for selection
   static Color iconColor(BuildContext context, {bool isSelected = false}) {
     if (isSelected) {
-      return AppColors.brightBlue;
+      return AppColors.secondary;
     }
-    return white70; 
+    return white70;
   }
 }

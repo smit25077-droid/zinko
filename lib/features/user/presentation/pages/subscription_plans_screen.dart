@@ -75,7 +75,7 @@ class SubscriptionPlansScreen extends StatelessWidget {
                       'Priority Support 24/7',
                       'Premium Badge Profile',
                     ],
-                    accentColor: AppColors.pro,
+                    accentColor: AppColors.primary,
                     onTap: () => _onPlanSelected(context, 'PRO'),
                   ).animate().fadeIn(duration: 800.ms),
                   const SizedBox(height: 24),

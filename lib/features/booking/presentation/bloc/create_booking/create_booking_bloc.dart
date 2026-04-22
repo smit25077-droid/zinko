@@ -50,12 +50,11 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
       : super(CreateBookingInitial()) {
     on<CreateBookingSubmittedEvent>((event, emit) async {
       emit(CreateBookingLoading());
-      try {
-        final result = await createBookingUseCase(event.request);
-        emit(CreateBookingSuccess(result));
-      } catch (e) {
-        emit(CreateBookingError(e.toString()));
-      }
+      final result = await createBookingUseCase(event.request);
+      result.fold(
+        (failure) => emit(CreateBookingError(failure.message)),
+        (response) => emit(CreateBookingSuccess(response)),
+      );
     });
   }
 }

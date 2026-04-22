@@ -1,3 +1,5 @@
+import 'package:dartz/dartz.dart';
+import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/wallet/domain/entities/wallet_balance.dart';
 import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
 import 'package:zinko_app/features/wallet/domain/repositories/wallet_repository.dart';
@@ -9,12 +11,22 @@ class WalletRepositoryImpl implements WalletRepository {
   WalletRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<WalletBalance> getBalance() async {
-    return await remoteDataSource.getBalance();
+  Future<Either<Failure, WalletBalance>> getBalance() async {
+    try {
+      final result = await remoteDataSource.getBalance();
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 
   @override
-  Future<List<WalletTransaction>> getTransactions() async {
-    return await remoteDataSource.getTransactions();
+  Future<Either<Failure, List<WalletTransaction>>> getTransactions() async {
+    try {
+      final result = await remoteDataSource.getTransactions();
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

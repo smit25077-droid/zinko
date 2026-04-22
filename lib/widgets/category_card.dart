@@ -28,7 +28,7 @@ class CategoryCard extends StatelessWidget {
           Icon(
             _getCategoryIcon(category),
             size: 28,
-            color: isSelected ? AppColors.white : AppColors.brightBlue,
+            color: isSelected ? AppColors.white : AppColors.secondary,
           ),
           const SizedBox(height: 8),
           Text(

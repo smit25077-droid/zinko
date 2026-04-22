@@ -23,6 +23,7 @@ import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_common_bottom_sheet.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 
 class CommunityScreen extends StatefulWidget {
   static const String routeName = '/community';
@@ -133,156 +134,114 @@ class _CommunityScreenState extends State<CommunityScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       backgroundColor: AppColors.transparent,
-      body: ZinkoBackground(
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                pinned: true,
-                floating: true,
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                expandedHeight: 160,
-                toolbarHeight: 60,
-                centerTitle: true,
-                leading: const SizedBox.shrink(),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: _GlassHeaderButton(
-                      icon: Icons.person_add_alt_1_rounded,
-                      onTap: () => Navigator.pushNamed(
-                          context, ConnectionRequestsScreen.routeName),
-                    ),
-                  ),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true,
-                  titlePadding: const EdgeInsets.only(bottom: 90),
-                  title: Text(
-                    'COMMUNITY',
-                    style: TextStyle(
-                      color: GlassTheme.textColor(context),
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      letterSpacing: 2.0,
-                    ),
-                  ),
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(alpha: 0.8),
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      // Optional: Add a subtle texture or pattern here
-                    ],
-                  ),
-                ),
-                bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(60),
-                  child: Container(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: OptimizedColors.white12,
-                        borderRadius: BorderRadius.circular(24),
-                        border:
-                            Border.all(color: GlassTheme.glassBorder(context)),
-                      ),
-                      child: TabBar(
-                        controller: _tabController,
-                        indicator: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.white.withValues(alpha: 0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            )
-                          ],
-                        ),
-                        indicatorPadding: const EdgeInsets.all(4),
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        dividerColor: Colors.transparent,
-                        labelColor: Colors.black,
-                        unselectedLabelColor:
-                            GlassTheme.secondaryTextColor(context)
-                                .withValues(alpha: 0.5),
-                        labelPadding: EdgeInsets.zero,
-                        labelStyle: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 10,
-                            letterSpacing: 0.8),
-                        tabs: const [
-                          Tab(text: 'FEED'),
-                          Tab(text: 'CHAT'),
-                          Tab(text: 'GROUPS'),
-                          Tab(text: 'CONNECT'),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ];
-          },
-          body: BlocListener<CommunityBloc, CommunityState>(
-            listener: (context, state) {
-              if (state is CommunityDataLoaded &&
-                  state.tabIndex != _tabController.index) {
-                _tabController.animateTo(state.tabIndex);
-              }
-            },
-            child: BlocBuilder<CommunityBloc, CommunityState>(
-              builder: (context, state) {
-                if (state is CommunityLoading) {
-                  return Center(
-                      child: CircularProgressIndicator(
-                          color: Theme.of(context).primaryColor));
-                }
-                if (state is CommunityDataLoaded) {
-                  return TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _FeedTab(
-                          onPremiumAction: () =>
-                              _showPremiumBottomSheet(context),
-                          posts: state.posts),
-                      const _ChatTab(),
-                      _GroupsTab(
-                          onPremiumAction: () =>
-                              _showPremiumBottomSheet(context),
-                          groups: state.groups),
-                      _ConnectTab(
-                          onPremiumAction: () =>
-                              _showPremiumBottomSheet(context)),
-                    ],
-                  );
-                }
-                if (state is CommunityError) {
-                  return Center(
-                      child: Text(state.message,
-                          style:
-                              TextStyle(color: GlassTheme.textColor(context))));
-                }
-                return const SizedBox.shrink();
-              },
+      appBar: ZinkoAppBar(
+        title: 'COMMUNITY',
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: _GlassHeaderButton(
+              icon: Icons.person_add_alt_1_rounded,
+              onTap: () => Navigator.pushNamed(
+                  context, ConnectionRequestsScreen.routeName),
             ),
           ),
+        ],
+      ),
+      body: ZinkoBackground(
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                height: 48,
+                decoration: BoxDecoration(
+                  color: OptimizedColors.white12,
+                  borderRadius: BorderRadius.circular(24),
+                  border:
+                      Border.all(color: GlassTheme.glassBorder(context)),
+                ),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
+                  ),
+                  indicatorPadding: const EdgeInsets.all(4),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  labelColor: Colors.black,
+                  unselectedLabelColor:
+                      GlassTheme.secondaryTextColor(context)
+                          .withValues(alpha: 0.5),
+                  labelPadding: EdgeInsets.zero,
+                  labelStyle: const TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 10,
+                      letterSpacing: 0.8),
+                  tabs: const [
+                    Tab(text: 'FEED'),
+                    Tab(text: 'CHAT'),
+                    Tab(text: 'GROUPS'),
+                    Tab(text: 'CONNECT'),
+                  ],
+                ),
+              ),
+            ),
+            Expanded(
+              child: BlocListener<CommunityBloc, CommunityState>(
+                listener: (context, state) {
+                  if (state is CommunityDataLoaded &&
+                      state.tabIndex != _tabController.index) {
+                    _tabController.animateTo(state.tabIndex);
+                  }
+                },
+                child: BlocBuilder<CommunityBloc, CommunityState>(
+                  builder: (context, state) {
+                    if (state is CommunityLoading) {
+                      return Center(
+                          child: CircularProgressIndicator(
+                              color: Theme.of(context).primaryColor));
+                    }
+                    if (state is CommunityDataLoaded) {
+                      return TabBarView(
+                        controller: _tabController,
+                        children: [
+                          _FeedTab(
+                              onPremiumAction: () =>
+                                  _showPremiumBottomSheet(context),
+                              posts: state.posts),
+                          const _ChatTab(),
+                          _GroupsTab(
+                              onPremiumAction: () =>
+                                  _showPremiumBottomSheet(context),
+                              groups: state.groups),
+                          _ConnectTab(
+                              onPremiumAction: () =>
+                                  _showPremiumBottomSheet(context)),
+                        ],
+                      );
+                    }
+                    if (state is CommunityError) {
+                      return Center(
+                          child: Text(state.message,
+                              style: TextStyle(
+                                  color: GlassTheme.textColor(context))));
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

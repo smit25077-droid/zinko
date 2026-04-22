@@ -3,6 +3,8 @@ import 'package:zinko_app/features/event/presentation/bloc/event_bloc.dart';
 import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
 import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -50,15 +52,36 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
         return Scaffold(
             extendBodyBehindAppBar: true,
+            appBar: ZinkoAppBar(
+              title: '', // Transparent title as it's a detail screen with image header
+              showBackButton: true,
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: _GlassHeaderButton(
+                    icon: _event.isFavorite
+                        ? Icons.favorite_rounded
+                        : Icons.favorite_border_rounded,
+                    iconColor: _event.isFavorite ? Colors.redAccent : null,
+                    onTap: () {
+                      context
+                          .read<EventBloc>()
+                          .add(ToggleFavoriteEventEvent(_event.id));
+                    },
+                  ),
+                ),
+              ],
+            ),
             body: ZinkoBackground(
               child: Stack(
                 children: [
-                  CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      _buildSliverAppBar(context),
-                      SliverToBoxAdapter(
-                        child: Padding(
+                  ZinkoScrollBody(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildImageHeader(context),
+                        Padding(
                           padding: const EdgeInsets.fromLTRB(20, 16, 20, 140),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,8 +96,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -89,59 +112,34 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 260,
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      pinned: true,
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _GlassHeaderButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onTap: () => Navigator.pop(context),
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _GlassHeaderButton(
-            icon: _event.isFavorite
-                ? Icons.favorite_rounded
-                : Icons.favorite_border_rounded,
-            iconColor: _event.isFavorite ? Colors.redAccent : null,
-            onTap: () {
-              context
-                  .read<EventBloc>()
-                  .add(ToggleFavoriteEventEvent(_event.id));
-            },
+  Widget _buildImageHeader(BuildContext context) {
+    return SizedBox(
+      height: 300,
+      width: double.infinity,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            _event.imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Image.asset(
+                'assets/images/cafe_hotel_bg.png',
+                fit: BoxFit.cover),
           ),
-        ),
-        const SizedBox(width: 8),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.network(
-              _event.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Image.asset(
-                  'assets/images/cafe_hotel_bg.png',
-                  fit: BoxFit.cover),
-            ),
-            Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
                   Colors.black.withValues(alpha: 0.4),
                   Colors.transparent,
-                  Colors.black.withValues(alpha: 0.2)
-                ]))),
-          ],
-        ),
+                  Colors.black.withValues(alpha: 0.6),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
