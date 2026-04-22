@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
+import 'package:zinko_app/core/error/failures.dart';
 
 abstract class PasswordChangeRepository {
   Future<Either<Failure, bool>> sendOtp(String email);

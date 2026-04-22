@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../entities/chat_entity.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
 
 abstract class ChatRepository {
   Future<Either<Failure, List<ChatEntity>>> getChats();

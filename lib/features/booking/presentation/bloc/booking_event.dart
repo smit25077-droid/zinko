@@ -1,4 +1,4 @@
-import '../../domain/entities/booking_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_entity.dart';
 
 abstract class BookingEvent {}
 
@@ -29,3 +29,5 @@ class UserCheckInEvent extends BookingEvent {
   final String otp;
   UserCheckInEvent({required this.bookingCode, required this.otp});
 }
+
+class ResetBookingEvent extends BookingEvent {}

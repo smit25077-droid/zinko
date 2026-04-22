@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../../domain/entities/workspace_entity.dart';
-import '../../../../user/domain/entities/person_entity.dart';
-import '../../../domain/usecases/get_workspaces.dart';
-import '../../../../community/domain/usecases/person_usecases.dart';
-import 'map_event.dart';
-import 'map_state.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_workspaces.dart';
+import 'package:zinko_app/features/community/domain/usecases/person_usecases.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/map/map_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/map/map_state.dart';
 
 class MapBloc extends Bloc<MapEvent, MapState> {
   final GetWorkspaces getWorkspaces;

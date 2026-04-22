@@ -1,8 +1,8 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 class NotificationsScreen extends StatelessWidget {
   static const String routeName = '/notifications';

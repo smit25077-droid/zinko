@@ -1,13 +1,14 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zinko_app/core/routes/app_router.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_state.dart';
-import '../../../auth/presentation/pages/otp_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/auth/presentation/pages/otp_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 class VerificationScreen extends StatelessWidget {
   static const String routeName = '/verification';
@@ -16,27 +17,8 @@ class VerificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _GlassHeaderButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => AppRouter.safetyPop(context),
-          ),
-        ),
-        title: Text(
-          'VERIFICATION',
-          style: TextStyle(
-            color: GlassTheme.textColor(context),
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-            letterSpacing: 2.0,
-          ),
-        ),
-        centerTitle: true,
+      appBar: const ZinkoAppBar(
+        title: 'VERIFICATION',
       ),
       body: ZinkoBackground(
         child: SafeArea(
@@ -148,118 +130,78 @@ class VerificationScreen extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: isVerified
-                      ? Colors.green.withValues(alpha: 0.12)
-                      : GlassTheme.textColor(context).withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(icon,
-                    color: isVerified
-                        ? Colors.greenAccent
-                        : GlassTheme.textColor(context).withValues(alpha: 0.5),
-                    size: 20),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(title,
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w900,
-                            color: GlassTheme.textColor(context),
-                            letterSpacing: 0.5)),
-                    const SizedBox(height: 2),
-                    Text(subtitle,
-                        style: TextStyle(
-                            fontSize: 11,
-                            color: GlassTheme.secondaryTextColor(context)
-                                .withValues(alpha: 0.5),
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.2)),
-                  ],
-                ),
-              ),
-              if (isVerified)
-                const Row(
-                  children: [
-                    Icon(Icons.verified_rounded,
-                        color: Colors.greenAccent, size: 16),
-                    SizedBox(width: 6),
-                    Text('SECURE',
-                        style: TextStyle(
-                            color: Colors.greenAccent,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 10,
-                            letterSpacing: 1.0)),
-                  ],
-                )
-              else
-                GestureDetector(
-                  onTap: onTap,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    decoration: BoxDecoration(
-                        color: isDark ? Colors.white : Colors.black,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: Text('VERIFY',
-                        style: TextStyle(
-                            color: isDark ? Colors.black : Colors.white,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 11,
-                            letterSpacing: 0.5)),
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _GlassHeaderButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassHeaderButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-          child: Container(
-            width: 40,
-            height: 40,
+    return ZinkoCommonCard(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: GlassTheme.glassBorder(context)),
+              color: isVerified
+                  ? Colors.green.withValues(alpha: 0.12)
+                  : GlassTheme.textColor(context).withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
+            child: Icon(icon,
+                color: isVerified
+                    ? Colors.greenAccent
+                    : GlassTheme.textColor(context).withValues(alpha: 0.5),
+                size: 20),
           ),
-        ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        color: GlassTheme.textColor(context),
+                        letterSpacing: 0.5)),
+                const SizedBox(height: 2),
+                Text(subtitle,
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: GlassTheme.secondaryTextColor(context)
+                            .withValues(alpha: 0.5),
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2)),
+              ],
+            ),
+          ),
+          if (isVerified)
+            const Row(
+              children: [
+                Icon(Icons.verified_rounded,
+                    color: Colors.greenAccent, size: 16),
+                 SizedBox(width: 6),
+                 Text('SECURE',
+                    style: TextStyle(
+                        color: Colors.greenAccent,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 10,
+                        letterSpacing: 1.0)),
+              ],
+            )
+          else
+            GestureDetector(
+              onTap: onTap,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                    color: isDark ? Colors.white : Colors.black,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Text('VERIFY',
+                    style: TextStyle(
+                        color: isDark ? Colors.black : Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 11,
+                        letterSpacing: 0.5)),
+              ),
+            ),
+        ],
       ),
     );
   }

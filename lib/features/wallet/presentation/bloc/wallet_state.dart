@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/wallet_balance.dart';
-import '../../domain/entities/wallet_transaction.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_balance.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
 
 abstract class WalletState extends Equatable {
   const WalletState();

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../core/theme/optimized_colors.dart';
-import '../utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
 
 class ZinkoTextField extends StatelessWidget {
   final String label;

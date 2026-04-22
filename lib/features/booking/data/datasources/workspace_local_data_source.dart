@@ -1,6 +1,6 @@
 import 'dart:async';
-import '../models/workspace_model.dart';
-import '../../domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/data/models/workspace_model.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 
 abstract class WorkspaceLocalDataSource {
   Future<List<WorkspaceEntity>> getWorkspaces();

@@ -1,4 +1,4 @@
-import 'transaction_entity.dart';
+import 'package:zinko_app/features/user/domain/entities/transaction_entity.dart';
 
 class UserEntity {
   final String name;

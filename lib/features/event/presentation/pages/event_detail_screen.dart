@@ -1,8 +1,8 @@
-import '../../../../widgets/zinko_background.dart';
-import '../bloc/event_bloc.dart';
-import '../bloc/event_event.dart';
-import '../bloc/event_state.dart';
-import '../../../../utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_bloc.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';

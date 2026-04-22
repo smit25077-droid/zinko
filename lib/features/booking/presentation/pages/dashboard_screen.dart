@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
-import '../../domain/entities/workspace_entity.dart';
-import '../bloc/workspace_bloc.dart';
-import '../bloc/workspace_event.dart';
-import '../bloc/workspace_state.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/bloc/user_state.dart';
-import '../../../user/presentation/bloc/user_event.dart';
-import 'all_workspaces_screen.dart';
-import 'workspace_detail_screen.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../../../notifications/presentation/pages/notifications_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/optimized_colors.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../features/cafe/presentation/bloc/cafe_bloc.dart';
-import '../../../../features/cafe/presentation/bloc/cafe_event.dart';
-import '../../../../features/cafe/presentation/bloc/cafe_state.dart';
-import '../../../../features/cafe/data/mappers/cafe_mapper.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_empty_state.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/features/booking/presentation/pages/all_workspaces_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/features/notifications/presentation/pages/notifications_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
+import 'package:zinko_app/features/cafe/data/mappers/cafe_mapper.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_empty_state.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -116,7 +116,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             final recommended = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
                             return _RecommendedList(
                               workspaces: recommended,
-                              onFavTap: (id) => context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(id)),
+                              onFavTap: (id) {
+                                final userState = context.read<UserBloc>().state;
+                                if (userState is UserLoaded) {
+                                  context.read<CafeBloc>().add(ToggleWishlistEvent(
+                                        cafeId: int.parse(id),
+                                        userCode: userState.user.userCode,
+                                      ));
+                                }
+                              },
                             );
                           }
                           return const _HorizontalShimmer();
@@ -175,7 +183,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               );
                             }
                             final cafes = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
-                            return _SliverNearbyList(nearby: cafes);
+                            return _SliverNearbyList(
+                              nearby: cafes,
+                              onFavTap: (id) {
+                                final userState = context.read<UserBloc>().state;
+                                if (userState is UserLoaded) {
+                                  context.read<CafeBloc>().add(ToggleWishlistEvent(
+                                        cafeId: int.parse(id),
+                                        userCode: userState.user.userCode,
+                                      ));
+                                }
+                              },
+                            );
                           }
                           return const SliverToBoxAdapter(child: _VerticalShimmer());
                         },
@@ -215,8 +234,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 class _SliverNearbyList extends StatelessWidget {
   final List<WorkspaceEntity> nearby;
+  final Function(String)? onFavTap;
 
-  const _SliverNearbyList({required this.nearby});
+  const _SliverNearbyList({required this.nearby, this.onFavTap});
 
   @override
   Widget build(BuildContext context) {
@@ -228,10 +248,12 @@ class _SliverNearbyList extends StatelessWidget {
             final w = nearby[index];
             return _NearbyCard(
               workspace: w,
-              onFavTap: () => context
-                  .read<WorkspaceBloc>()
-                  .add(ToggleFavoriteWorkspaceEvent(w.id)),
-            ).animate().fadeIn(delay: (index * 30).ms); 
+              onFavTap: () => onFavTap != null
+                  ? onFavTap!(w.id)
+                  : context
+                      .read<WorkspaceBloc>()
+                      .add(ToggleFavoriteWorkspaceEvent(w.id)),
+            ).animate().fadeIn(delay: (index * 30).ms);
           },
           childCount: nearby.length > 8 ? 8 : nearby.length,
         ),

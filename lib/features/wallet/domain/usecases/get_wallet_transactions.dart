@@ -1,5 +1,5 @@
-import '../../domain/entities/wallet_transaction.dart';
-import '../../domain/repositories/wallet_repository.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
+import 'package:zinko_app/features/wallet/domain/repositories/wallet_repository.dart';
 
 class GetWalletTransactions {
   final WalletRepository repository;

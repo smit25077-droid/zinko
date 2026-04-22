@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
-import '../../domain/entities/community_entities.dart';
+import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
 
 abstract class CommunityState extends Equatable {
   const CommunityState();

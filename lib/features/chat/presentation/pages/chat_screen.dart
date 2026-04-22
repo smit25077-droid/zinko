@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/models/app_models.dart';
-import '../bloc/chat_bloc.dart';
-import '../bloc/chat_event.dart';
-import '../bloc/chat_state.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import 'call_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../core/di/service_locator.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_event.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_state.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/features/chat/presentation/pages/call_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
 
 class ChatScreen extends StatelessWidget {
   static const String routeName = '/chat';

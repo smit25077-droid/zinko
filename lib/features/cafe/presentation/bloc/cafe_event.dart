@@ -15,3 +15,24 @@ class SearchCafesEvent extends CafeEvent {
   @override
   List<Object?> get props => [keyword];
 }
+
+class ToggleWishlistEvent extends CafeEvent {
+  final int cafeId;
+  final int userCode;
+
+  const ToggleWishlistEvent({required this.cafeId, required this.userCode});
+
+  @override
+  List<Object?> get props => [cafeId, userCode];
+}
+
+class GetWishlistEvent extends CafeEvent {
+  final int userCode;
+
+  const GetWishlistEvent({required this.userCode});
+
+  @override
+  List<Object?> get props => [userCode];
+}
+
+class ResetCafeEvent extends CafeEvent {}

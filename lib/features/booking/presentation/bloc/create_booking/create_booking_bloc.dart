@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/entities/booking_request_entity.dart';
-import '../../../domain/usecases/create_booking.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
+import 'package:zinko_app/features/booking/domain/usecases/create_booking.dart';
 
 // Events
 abstract class CreateBookingEvent extends Equatable {

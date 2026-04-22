@@ -1,4 +1,4 @@
-import '../../domain/entities/person_entity.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
 
 class PersonModel extends PersonEntity {
   PersonModel({

@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/user_entity.dart';
-import '../../domain/repositories/user_repository.dart';
-import '../datasources/user_remote_data_source.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
+import 'package:zinko_app/features/user/domain/repositories/user_repository.dart';
+import 'package:zinko_app/features/user/data/datasources/user_remote_data_source.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;

@@ -1,7 +1,7 @@
-import '../../domain/entities/wallet_balance.dart';
-import '../../domain/entities/wallet_transaction.dart';
-import '../../domain/repositories/wallet_repository.dart';
-import '../datasources/wallet_remote_data_source.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_balance.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
+import 'package:zinko_app/features/wallet/domain/repositories/wallet_repository.dart';
+import 'package:zinko_app/features/wallet/data/datasources/wallet_remote_data_source.dart';
 
 class WalletRepositoryImpl implements WalletRepository {
   final WalletRemoteDataSource remoteDataSource;

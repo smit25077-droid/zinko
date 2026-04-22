@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
-import '../utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
 
 class ZinkoCommonDialog extends StatelessWidget {
   final String title;

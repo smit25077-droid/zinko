@@ -1,12 +1,12 @@
 import 'package:zinko_app/features/cafe/domain/entities/cafe_entities.dart';
 import 'package:zinko_app/features/cafe/domain/repositories/cafe_repository.dart';
 
-class SearchCafes {
+class GetWishlist {
   final CafeRepository repository;
 
-  SearchCafes({required this.repository});
+  GetWishlist({required this.repository});
 
-  Future<List<Cafe>> call(String keyword) async {
-    return await repository.searchCafes(keyword);
+  Future<List<Cafe>> call(int userCode) async {
+    return await repository.getWishlist(userCode);
   }
 }

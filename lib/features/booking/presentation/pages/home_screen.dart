@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 
-import '../../../event/presentation/pages/events_screen.dart';
-import '../../../user/presentation/pages/profile_screen.dart';
-import 'dashboard_screen.dart';
-import 'map_screen.dart';
-import '../../../community/presentation/pages/community_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../widgets/zinko_glass_box.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/event/presentation/pages/events_screen.dart';
+import 'package:zinko_app/features/user/presentation/pages/profile_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/dashboard_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/map_screen.dart';
+import 'package:zinko_app/features/community/presentation/pages/community_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/widgets/zinko_glass_box.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/bloc/navigation/navigation_bloc.dart';
-import '../../../../core/bloc/navigation/navigation_event.dart';
-import '../../../../core/bloc/navigation/navigation_state.dart';
-import '../../../../injection_container.dart' as di;
+import 'package:zinko_app/core/bloc/navigation/navigation_bloc.dart';
+import 'package:zinko_app/core/bloc/navigation/navigation_event.dart';
+import 'package:zinko_app/core/bloc/navigation/navigation_state.dart';
+import 'package:zinko_app/injection_container.dart' as di;
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = '/home';
+
   const HomeScreen({super.key});
 
   final List<Widget> _screens = const [
@@ -40,9 +44,7 @@ class HomeScreen extends StatelessWidget {
               onPopInvokedWithResult: (didPop, result) {
                 if (didPop) return;
                 if (state.index != 0) {
-                  context
-                      .read<NavigationBloc>()
-                      .add(const NavigationTabChanged(0));
+                  context.read<NavigationBloc>().add(const NavigationTabChanged(0));
                 }
               },
               child: Scaffold(
@@ -59,9 +61,16 @@ class HomeScreen extends StatelessWidget {
                       right: 0,
                       child: _FloatingGlassDock(
                         currentIndex: state.index,
-                        onTap: (index) => context
-                            .read<NavigationBloc>()
-                            .add(NavigationTabChanged(index)),
+                        onTap: (index) {
+                          if (index == 1 || index == 2 || index == 3) {
+                            final userState = context.read<UserBloc>().state;
+                            if (userState is UserLoaded && !userState.user.isProfileComplete) {
+                              ZinkoProfileCompletionDialog.show(context, userState.user);
+                              return;
+                            }
+                          }
+                          context.read<NavigationBloc>().add(NavigationTabChanged(index));
+                        },
                       ),
                     ),
                   ],
@@ -108,35 +117,14 @@ class _FloatingGlassDock extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _ExpandingNavItem(
-                    index: 0,
-                    current: currentIndex,
-                    icon: Icons.grid_view_rounded,
-                    label: 'HOME',
-                    onTap: onTap),
+                    index: 0, current: currentIndex, icon: Icons.grid_view_rounded, label: 'HOME', onTap: onTap),
+                _ExpandingNavItem(index: 1, current: currentIndex, icon: Icons.map_rounded, label: 'MAP', onTap: onTap),
                 _ExpandingNavItem(
-                    index: 1,
-                    current: currentIndex,
-                    icon: Icons.map_rounded,
-                    label: 'MAP',
-                    onTap: onTap),
+                    index: 2, current: currentIndex, icon: Icons.star_rounded, label: 'EVENTS', onTap: onTap),
                 _ExpandingNavItem(
-                    index: 2,
-                    current: currentIndex,
-                    icon: Icons.star_rounded,
-                    label: 'EVENTS',
-                    onTap: onTap),
+                    index: 3, current: currentIndex, icon: Icons.chat_bubble_rounded, label: 'COMMUNITY', onTap: onTap),
                 _ExpandingNavItem(
-                    index: 3,
-                    current: currentIndex,
-                    icon: Icons.chat_bubble_rounded,
-                    label: 'COMMUNITY',
-                    onTap: onTap),
-                _ExpandingNavItem(
-                    index: 4,
-                    current: currentIndex,
-                    icon: Icons.person_rounded,
-                    label: 'ME',
-                    onTap: onTap),
+                    index: 4, current: currentIndex, icon: Icons.person_rounded, label: 'ME', onTap: onTap),
               ],
             ),
           ),
@@ -175,12 +163,10 @@ class _ExpandingNavItem extends StatelessWidget {
         curve: Curves.easeInOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color:
-              isSelected ? activeColor.withValues(alpha: 0.12) : Colors.transparent,
+          color: isSelected ? activeColor.withValues(alpha: 0.12) : Colors.transparent,
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
-            color:
-                isSelected ? activeColor.withValues(alpha: 0.08) : Colors.transparent,
+            color: isSelected ? activeColor.withValues(alpha: 0.08) : Colors.transparent,
             width: 1,
           ),
         ),
@@ -189,9 +175,7 @@ class _ExpandingNavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected
-                  ? activeColor
-                  : GlassTheme.iconColor(context, isSelected: false),
+              color: isSelected ? activeColor : GlassTheme.iconColor(context, isSelected: false),
               size: 22,
             ),
             AnimatedSize(

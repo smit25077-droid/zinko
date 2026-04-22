@@ -1,6 +1,6 @@
 import 'package:zinko_app/core/network/api_endpoints.dart';
 import 'package:zinko_app/core/network/dio_client.dart';
-import '../models/user_model.dart';
+import 'package:zinko_app/features/user/data/models/user_model.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> getUserProfile();

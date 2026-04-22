@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/cafe_entities.dart' as cafe_ent;
-import '../../../booking/domain/entities/workspace_entity.dart' as booking;
+import 'package:zinko_app/features/cafe/domain/entities/cafe_entities.dart' as cafe_ent;
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart' as booking;
 
 class CafeMapper {
   static booking.WorkspaceEntity toWorkspaceEntity(cafe_ent.Cafe cafe) {
@@ -24,6 +24,7 @@ class CafeMapper {
       email: cafe.email,
       tablesLeft: cafe.workspace.where((w) => w.isActive).length,
       totalSlots: cafe.workspace.length,
+      isFavorite: cafe.isLiked,
       lat: double.tryParse(cafe.latitude) ?? 0.0,
       lng: double.tryParse(cafe.longitude) ?? 0.0,
       cafeWorkSpaces: cafe.workspace

@@ -6,14 +6,14 @@ import 'package:another_flushbar/flushbar.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
-import '../bloc/booking_bloc.dart';
-import '../bloc/booking_event.dart';
-import '../bloc/booking_state.dart';
-import '../../domain/entities/user_booking_entity.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_state.dart';
+import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 import 'package:zinko_app/features/booking/presentation/pages/booking_details_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_network_image.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
 
 class BookingsScreen extends StatelessWidget {
   static const String routeName = '/bookings';

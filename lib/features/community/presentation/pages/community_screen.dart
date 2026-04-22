@@ -2,26 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/community_entities.dart';
-import '../bloc/community_bloc.dart';
-import '../bloc/community_event.dart';
-import '../bloc/community_state.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/bloc/user_state.dart';
-import '../../../../models/app_models.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import 'connection_requests_screen.dart';
-import '../../../user/presentation/pages/subscription_plans_screen.dart';
-import '../../../chat/presentation/bloc/chat_bloc.dart';
-import '../../../chat/presentation/bloc/chat_event.dart';
-import '../../../chat/presentation/bloc/chat_state.dart';
-import '../../../chat/presentation/pages/chat_screen.dart';
-import '../../../chat/domain/entities/chat_entity.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/optimized_colors.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_common_bottom_sheet.dart';
+import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/models/app_models.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/features/community/presentation/pages/connection_requests_screen.dart';
+import 'package:zinko_app/features/user/presentation/pages/subscription_plans_screen.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_event.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_state.dart';
+import 'package:zinko_app/features/chat/presentation/pages/chat_screen.dart';
+import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_common_bottom_sheet.dart';
+import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 
 class CommunityScreen extends StatefulWidget {
   static const String routeName = '/community';
@@ -62,7 +63,13 @@ class _CommunityScreenState extends State<CommunityScreen>
 
   void _showPremiumBottomSheet(BuildContext context) {
     final userState = context.read<UserBloc>().state;
-    if (userState is UserLoaded && userState.user.isPremium) return;
+    if (userState is UserLoaded) {
+      if (!userState.user.isProfileComplete) {
+        ZinkoProfileCompletionDialog.show(context, userState.user);
+        return;
+      }
+      if (userState.user.isPremium) return;
+    }
     ZinkoCommonBottomSheet.show(
       context: context,
       title: 'PREMIUM ACCESS',
@@ -245,7 +252,7 @@ class _CommunityScreenState extends State<CommunityScreen>
                 if (state is CommunityLoading) {
                   return Center(
                       child: CircularProgressIndicator(
-                          color: GlassTheme.textColor(context)));
+                          color: Theme.of(context).primaryColor));
                 }
                 if (state is CommunityDataLoaded) {
                   return TabBarView(

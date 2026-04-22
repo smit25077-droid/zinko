@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../data/models/auth_requests.dart';
+import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
 
 abstract class AuthEvent extends Equatable {
   const AuthEvent();

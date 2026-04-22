@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../../domain/entities/workspace_entity.dart';
-import '../../../../user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
 
 class MapState extends Equatable {
   final String selectedFilter;

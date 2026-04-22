@@ -1,4 +1,4 @@
-import '../../domain/entities/cafe_entities.dart';
+import 'package:zinko_app/features/cafe/domain/entities/cafe_entities.dart';
 
 class CafeModel extends Cafe {
   const CafeModel({
@@ -21,6 +21,7 @@ class CafeModel extends Cafe {
     required super.images,
     required super.timeSlots,
     required super.workspace,
+    super.isLiked = false,
   });
 
   factory CafeModel.fromJson(Map<String, dynamic> json) {
@@ -56,6 +57,32 @@ class CafeModel extends Cafe {
               ?.map((e) => CafeWorkspaceModel.fromJson(e))
               .toList() ??
           [],
+      isLiked: json['is_wishlist'] ?? false,
+    );
+  }
+
+  factory CafeModel.fromWishlistJson(Map<String, dynamic> json) {
+    return CafeModel(
+      cafeId: json['cafe_id'] ?? 0,
+      cafeName: json['cafe_name'] ?? '',
+      description: '',
+      address: '',
+      city: '',
+      pincode: '',
+      latitude: '0',
+      longitude: '0',
+      phoneNo: '',
+      email: '',
+      ownerName: '',
+      ownerPhoneNo: '',
+      ownerEmail: '',
+      venueType: '',
+      hourRate: 0,
+      amenities: [],
+      images: [],
+      timeSlots: [],
+      workspace: [],
+      isLiked: json['is_wishlist'] ?? true,
     );
   }
 
@@ -83,6 +110,7 @@ class CafeModel extends Cafe {
             timeSlots.map((s) => (s as CafeTimeSlotModel).toJson()).toList(),
         'cafe_work_space':
             workspace.map((w) => (w as CafeWorkspaceModel).toJson()).toList(),
+        'is_wishlist': isLiked,
       };
 }
 

@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/booking_bloc.dart';
-import '../bloc/booking_event.dart';
-import '../bloc/event_success_bloc.dart';
-import 'bookings_screen.dart';
-import 'home_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/event_success_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 class EventRegistrationSuccessScreen extends StatelessWidget {
   static const String routeName = '/registration-success';

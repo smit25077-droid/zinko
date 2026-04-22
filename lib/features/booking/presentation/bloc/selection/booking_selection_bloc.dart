@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'booking_selection_event.dart';
-import 'booking_selection_state.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/selection/booking_selection_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/selection/booking_selection_state.dart';
 
 class BookingSelectionBloc
     extends Bloc<BookingSelectionEvent, BookingSelectionState> {

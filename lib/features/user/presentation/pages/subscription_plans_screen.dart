@@ -1,16 +1,16 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_event.dart';
-import '../bloc/user_state.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_app_bar.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
-import '../../../../core/routes/app_router.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/core/routes/app_router.dart';
 
 class SubscriptionPlansScreen extends StatelessWidget {
   static const String routeName = '/subscription-plans';
@@ -146,155 +146,130 @@ class _SubscriptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+    return ZinkoCommonCard(
+      padding: const EdgeInsets.all(24),
+      borderColor: isElite ? accentColor.withValues(alpha: 0.3) : null,
+      gradientColors: [
+        GlassTheme.glassColor(context).withValues(alpha: isElite ? 0.3 : 0.15),
+        GlassTheme.glassColor(context).withValues(alpha: isElite ? 0.2 : 0.1),
+      ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  color: accentColor.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accentColor.withValues(alpha: 0.4)),
+                ),
+                child: Text(
+                  title,
+                  style: TextStyle(
+                      color: accentColor,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 12,
+                      letterSpacing: 1.5),
+                ),
+              ),
+              if (isElite)
+                const Row(
+                  children: [
+                    Icon(Icons.star_rounded, color: Colors.amber, size: 16),
+                    SizedBox(width: 4),
+                    Text('BEST VALUE',
+                        style: TextStyle(
+                            color: Colors.amber,
+                            fontWeight: FontWeight.w900,
+                            fontSize: 10)),
+                  ],
+                ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(price,
+                  style: TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w900,
+                      color: GlassTheme.textColor(context))),
+              const SizedBox(width: 4),
+              Text(period,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: GlassTheme.secondaryTextColor(context)
+                          .withValues(alpha: 0.4),
+                      fontWeight: FontWeight.w600)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(description,
+              style: TextStyle(
+                  fontSize: 13,
+                  color: GlassTheme.secondaryTextColor(context)
+                      .withValues(alpha: 0.6),
+                  height: 1.4,
+                  fontWeight: FontWeight.w500)),
+          const SizedBox(height: 24),
+          ...features.map((f) => Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    Icon(Icons.check_circle_rounded,
+                        color: accentColor.withValues(alpha: 0.7), size: 18),
+                    const SizedBox(width: 12),
+                    Expanded(
+                        child: Text(f,
+                            style: TextStyle(
+                                color: GlassTheme.textColor(context)
+                                    .withValues(alpha: 0.8),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600))),
+                  ],
+                ),
+              )),
+          const SizedBox(height: 24),
+          GestureDetector(
+            onTap: onTap,
             child: Container(
-              padding: const EdgeInsets.all(24),
+              height: 56,
+              width: double.infinity,
               decoration: BoxDecoration(
-                color: GlassTheme.glassColor(context)
-                    .withValues(alpha: isElite ? 0.3 : 0.15),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                    color: isElite
-                        ? accentColor.withValues(alpha: 0.3)
-                        : GlassTheme.glassBorder(context)),
+                color: isElite
+                    ? accentColor
+                    : (isDark ? Colors.white : Colors.black),
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: [
-                  if (isElite)
-                    BoxShadow(
-                        color: accentColor.withValues(alpha: 0.1),
-                        blurRadius: 40,
-                        spreadRadius: -10),
+                  BoxShadow(
+                      color: (isElite
+                              ? accentColor
+                              : (isDark ? Colors.white : Colors.black))
+                          .withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6)),
                 ],
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: accentColor.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border:
-                              Border.all(color: accentColor.withValues(alpha: 0.4)),
-                        ),
-                        child: Text(
-                          title,
-                          style: TextStyle(
-                              color: accentColor,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 12,
-                              letterSpacing: 1.5),
-                        ),
-                      ),
-                      if (isElite)
-                        const Row(
-                          children: [
-                            Icon(Icons.star_rounded,
-                                color: Colors.amber, size: 16),
-                            SizedBox(width: 4),
-                            Text('BEST VALUE',
-                                style: TextStyle(
-                                    color: Colors.amber,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 10)),
-                          ],
-                        ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      Text(price,
-                          style: TextStyle(
-                              fontSize: 42,
-                              fontWeight: FontWeight.w900,
-                              color: GlassTheme.textColor(context))),
-                      const SizedBox(width: 4),
-                      Text(period,
-                          style: TextStyle(
-                              fontSize: 14,
-                              color: GlassTheme.secondaryTextColor(context)
-                                  .withValues(alpha: 0.4),
-                              fontWeight: FontWeight.w600)),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(description,
-                      style: TextStyle(
-                          fontSize: 13,
-                          color: GlassTheme.secondaryTextColor(context)
-                              .withValues(alpha: 0.6),
-                          height: 1.4,
-                          fontWeight: FontWeight.w500)),
-                  const SizedBox(height: 24),
-                  ...features.map((f) => Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            Icon(Icons.check_circle_rounded,
-                                color: accentColor.withValues(alpha: 0.7), size: 18),
-                            const SizedBox(width: 12),
-                            Expanded(
-                                child: Text(f,
-                                    style: TextStyle(
-                                        color: GlassTheme.textColor(context)
-                                            .withValues(alpha: 0.8),
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600))),
-                          ],
-                        ),
-                      )),
-                  const SizedBox(height: 24),
-                  GestureDetector(
-                    onTap: onTap,
-                    child: Container(
-                      height: 56,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: isElite
-                            ? accentColor
-                            : (isDark ? Colors.white : Colors.black),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                              color: (isElite
-                                      ? accentColor
-                                      : (isDark ? Colors.white : Colors.black))
-                                  .withValues(alpha: 0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 6)),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        'GET STARTED',
-                        style: TextStyle(
-                            color: isElite
-                                ? Colors.white
-                                : (isDark ? Colors.black : Colors.white),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.0),
-                      ),
-                    ),
-                  ),
-                ],
+              alignment: Alignment.center,
+              child: Text(
+                'GET STARTED',
+                style: TextStyle(
+                    color: isElite
+                        ? Colors.white
+                        : (isDark ? Colors.black : Colors.white),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

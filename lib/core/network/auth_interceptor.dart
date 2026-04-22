@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../widgets/global_network_overlay.dart';
-import '../../features/auth/presentation/pages/login_screen.dart';
-import '../../features/auth/data/models/auth_responses.dart';
-import '../../features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:zinko_app/widgets/global_network_overlay.dart';
+import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
+import 'package:zinko_app/features/auth/data/models/auth_responses.dart';
+import 'package:zinko_app/features/auth/data/datasources/auth_local_data_source.dart';
 
 class AuthInterceptor extends Interceptor {
   final SharedPreferences sharedPreferences;
@@ -34,7 +34,7 @@ class AuthInterceptor extends Interceptor {
     // 2. Global Token Expiration/Unauthorized Handling (401 or 403)
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
       // Clear session cache
-      sharedPreferences.remove(CACHED_USER_DATA);
+      sharedPreferences.clear();
 
       // Navigate to login screen and clear history
       // Note: pushing to the route automatically clears the stack

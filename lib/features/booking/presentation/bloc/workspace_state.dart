@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 
 abstract class WorkspaceState extends Equatable {
   const WorkspaceState();

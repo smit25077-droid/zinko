@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
-import '../../../booking/presentation/pages/bookings_screen.dart';
-import '../../../booking/presentation/pages/wishlist_screen.dart';
-import '../../../onboarding/presentation/pages/splash_screen.dart';
-import '../../../settings/presentation/pages/settings_screen.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_event.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_event.dart';
-import '../bloc/user_state.dart';
-import 'edit_profile_screen.dart';
-import 'subscription_plans_screen.dart';
-import '../../../wallet/presentation/pages/wallet_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/wishlist_screen.dart';
+import 'package:zinko_app/features/settings/presentation/pages/settings_screen.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/user/presentation/pages/edit_profile_screen.dart';
+import 'package:zinko_app/features/user/presentation/pages/subscription_plans_screen.dart';
+import 'package:zinko_app/features/wallet/presentation/pages/wallet_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_app_bar.dart';
-import '../../../../widgets/zinko_common_dialog.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../../domain/entities/user_entity.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_common_dialog.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
+import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
@@ -67,47 +70,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 color: AppColors.primary,
                 backgroundColor: GlassTheme.glassColor(context),
-                child: CustomScrollView(
+                child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  slivers: [
-                    _buildHeader(context, user, isLoading),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          children: [
-                            if (isError) ...[
-                              const SizedBox(height: 12),
-                              _buildErrorBanner(context, (state).message),
-                            ],
-                            const SizedBox(height: 12),
-                            if (user != null) ...[
-                              _buildCompletionCard(context, user),
-                              const SizedBox(height: 12),
-                            ],
-                            _buildMembershipCard(context, user),
-                            const SizedBox(height: 12),
-                            _buildSectionTitle(context, 'MY ACCOUNT'),
-                            const SizedBox(height: 10),
-                            _buildAccountCard(context, user),
-                            const SizedBox(height: 20),
-                            _buildSectionTitle(context, 'RECENT ACTIVITY'),
-                            const SizedBox(height: 10),
-                            _buildMenuGrid(context),
-                            const SizedBox(height: 20),
-                            _buildSectionTitle(context, 'PREFERENCES & SETTINGS'),
-                            const SizedBox(height: 10),
-                            _buildGeneralList(context, user),
-                            const SizedBox(height: 24),
-                            _buildLogoutBtn(context),
-                            const SizedBox(height: 100),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    children: [
+                      _buildHeader(context, user, isLoading),
+                      if (isError) ...[
+                        const SizedBox(height: 12),
+                        _buildErrorBanner(context, (state).message),
+                      ],
+                      const SizedBox(height: 12),
+                      if (user != null) ...[
+                        _buildCompletionCard(context, user),
+                        const SizedBox(height: 12),
+                      ],
+                      _buildMembershipCard(context, user),
+                      const SizedBox(height: 12),
+                      _buildSectionTitle(context, 'MY ACCOUNT'),
+                      const SizedBox(height: 10),
+                      _buildAccountCard(context, user),
+                      const SizedBox(height: 20),
+                      _buildSectionTitle(context, 'RECENT ACTIVITY'),
+                      const SizedBox(height: 10),
+                      _buildMenuGrid(context),
+                      const SizedBox(height: 20),
+                      _buildSectionTitle(context, 'PREFERENCES & SETTINGS'),
+                      const SizedBox(height: 10),
+                      _buildGeneralList(context, user),
+                      const SizedBox(height: 24),
+                      _buildLogoutBtn(context),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
                 ),
               );
             },
@@ -151,85 +148,72 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildHeader(BuildContext context, dynamic user, bool isLoading) {
-    return SliverAppBar(
-      expandedHeight: 170,
-      backgroundColor: AppColors.transparent,
-      elevation: 0,
-      shadowColor: AppColors.transparent,
-      foregroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      pinned: true,
-      stretch: true,
-      centerTitle: true,
-      leading: const SizedBox(),
-      flexibleSpace: FlexibleSpaceBar(
-        background: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Hero(
-              tag: 'profile_pic',
-              child: Container(
-                width: 90,
-                height: 90,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                      color: AppColors.brightBlue.withValues(alpha: 0.5), width: 3.5),
-                  boxShadow: [
-                    BoxShadow(
-                        color: AppColors.brightBlue.withValues(alpha: 0.2),
-                        blurRadius: 20,
-                        spreadRadius: 1)
-                  ],
-                ),
-                child: ClipOval(
-                  child: isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                              color: GlassTheme.textColor(context),
-                              strokeWidth: 2))
-                      : ZinkoNetworkImage(
-                          imageUrl: user?.profileImage ?? '',
-                          width: 90,
-                          height: 90,
-                          fit: BoxFit.cover,
-                        ),
-                ),
-              ),
-            )
-                .animate()
-                .scale(curve: Curves.elasticOut, duration: 1000.ms)
-                .rotate(begin: -0.05, end: 0),
-            const SizedBox(height: 12),
-            Text(
-              user?.name.toUpperCase() ?? (isLoading ? 'LOADING...' : 'ME'),
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w900,
-                  color: GlassTheme.textColor(context),
-                  letterSpacing: -0.5),
-            ).animate(delay: 200.ms).fadeIn(),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-              decoration: BoxDecoration(
-                color: GlassTheme.glassColor(context),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: GlassTheme.glassBorder(context)),
-              ),
-              child: Text(
-                'EXPERT USER',
-                style: TextStyle(
-                    fontSize: 9,
-                    color: GlassTheme.secondaryTextColor(context),
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5),
-              ),
-            ).animate(delay: 350.ms).fadeIn(),
-          ],
-        ),
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const SizedBox(height: 40),
+        Hero(
+          tag: 'profile_pic',
+          child: Container(
+            width: 90,
+            height: 90,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                  color: AppColors.brightBlue.withValues(alpha: 0.5), width: 3.5),
+              boxShadow: [
+                BoxShadow(
+                    color: AppColors.brightBlue.withValues(alpha: 0.2),
+                    blurRadius: 20,
+                    spreadRadius: 1)
+              ],
+            ),
+            child: ClipOval(
+              child: isLoading
+                  ? Center(
+                      child: CircularProgressIndicator(
+                          color: GlassTheme.textColor(context),
+                          strokeWidth: 2))
+                  : ZinkoNetworkImage(
+                      imageUrl: user?.profileImage ?? '',
+                      width: 90,
+                      height: 90,
+                      fit: BoxFit.cover,
+                    ),
+            ),
+          ),
+        )
+            .animate()
+            .scale(curve: Curves.elasticOut, duration: 1000.ms)
+            .rotate(begin: -0.05, end: 0),
+        const SizedBox(height: 12),
+        Text(
+          user?.name.toUpperCase() ?? (isLoading ? 'LOADING...' : 'ME'),
+          style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w900,
+              color: GlassTheme.textColor(context),
+              letterSpacing: -0.5),
+        ).animate(delay: 200.ms).fadeIn(),
+        const SizedBox(height: 4),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: GlassTheme.glassColor(context),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: GlassTheme.glassBorder(context)),
+          ),
+          child: Text(
+            'EXPERT USER',
+            style: TextStyle(
+                fontSize: 9,
+                color: GlassTheme.secondaryTextColor(context),
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1.5),
+          ),
+        ).animate(delay: 350.ms).fadeIn(),
+      ],
     );
   }
 
@@ -317,8 +301,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildMembershipCard(BuildContext context, dynamic user) {
     return ZinkoCommonCard(
-      onTap: () =>
-          Navigator.pushNamed(context, SubscriptionPlansScreen.routeName),
+      onTap: () {
+        if (user != null && !user.isProfileComplete) {
+          ZinkoProfileCompletionDialog.show(context, user);
+        } else {
+          Navigator.pushNamed(context, SubscriptionPlansScreen.routeName);
+        }
+      },
       backgroundColor: AppColors.royalBlue,
       child: Row(
         children: [
@@ -534,9 +523,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       iconColor: AppColors.error,
       actionLabel: 'LOGOUT',
       actionColor: AppColors.error,
-      onAction: () {
-        context.read<AuthBloc>().add(LogoutRequested());
-        Navigator.pushNamedAndRemoveUntil(context, SplashScreen.routeName, (route) => false);
+      onAction: () async {
+        // 1. Clear SharedPreferences
+        await sl<SharedPreferences>().clear();
+        
+        // 2. Reset All relevant global Blocs
+        if (context.mounted) {
+          context.read<UserBloc>().add(ResetUserEvent());
+          context.read<AuthBloc>().add(LogoutRequested());
+          
+          // 3. Navigate to Login
+          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
+        }
       },
     );
   }

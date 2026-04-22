@@ -1,5 +1,5 @@
-import '../models/event_model.dart';
-import '../../../../models/app_models.dart' hide EventModel;
+import 'package:zinko_app/features/event/data/models/event_model.dart';
+import 'package:zinko_app/models/app_models.dart' hide EventModel;
 
 abstract class EventRemoteDataSource {
   Future<List<EventModel>> getEvents();

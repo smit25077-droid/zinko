@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../booking/presentation/pages/home_screen.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/di/service_locator.dart';
-import '../bloc/splash_bloc.dart';
-import 'onboarding_screen.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
+import 'package:zinko_app/features/onboarding/presentation/bloc/splash_bloc.dart';
+import 'package:zinko_app/features/onboarding/presentation/pages/onboarding_screen.dart';
 
 class SplashScreen extends StatelessWidget {
   static const String routeName = '/splash';

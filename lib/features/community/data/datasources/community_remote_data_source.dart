@@ -1,5 +1,5 @@
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
-import '../models/community_models.dart';
+import 'package:zinko_app/features/community/data/models/community_models.dart';
 
 abstract class CommunityRemoteDataSource {
   Future<List<PostModel>> getPosts();

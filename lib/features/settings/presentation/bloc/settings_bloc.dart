@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/di/service_locator.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
 
 // Events
 abstract class SettingsEvent {}

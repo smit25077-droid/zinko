@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../utils/glass_theme.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
 
 class ZinkoEmptyState extends StatelessWidget {
   final String title;

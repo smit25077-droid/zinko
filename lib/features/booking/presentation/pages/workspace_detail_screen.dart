@@ -5,22 +5,27 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 import 'dart:io' show Platform;
 
-import '../../domain/entities/workspace_entity.dart';
-import '../bloc/workspace_bloc.dart';
-import '../bloc/workspace_event.dart';
-import '../bloc/workspace_state.dart';
-import 'booking_screen.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/bloc/user_state.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_common_dialog.dart';
-import '../../../../widgets/zinko_common_bottom_sheet.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../bloc/workspace_detail_bloc.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
+import 'package:zinko_app/features/booking/presentation/pages/booking_screen.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_common_bottom_sheet.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_detail_bloc.dart';
+
+import 'package:collection/collection.dart';
 
 class WorkspaceDetailScreen extends StatelessWidget {
   static const String routeName = '/workspace-detail';
@@ -96,16 +101,63 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
         builder: (context, state) {
           final workspace = widget.workspace;
           return Scaffold(
-            extendBodyBehindAppBar: true,
+            extendBodyBehindAppBar: false,
+            appBar: ZinkoAppBar(
+              title: workspace.name,
+              actions: [
+                IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.2)),
+                    ),
+                    child: BlocBuilder<CafeBloc, CafeState>(
+                      builder: (context, cafeState) {
+                        bool isLiked = workspace.isFavorite;
+                        if (cafeState is CafeLoaded) {
+                          final c = cafeState.cafes.firstWhereOrNull(
+                              (e) => e.cafeId.toString() == workspace.id);
+                          if (c != null) isLiked = c.isLiked;
+                        } else if (cafeState is CafeWishlistLoaded) {
+                          final c = cafeState.wishlist.firstWhereOrNull(
+                              (e) => e.cafeId.toString() == workspace.id);
+                          if (c != null) isLiked = c.isLiked;
+                        }
+
+                        return Icon(
+                          isLiked
+                              ? Icons.favorite_rounded
+                              : Icons.favorite_border_rounded,
+                          color: isLiked ? Colors.redAccent : Colors.white,
+                          size: 20,
+                        );
+                      },
+                    ),
+                  ),
+                  onPressed: () {
+                    final userState = context.read<UserBloc>().state;
+                    if (userState is UserLoaded) {
+                      context.read<CafeBloc>().add(ToggleWishlistEvent(
+                            cafeId: int.parse(workspace.id),
+                            userCode: userState.user.userCode,
+                          ));
+                    }
+                  },
+                ),
+                const SizedBox(width: 8),
+              ],
+            ),
             body: ZinkoBackground(
               child: Stack(
                 children: [
-                  CustomScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    slivers: [
-                      _buildSliverAppBar(context),
-                      SliverToBoxAdapter(
-                        child: Padding(
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildImageCarousel(context),
+                        Padding(
                           padding: const EdgeInsets.fromLTRB(20, 16, 20, 140),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,10 +171,6 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                                 const SizedBox(height: 12),
                                 _buildGlassAmenities(),
                               ],
-                              if (workspace.phone.isNotEmpty || workspace.email.isNotEmpty) ...[
-                                const SizedBox(height: 12),
-                                _buildGlassContactInfo(),
-                              ],
                               if (workspace.lat != 0) ...[
                                 const SizedBox(height: 12),
                                 _buildGlassMap(),
@@ -134,8 +182,8 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                             ],
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   Positioned(
                     bottom: 0,
@@ -528,95 +576,77 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Widget _buildImageCarousel(BuildContext context) {
     final workspace = widget.workspace;
-    return SliverAppBar(
-      expandedHeight: 280,
-      backgroundColor: Colors.black,
-      foregroundColor: Colors.white,
-      elevation: 0,
-      pinned: true,
-      stretch: true,
-      leading: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: _GlassHeaderButton(
-          icon: Icons.arrow_back_ios_new_rounded,
-          onTap: () => Navigator.pop(context),
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _GlassHeaderButton(
-            icon: workspace.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-            iconColor: workspace.isFavorite ? Colors.redAccent : Colors.white,
-            onTap: () {
-              context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(workspace.id));
+    return SizedBox(
+      height: 280,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            onPageChanged: (index) => context
+                .read<WorkspaceDetailBloc>()
+                .add(UpdatePageIndex(index)),
+            itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
+            itemBuilder: (context, index) {
+              return ZinkoNetworkImage(
+                imageUrl: workspace.images.isEmpty
+                    ? workspace.imageUrl
+                    : workspace.images[index],
+                fit: BoxFit.cover,
+              );
             },
           ),
-        ),
-        const SizedBox(width: 8),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) => context.read<WorkspaceDetailBloc>().add(UpdatePageIndex(index)),
-              itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
-              itemBuilder: (context, index) {
-                return ZinkoNetworkImage(
-                  imageUrl: workspace.images.isEmpty ? workspace.imageUrl : workspace.images[index],
-                  fit: BoxFit.cover,
-                );
-              },
-            ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  stops: const [0.0, 0.4, 1.0],
-                  colors: [
-                    Colors.black.withValues(alpha: 0.6),
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.8),
-                  ],
-                ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.0, 0.4, 1.0],
+                colors: [
+                  Colors.black.withValues(alpha: 0.6),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.8),
+                ],
               ),
             ),
-            if (workspace.images.length > 1)
-              Positioned(
-                bottom: 20,
-                left: 0,
-                right: 0,
-                child: BlocBuilder<WorkspaceDetailBloc, WorkspaceDetailState>(
-                  builder: (context, state) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: workspace.images.asMap().entries.map((entry) {
-                        bool isSelected = state.currentPage == entry.key;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          width: isSelected ? 24 : 8,
-                          height: 4,
-                          margin: const EdgeInsets.symmetric(horizontal: 3),
-                          decoration: BoxDecoration(
-                            color: isSelected ? Colors.white : Colors.white24,
-                            borderRadius: BorderRadius.circular(2),
-                            boxShadow: isSelected
-                                ? [BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 4)]
-                                : [],
-                          ),
-                        );
-                      }).toList(),
-                    );
-                  },
-                ),
+          ),
+          if (workspace.images.length > 1)
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: BlocBuilder<WorkspaceDetailBloc, WorkspaceDetailState>(
+                builder: (context, state) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: workspace.images.asMap().entries.map((entry) {
+                      bool isSelected = state.currentPage == entry.key;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: isSelected ? 24 : 8,
+                        height: 4,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white : Colors.white24,
+                          borderRadius: BorderRadius.circular(2),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                      color:
+                                          Colors.white.withValues(alpha: 0.3),
+                                      blurRadius: 4)
+                                ]
+                              : [],
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
@@ -694,7 +724,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
             onTap: () {
               final userState = context.read<UserBloc>().state;
               if (userState is UserLoaded && !userState.user.isProfileComplete) {
-                _showProfileIncompleteDialog(context, userState.user.completionPercentage);
+                ZinkoProfileCompletionDialog.show(context, userState.user);
                 return;
               }
               Navigator.pushNamed(context, BookingScreen.routeName, arguments: {
@@ -732,114 +762,5 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
         ],
       ),
     ).animate().fadeIn(duration: 400.ms);
-  }
-
-  Widget _buildGlassContactInfo() {
-    final workspace = widget.workspace;
-    return _buildSectionCard(
-      title: 'CONTACT INFO',
-      child: Column(
-        children: [
-          if (workspace.phone.isNotEmpty)
-            _buildContactRow(Icons.phone_rounded, workspace.phone, () {
-              launchUrl(Uri.parse('tel:${workspace.phone}'));
-            }),
-          if (workspace.phone.isNotEmpty && workspace.email.isNotEmpty) const SizedBox(height: 12),
-          if (workspace.email.isNotEmpty)
-            _buildContactRow(Icons.email_rounded, workspace.email, () {
-              launchUrl(Uri.parse('mailto:${workspace.email}'));
-            }),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContactRow(IconData icon, String text, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 16, color: AppColors.royalBlue),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            Icon(Icons.open_in_new_rounded,
-                size: 14, color: AppColors.white.withValues(alpha: 0.3)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showProfileIncompleteDialog(BuildContext context, double percentage) {
-    ZinkoCommonDialog.show(
-      context: context,
-      title: 'PROFILE INCOMPLETE',
-      customContent: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text(
-            'To ensure a secure community, Zinko requires a 100% complete profile before making any bookings.',
-            style: TextStyle(color: Colors.white70, fontSize: 13, height: 1.5, fontWeight: FontWeight.w500),
-          ),
-          const SizedBox(height: 20),
-          LinearProgressIndicator(
-            value: percentage,
-            backgroundColor: Colors.white12,
-            valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
-            minHeight: 6,
-          ),
-          const SizedBox(height: 8),
-          Text('${(percentage * 100).toInt()}% Complete',
-              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.w900, fontSize: 12)),
-        ],
-      ),
-      actionLabel: 'COMPLETE NOW',
-      cancelLabel: 'LATER',
-      onAction: () {
-        Navigator.pop(context);
-        Navigator.pushNamed(context, '/profile');
-      },
-    );
-  }
-}
-
-class _GlassHeaderButton extends StatelessWidget {
-  final IconData icon;
-  final Color? iconColor;
-  final VoidCallback onTap;
-
-  const _GlassHeaderButton({required this.icon, this.iconColor, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.4),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
-        ),
-        child: Icon(icon, color: iconColor ?? Colors.white, size: 18),
-      ),
-    );
   }
 }

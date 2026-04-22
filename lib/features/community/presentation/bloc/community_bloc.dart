@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/usecases/usecase.dart';
-import '../../domain/entities/community_entities.dart';
-import '../../../user/domain/entities/person_entity.dart';
-import '../../domain/usecases/post_usecases.dart';
-import '../../domain/usecases/group_usecases.dart';
-import '../../domain/usecases/person_usecases.dart';
-import 'community_event.dart';
-import 'community_state.dart';
+import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/community/domain/usecases/post_usecases.dart';
+import 'package:zinko_app/features/community/domain/usecases/group_usecases.dart';
+import 'package:zinko_app/features/community/domain/usecases/person_usecases.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_state.dart';
 
 class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   final GetPosts getPosts;

@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:zinko_app/core/error/failures.dart';
-import '../entities/event_entity.dart';
+import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
 
 abstract class EventRepository {
   Future<Either<Failure, List<EventEntity>>> getEvents();

@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_local_data_source.dart';
-import '../datasources/auth_remote_data_source.dart';
-import '../models/auth_requests.dart';
-import '../models/auth_responses.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:zinko_app/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:zinko_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
+import 'package:zinko_app/features/auth/data/models/auth_responses.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;

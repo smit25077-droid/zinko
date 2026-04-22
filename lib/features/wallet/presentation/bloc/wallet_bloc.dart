@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/get_wallet_balance.dart';
-import '../../domain/usecases/get_wallet_transactions.dart';
-import 'wallet_event.dart';
-import 'wallet_state.dart';
+import 'package:zinko_app/features/wallet/domain/usecases/get_wallet_balance.dart';
+import 'package:zinko_app/features/wallet/domain/usecases/get_wallet_transactions.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_event.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_state.dart';
 
 class WalletBloc extends Bloc<WalletEvent, WalletState> {
   final GetWalletBalance getWalletBalance;
@@ -13,6 +13,11 @@ class WalletBloc extends Bloc<WalletEvent, WalletState> {
     required this.getWalletTransactions,
   }) : super(WalletInitial()) {
     on<FetchWalletDataEvent>(_onFetchWalletData);
+    on<ResetWalletEvent>(_onResetWallet);
+  }
+
+  void _onResetWallet(ResetWalletEvent event, Emitter<WalletState> emit) {
+    emit(WalletInitial());
   }
 
   Future<void> _onFetchWalletData(

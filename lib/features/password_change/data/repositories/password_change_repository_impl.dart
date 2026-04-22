@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/repositories/password_change_repository.dart';
-import '../datasources/password_change_remote_data_source.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/password_change/domain/repositories/password_change_repository.dart';
+import 'package:zinko_app/features/password_change/data/datasources/password_change_remote_data_source.dart';
 
 class PasswordChangeRepositoryImpl implements PasswordChangeRepository {
   final PasswordChangeRemoteDataSource remoteDataSource;

@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/widgets/zinko_empty_state.dart';
-import '../../domain/entities/workspace_entity.dart';
-import '../bloc/workspace_bloc.dart';
-import '../bloc/workspace_event.dart';
-import '../bloc/workspace_state.dart';
-import 'workspace_detail_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_glass_box.dart';
-import '../../../../widgets/zinko_network_image.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
+import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_glass_box.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
 
 class AllWorkspacesScreen extends StatefulWidget {
   static const String routeName = '/all-workspaces';

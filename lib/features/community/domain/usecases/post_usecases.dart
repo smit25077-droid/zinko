@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../entities/community_entities.dart';
-import '../repositories/community_repository.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
+import 'package:zinko_app/features/community/domain/repositories/community_repository.dart';
 
 class GetPosts implements UseCase<List<PostEntity>, NoParams> {
   final CommunityRepository repository;

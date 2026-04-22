@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/get_workspaces.dart';
-import '../../domain/usecases/search_workspaces.dart';
-import '../../domain/usecases/watch_workspaces.dart';
-import '../../domain/repositories/workspace_repository.dart';
-import 'workspace_event.dart';
-import 'workspace_state.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_workspaces.dart';
+import 'package:zinko_app/features/booking/domain/usecases/search_workspaces.dart';
+import 'package:zinko_app/features/booking/domain/usecases/watch_workspaces.dart';
+import 'package:zinko_app/features/booking/domain/repositories/workspace_repository.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
 
 class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
   final GetWorkspaces getWorkspaces;

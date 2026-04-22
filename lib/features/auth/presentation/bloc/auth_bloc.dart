@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:zinko_app/features/auth/domain/usecases/register_usecase.dart';
-import '../../domain/repositories/auth_repository.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
+import 'package:zinko_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;

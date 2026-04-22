@@ -1,4 +1,4 @@
-import '../../domain/entities/event_entity.dart';
+import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
 
 class EventModel extends EventEntity {
   const EventModel({

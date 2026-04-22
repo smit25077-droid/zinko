@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
-import '../../../auth/presentation/pages/login_screen.dart';
+import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   static const String routeName = '/onboarding';

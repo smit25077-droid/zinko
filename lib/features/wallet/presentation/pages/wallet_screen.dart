@@ -6,16 +6,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
-import '../bloc/wallet_bloc.dart';
-import '../bloc/wallet_event.dart';
-import '../bloc/wallet_state.dart';
-import '../../domain/entities/wallet_transaction.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_app_bar.dart';
-import '../../../../widgets/zinko_common_dialog.dart';
-import '../../../../core/di/service_locator.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_event.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_state.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_common_dialog.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
 
 class WalletScreen extends StatelessWidget {
   static const String routeName = '/wallet';

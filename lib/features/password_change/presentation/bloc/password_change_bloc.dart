@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/password_change_usecases.dart';
+import 'package:zinko_app/features/password_change/domain/usecases/password_change_usecases.dart';
 
 // Events
 abstract class PasswordChangeEvent extends Equatable {

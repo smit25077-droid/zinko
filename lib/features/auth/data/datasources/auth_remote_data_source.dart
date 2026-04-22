@@ -1,7 +1,7 @@
-import '../../../../core/network/api_endpoints.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/auth_requests.dart';
-import '../models/auth_responses.dart';
+import 'package:zinko_app/core/network/api_endpoints.dart';
+import 'package:zinko_app/core/network/dio_client.dart';
+import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
+import 'package:zinko_app/features/auth/data/models/auth_responses.dart';
 
 abstract class AuthRemoteDataSource {
   Future<AuthResponse<UserData>> login(LoginRequest request);

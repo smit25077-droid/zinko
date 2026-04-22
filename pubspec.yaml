@@ -60,6 +60,7 @@ dependencies:
   cached_network_image: ^3.4.1
   flutter_rating_bar: ^4.0.1
 
+  collection: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/core/usecases/usecase.dart';
-import '../entities/chat_entity.dart';
-import '../repositories/chat_repository.dart';
+import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
+import 'package:zinko_app/features/chat/domain/repositories/chat_repository.dart';
 
 class GetChats implements UseCase<List<ChatEntity>, NoParams> {
   final ChatRepository repository;

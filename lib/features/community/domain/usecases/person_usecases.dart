@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/core/usecases/usecase.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
-import '../repositories/community_repository.dart';
+import 'package:zinko_app/features/community/domain/repositories/community_repository.dart';
 
 class GetPeople implements UseCase<List<PersonEntity>, NoParams> {
   final CommunityRepository repository;

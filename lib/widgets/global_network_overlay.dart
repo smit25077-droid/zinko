@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../core/bloc/network_bloc.dart';
+import 'package:zinko_app/core/bloc/network_bloc.dart';
 
 /// A key that the overlay uses to show dialogs outside [MaterialApp]'s builder.
 /// Assign this to [MaterialApp.navigatorKey].

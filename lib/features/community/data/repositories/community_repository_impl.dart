@@ -1,9 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
-import '../../domain/entities/community_entities.dart';
-import '../../domain/repositories/community_repository.dart';
-import '../datasources/community_remote_data_source.dart';
+import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
+import 'package:zinko_app/features/community/domain/repositories/community_repository.dart';
+import 'package:zinko_app/features/community/data/datasources/community_remote_data_source.dart';
 
 class CommunityRepositoryImpl implements CommunityRepository {
   final CommunityRemoteDataSource remoteDataSource;

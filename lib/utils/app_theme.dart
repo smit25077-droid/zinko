@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
 /// Centralized theme configurations for light and dark modes
 class AppTheme {

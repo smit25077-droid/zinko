@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import '../../../domain/entities/workspace_entity.dart';
-import '../../../../user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
 
 abstract class MapEvent extends Equatable {
   const MapEvent();

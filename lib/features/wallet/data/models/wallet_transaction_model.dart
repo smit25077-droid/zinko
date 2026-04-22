@@ -1,4 +1,4 @@
-import '../../domain/entities/wallet_transaction.dart';
+import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
 
 class WalletTransactionModel extends WalletTransaction {
   const WalletTransactionModel({

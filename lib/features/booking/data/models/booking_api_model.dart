@@ -1,4 +1,4 @@
-import '../../domain/entities/booking_request_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
 
 class CreateBookingRequestModel extends BookingRequestEntity {
   const CreateBookingRequestModel({

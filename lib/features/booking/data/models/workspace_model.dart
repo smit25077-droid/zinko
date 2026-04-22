@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 
 class WorkspaceModel extends WorkspaceEntity {
   const WorkspaceModel({

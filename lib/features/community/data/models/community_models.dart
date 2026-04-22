@@ -1,4 +1,4 @@
-import '../../domain/entities/community_entities.dart';
+import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
 
 class PostModel extends PostEntity {
   const PostModel({

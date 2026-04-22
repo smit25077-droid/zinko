@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/cafe_entities.dart';
+import 'package:zinko_app/features/cafe/domain/entities/cafe_entities.dart';
 
 abstract class CafeState extends Equatable {
   const CafeState();
@@ -19,6 +19,15 @@ class CafeLoaded extends CafeState {
 
   @override
   List<Object?> get props => [cafes];
+}
+
+class CafeWishlistLoaded extends CafeState {
+  final List<Cafe> wishlist;
+
+  const CafeWishlistLoaded({required this.wishlist});
+
+  @override
+  List<Object?> get props => [wishlist];
 }
 
 class CafeError extends CafeState {

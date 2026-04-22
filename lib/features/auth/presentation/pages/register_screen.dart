@@ -4,15 +4,15 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
-import '../../../../utils/zinko_flushbar.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
-import '../../data/models/auth_requests.dart';
-import './register_form_bloc.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
+import 'package:zinko_app/features/auth/presentation/pages/register_form_bloc.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const String routeName = '/register';

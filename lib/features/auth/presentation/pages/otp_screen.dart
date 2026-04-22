@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/bloc/user_state.dart';
-import '../../../user/presentation/bloc/user_event.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../bloc/otp_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/otp_bloc.dart';
 import 'package:pinput/pinput.dart';
-import '../../../../utils/zinko_flushbar.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
-import '../../../../core/routes/app_router.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/core/routes/app_router.dart';
 
 class OtpScreen extends StatelessWidget {
   final String type;

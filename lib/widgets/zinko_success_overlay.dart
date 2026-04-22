@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:audioplayers/audioplayers.dart';
-import '../core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
 class ZinkoSuccessOverlay extends StatefulWidget {
   final String title;

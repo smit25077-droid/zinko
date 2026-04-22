@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../entities/user_entity.dart';
-import '../repositories/user_repository.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
+import 'package:zinko_app/features/user/domain/repositories/user_repository.dart';
 
 class UpdateUserProfile implements UseCase<UserEntity, UpdateUserParams> {
   final UserRepository repository;

@@ -3,15 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../models/app_models.dart';
-import '../../../../providers/app_provider.dart';
-import '../../domain/entities/person_entity.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_state.dart';
-import 'subscription_plans_screen.dart';
-import '../../../chat/presentation/pages/chat_screen.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/models/app_models.dart';
+import 'package:zinko_app/providers/app_provider.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/user/presentation/pages/subscription_plans_screen.dart';
+import 'package:zinko_app/features/chat/presentation/pages/chat_screen.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 
 // ── Main Person Profile Screen ─────────────────────────────────────────────────
 class PersonProfileScreen extends StatefulWidget {
@@ -72,7 +74,13 @@ class _PersonProfileScreenState extends State<PersonProfileScreen>
 
   void _showPremiumBottomSheet(BuildContext context) {
     final state = context.read<UserBloc>().state;
-    if (state is UserLoaded && state.user.isPremium) return;
+    if (state is UserLoaded) {
+      if (!state.user.isProfileComplete) {
+        ZinkoProfileCompletionDialog.show(context, state.user);
+        return;
+      }
+      if (state.user.isPremium) return;
+    }
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -85,24 +93,8 @@ class _PersonProfileScreenState extends State<PersonProfileScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              color: Colors.white, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'IDENTITY',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w900,
-            fontSize: 18,
-            letterSpacing: 2.0,
-          ),
-        ),
-        centerTitle: true,
+      appBar: ZinkoAppBar(
+        title: 'IDENTITY',
         actions: [
           IconButton(
             icon: const Icon(Icons.more_horiz_rounded,
@@ -119,162 +111,150 @@ class _PersonProfileScreenState extends State<PersonProfileScreen>
                 state is UserLoaded ? state.user.isPremium : false;
             final p = widget.person;
 
-            return CustomScrollView(
+            return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 120),
-                      // Avatar Header
-                      Hero(
-                        tag: 'person-${p.id}',
-                        child: Container(
-                          width: 130,
-                          height: 130,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                                color: Colors.white.withValues(alpha: 0.3), width: 4),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.4),
-                                  blurRadius: 20,
-                                  spreadRadius: 5)
-                            ],
-                            image: DecorationImage(
-                                image: NetworkImage(p.avatarUrl),
-                                fit: BoxFit.cover),
-                          ),
-                        ),
-                      )
-                          .animate()
-                          .scale(curve: Curves.elasticOut, duration: 800.ms),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            p.name,
-                            style: const TextStyle(
-                                fontSize: 30,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white),
-                          ),
-                          if (p.isVerified) ...[
-                            const SizedBox(width: 8),
-                            const Icon(Icons.verified,
-                                color: Colors.white, size: 24),
-                          ],
+              child: Column(
+                children: [
+                  const SizedBox(height: 120),
+                  // Avatar Header
+                  Hero(
+                    tag: 'person-${p.id}',
+                    child: Container(
+                      width: 130,
+                      height: 130,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            width: 4),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.4),
+                              blurRadius: 20,
+                              spreadRadius: 5)
                         ],
-                      ).animate(delay: 200.ms).fadeIn(),
+                        image: DecorationImage(
+                            image: NetworkImage(p.avatarUrl),
+                            fit: BoxFit.cover),
+                      ),
+                    ),
+                  )
+                      .animate()
+                      .scale(curve: Curves.elasticOut, duration: 800.ms),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                       Text(
-                        p.role.toUpperCase(),
-                        style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.2),
-                      ).animate(delay: 300.ms).fadeIn(),
-                      const SizedBox(height: 32),
-
-                      // Action Buttons
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: _GlassButton(
-                                onPressed: () =>
-                                    _onConnect(context, isPremiumUser),
-                                text: p.isConnected ? 'CONNECTED' : 'CONNECT',
-                                icon: p.isConnected
-                                    ? Icons.person_remove_rounded
-                                    : Icons.person_add_rounded,
-                                isFilled: true,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: _GlassButton(
-                                onPressed: () =>
-                                    _onMessage(context, isPremiumUser),
-                                text: 'MESSAGE',
-                                icon: Icons.chat_bubble_rounded,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                          .animate(delay: 400.ms)
-                          .fadeIn()
-                          ,
-
-                      const SizedBox(height: 32),
-
-                      // Stats Row
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: _buildGlassStats(p),
-                      ).animate(delay: 500.ms).fadeIn(),
-
-                      const SizedBox(height: 24),
-
-                      // Content Cards
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildSectionTitle('ABOUT IDENTITY'),
-                            const SizedBox(height: 12),
-                            _buildGlassCard(
-                              child: Text(
-                                p.bio,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    height: 1.6,
-                                    color: Colors.white.withValues(alpha: 0.85)),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            _buildSectionTitle('MASTERED SKILLS'),
-                            const SizedBox(height: 12),
-                            Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: p.skills
-                                  .map((skill) => _buildSkillBadge(skill))
-                                  .toList(),
-                            ),
-                            const SizedBox(height: 24),
-                            _buildSectionTitle('ACTIVITY LOG'),
-                            const SizedBox(height: 12),
-                            _buildGlassCard(
-                              child: Column(
-                                children: [
-                                  _buildActivityTile(
-                                      Icons.event_available_rounded,
-                                      'Attending "London Tech Meetup"',
-                                      '2h ago'),
-                                  Divider(
-                                      color: Colors.white.withValues(alpha: 0.1),
-                                      height: 24),
-                                  _buildActivityTile(
-                                      Icons.groups_3_rounded,
-                                      'Joined "Digital Nomads" Group',
-                                      'Yesterday'),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 60),
-                          ],
-                        ),
-                      ).animate(delay: 600.ms).fadeIn(),
+                        p.name,
+                        style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white),
+                      ),
+                      if (p.isVerified) ...[
+                        const SizedBox(width: 8),
+                        const Icon(Icons.verified,
+                            color: Colors.white, size: 24),
+                      ],
                     ],
-                  ),
-                ),
-              ],
+                  ).animate(delay: 200.ms).fadeIn(),
+                  Text(
+                    p.role.toUpperCase(),
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.2),
+                  ).animate(delay: 300.ms).fadeIn(),
+                  const SizedBox(height: 32),
+
+                  // Action Buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _GlassButton(
+                            onPressed: () => _onConnect(context, isPremiumUser),
+                            text: p.isConnected ? 'CONNECTED' : 'CONNECT',
+                            icon: p.isConnected
+                                ? Icons.person_remove_rounded
+                                : Icons.person_add_rounded,
+                            isFilled: true,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _GlassButton(
+                            onPressed: () => _onMessage(context, isPremiumUser),
+                            text: 'MESSAGE',
+                            icon: Icons.chat_bubble_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ).animate(delay: 400.ms).fadeIn(),
+
+                  const SizedBox(height: 32),
+
+                  // Stats Row
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: _buildGlassStats(p),
+                  ).animate(delay: 500.ms).fadeIn(),
+
+                  const SizedBox(height: 24),
+
+                  // Content Cards
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildSectionTitle('ABOUT IDENTITY'),
+                        const SizedBox(height: 12),
+                        _buildGlassCard(
+                          child: Text(
+                            p.bio,
+                            style: TextStyle(
+                                fontSize: 15,
+                                height: 1.6,
+                                color: Colors.white.withValues(alpha: 0.85)),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildSectionTitle('MASTERED SKILLS'),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: p.skills
+                              .map((skill) => _buildSkillBadge(skill))
+                              .toList(),
+                        ),
+                        const SizedBox(height: 24),
+                        _buildSectionTitle('ACTIVITY LOG'),
+                        const SizedBox(height: 12),
+                        _buildGlassCard(
+                          child: Column(
+                            children: [
+                              _buildActivityTile(Icons.event_available_rounded,
+                                  'Attending "London Tech Meetup"', '2h ago'),
+                              Divider(
+                                  color: Colors.white.withValues(alpha: 0.1),
+                                  height: 24),
+                              _buildActivityTile(Icons.groups_3_rounded,
+                                  'Joined "Digital Nomads" Group', 'Yesterday'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 60),
+                      ],
+                    ),
+                  ).animate(delay: 600.ms).fadeIn(),
+                ],
+              ),
             );
           },
         ),
@@ -294,48 +274,25 @@ class _PersonProfileScreenState extends State<PersonProfileScreen>
   }
 
   Widget _buildGlassCard({required Widget child}) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1),
-          ),
-          child: child,
-        ),
-      ),
+    return ZinkoCommonCard(
+      padding: const EdgeInsets.all(20),
+      child: child,
     );
   }
 
   Widget _buildGlassStats(PersonEntity p) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.15), width: 1),
-          ),
-          child: Row(
-            children: [
-              _buildStatItem(p.connections.toString(), 'CONNECTIONS'),
-              Container(
-                  width: 1, height: 30, color: Colors.white.withValues(alpha: 0.1)),
-              _buildStatItem(p.groups.toString(), 'GROUPS'),
-              Container(
-                  width: 1, height: 30, color: Colors.white.withValues(alpha: 0.1)),
-              _buildStatItem(p.rating.toStringAsFixed(1), 'RATING'),
-            ],
-          ),
-        ),
+    return ZinkoCommonCard(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      child: Row(
+        children: [
+          _buildStatItem(p.connections.toString(), 'CONNECTIONS'),
+          Container(
+              width: 1, height: 30, color: Colors.white.withValues(alpha: 0.1)),
+          _buildStatItem(p.groups.toString(), 'GROUPS'),
+          Container(
+              width: 1, height: 30, color: Colors.white.withValues(alpha: 0.1)),
+          _buildStatItem(p.rating.toStringAsFixed(1), 'RATING'),
+        ],
       ),
     );
   }

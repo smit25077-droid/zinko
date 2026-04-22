@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../../domain/usecases/event_usecases.dart';
-import 'event_event.dart';
-import 'event_state.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/event/domain/usecases/event_usecases.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
 
 class EventBloc extends Bloc<EventEvent, EventState> {
   final GetEvents getEvents;

@@ -77,3 +77,6 @@ class ChangePasswordEvent extends UserEvent {
   final String password;
   ChangePasswordEvent({required this.userCode, required this.password});
 }
+
+class ResetUserEvent extends UserEvent {
+}

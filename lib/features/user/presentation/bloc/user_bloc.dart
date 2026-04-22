@@ -1,16 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/usecases/get_user_profile.dart';
-import '../../domain/usecases/update_user_profile.dart';
-import '../../domain/usecases/add_money.dart';
-import '../../domain/usecases/redeem_referral.dart';
-import '../../domain/usecases/update_visibility.dart';
-import '../../domain/usecases/send_email_otp.dart';
-import '../../domain/usecases/verify_email_otp.dart';
-import '../../domain/usecases/delete_user.dart';
-import '../../domain/usecases/change_password.dart';
-import '../../../../core/usecases/usecase.dart';
-import 'user_event.dart';
-import 'user_state.dart';
+import 'package:zinko_app/features/user/domain/usecases/get_user_profile.dart';
+import 'package:zinko_app/features/user/domain/usecases/update_user_profile.dart';
+import 'package:zinko_app/features/user/domain/usecases/add_money.dart';
+import 'package:zinko_app/features/user/domain/usecases/redeem_referral.dart';
+import 'package:zinko_app/features/user/domain/usecases/update_visibility.dart';
+import 'package:zinko_app/features/user/domain/usecases/send_email_otp.dart';
+import 'package:zinko_app/features/user/domain/usecases/verify_email_otp.dart';
+import 'package:zinko_app/features/user/domain/usecases/delete_user.dart';
+import 'package:zinko_app/features/user/domain/usecases/change_password.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   final GetUserProfile getUserProfile;
@@ -45,6 +45,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<VerifyPhoneEvent>(_onVerifyPhone);
     on<DeleteUserEvent>(_onDeleteUser);
     on<ChangePasswordEvent>(_onChangePassword);
+    on<ResetUserEvent>(_onResetUser);
   }
 
   Future<void> _onDeleteUser(
@@ -222,5 +223,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       (failure) => emit(UserError(failure.message)),
       (success) => emit(PasswordChanged("Password Change Successfully")),
     );
+  }
+
+  void _onResetUser(ResetUserEvent event, Emitter<UserState> emit) {
+    emit(UserInitial());
   }
 }

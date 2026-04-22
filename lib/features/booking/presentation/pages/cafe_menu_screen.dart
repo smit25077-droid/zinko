@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/cafe/cafe_menu_bloc.dart';
-import '../bloc/cafe/cafe_menu_event.dart';
-import '../bloc/cafe/cafe_menu_state.dart';
-import 'bookings_screen.dart';
-import '../../../../injection_container.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/optimized_colors.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/cafe/cafe_menu_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/cafe/cafe_menu_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/cafe/cafe_menu_state.dart';
+import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
+import 'package:zinko_app/injection_container.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 class CafeMenuScreen extends StatelessWidget {
   static const String routeName = '/cafe-menu';

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/user_booking_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 
 abstract class BookingState extends Equatable {
   const BookingState();

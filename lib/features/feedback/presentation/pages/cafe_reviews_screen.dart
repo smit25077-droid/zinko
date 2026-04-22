@@ -7,11 +7,11 @@ import 'package:intl/intl.dart';
 import 'package:zinko_app/features/feedback/domain/entities/cafe_review_entity.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
-import '../bloc/feedback_bloc.dart';
-import '../bloc/feedback_event.dart';
-import '../bloc/feedback_state.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/feedback/presentation/bloc/feedback_bloc.dart';
+import 'package:zinko_app/features/feedback/presentation/bloc/feedback_event.dart';
+import 'package:zinko_app/features/feedback/presentation/bloc/feedback_state.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 class CafeReviewsScreen extends StatefulWidget {
   static const String routeName = '/CafeReviewsScreen';

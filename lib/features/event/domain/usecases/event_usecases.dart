@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/core/usecases/usecase.dart';
-import '../entities/event_entity.dart';
-import '../repositories/event_repository.dart';
+import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
+import 'package:zinko_app/features/event/domain/repositories/event_repository.dart';
 
 class GetEvents implements UseCase<List<EventEntity>, NoParams> {
   final EventRepository repository;

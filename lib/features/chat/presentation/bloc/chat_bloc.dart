@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../../domain/entities/chat_entity.dart';
-import '../../domain/usecases/chat_usecases.dart';
-import 'chat_event.dart';
-import 'chat_state.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
+import 'package:zinko_app/features/chat/domain/usecases/chat_usecases.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_event.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   final GetChats getChats;

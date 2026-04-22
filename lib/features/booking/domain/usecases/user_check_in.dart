@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../repositories/booking_repository.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/booking/domain/repositories/booking_repository.dart';
 
 class UserCheckInParams {
   final String bookingCode;

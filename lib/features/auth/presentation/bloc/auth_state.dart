@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../data/models/auth_responses.dart';
+import 'package:zinko_app/features/auth/data/models/auth_responses.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();

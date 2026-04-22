@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/auth_responses.dart';
+import 'package:zinko_app/features/auth/data/models/auth_responses.dart';
 
 abstract class AuthLocalDataSource {
   Future<void> cacheUserData(UserData userToCache);
@@ -35,6 +35,6 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
 
   @override
   Future<void> clearCache() {
-    return sharedPreferences.remove(CACHED_USER_DATA);
+    return sharedPreferences.clear();
   }
 }

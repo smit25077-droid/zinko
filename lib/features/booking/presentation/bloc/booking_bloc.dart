@@ -1,13 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../domain/repositories/booking_repository.dart';
-import '../../domain/usecases/get_bookings.dart';
-import '../../domain/usecases/add_booking.dart';
-import '../../domain/usecases/complete_booking.dart';
-import '../../domain/usecases/get_user_bookings.dart';
-import '../../domain/usecases/user_check_in.dart';
-import '../../../../core/usecases/usecase.dart';
-import 'booking_event.dart';
-import 'booking_state.dart';
+import 'package:zinko_app/features/booking/domain/repositories/booking_repository.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_bookings.dart';
+import 'package:zinko_app/features/booking/domain/usecases/add_booking.dart';
+import 'package:zinko_app/features/booking/domain/usecases/complete_booking.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_user_bookings.dart';
+import 'package:zinko_app/features/booking/domain/usecases/user_check_in.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_state.dart';
 
 class BookingBloc extends Bloc<BookingEvent, BookingState> {
   final GetBookings getBookings;
@@ -31,6 +31,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<CompleteBookingEvent>(_onCompleteBooking);
     on<FilterBookingsByTabEvent>(_onFilterByTab);
     on<UserCheckInEvent>(_onUserCheckIn);
+    on<ResetBookingEvent>(_onResetBooking);
+  }
+
+  void _onResetBooking(ResetBookingEvent event, Emitter<BookingState> emit) {
+    emit(BookingInitial());
   }
 
   Future<void> _onUserCheckIn(UserCheckInEvent event, Emitter<BookingState> emit) async {

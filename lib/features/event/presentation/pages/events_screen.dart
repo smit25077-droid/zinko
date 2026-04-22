@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/core/theme/app_colors.dart' show AppColors;
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../domain/entities/event_entity.dart';
-import '../bloc/event_bloc.dart';
-import '../bloc/event_event.dart';
-import '../bloc/event_state.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import 'event_detail_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/optimized_colors.dart';
+import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_bloc.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/features/event/presentation/pages/event_detail_screen.dart';
 
 class EventsScreen extends StatefulWidget {
   static const String routeName = '/events';
@@ -33,10 +34,10 @@ class _EventsScreenState extends State<EventsScreen> {
     return ZinkoBackground(
       child: Scaffold(
         backgroundColor: AppColors.transparent,
-        // appBar: CommonAppBar(
-        //   title: 'EVENTS',
-        //   isBackEnable: false,
-        // ),
+        appBar: ZinkoAppBar(
+          title: 'EVENTS',
+          leading: SizedBox(),
+        ),
         body: Column(
           children: [
             // SizedBox(height: 80),
@@ -51,20 +52,17 @@ class _EventsScreenState extends State<EventsScreen> {
                   }
                   if (state is EventLoaded) {
                     final events = state.events;
-                    return Padding(
-                      padding: EdgeInsets.only(top: 10),
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        physics: const BouncingScrollPhysics(),
-                        itemCount: events.length,
-                        itemBuilder: (context, index) {
-                          final event = events[index];
-                          return _EventCard(event: event)
-                              .animate()
-                              .fadeIn(duration: 400.ms, delay: 100.ms)
-                              ;
-                        },
-                      ),
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16,),
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: events.length,
+                      itemBuilder: (context, index) {
+                        final event = events[index];
+                        return _EventCard(event: event,index: index)
+                            .animate()
+                            .fadeIn(duration: 400.ms, delay: 100.ms)
+                            ;
+                      },
                     );
                   }
                   if (state is EventError) {
@@ -82,14 +80,15 @@ class _EventsScreenState extends State<EventsScreen> {
           ],
         ),
       ),
-    );
+      );
   }
 }
 
 class _EventCard extends StatelessWidget {
   final EventEntity event;
+  final int index;
 
-  const _EventCard({required this.event});
+  const _EventCard({required this.event, required this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +97,7 @@ class _EventCard extends StatelessWidget {
         onTap: () => Navigator.pushNamed(context, EventDetailScreen.routeName,
             arguments: event),
         child: Container(
-          margin: const EdgeInsets.only(bottom: 20),
+          margin: EdgeInsets.only(bottom: 12,top: index == 0 ? 12 :0),
           decoration: BoxDecoration(
             color: GlassTheme.glassColor(context),
             borderRadius: BorderRadius.circular(30),

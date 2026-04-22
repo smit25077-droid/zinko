@@ -1,4 +1,4 @@
-import '../models/person_model.dart';
+import 'package:zinko_app/features/user/data/models/person_model.dart';
 
 abstract class PersonLocalDataSource {
   Future<List<PersonModel>> getPeople();

@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../features/user/presentation/bloc/user_bloc.dart';
-import '../../../../features/user/presentation/bloc/user_state.dart';
-import '../../../../features/user/presentation/bloc/user_event.dart';
-import '../../../../features/auth/presentation/pages/otp_screen.dart';
-import '../../../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../../../features/auth/presentation/bloc/auth_event.dart';
-import '../../../onboarding/presentation/pages/splash_screen.dart';
-import './reset_password_screen.dart';
-import '../bloc/settings_bloc.dart';
-import '../../../../utils/zinko_flushbar.dart';
-import '../../../../widgets/zinko_common_dialog.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/features/auth/presentation/pages/otp_screen.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:zinko_app/features/onboarding/presentation/pages/splash_screen.dart';
+import 'package:zinko_app/features/settings/presentation/pages/reset_password_screen.dart';
+import 'package:zinko_app/features/settings/presentation/bloc/settings_bloc.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 
 
 class SettingsScreen extends StatelessWidget {

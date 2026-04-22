@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../entities/cafe_review_entity.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/feedback/domain/entities/cafe_review_entity.dart';
 
 abstract class FeedbackRepository {
   Future<Either<Failure, void>> submitReview({

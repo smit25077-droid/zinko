@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/feedback/domain/usecases/get_cafe_reviews.dart';
 import 'package:zinko_app/features/feedback/domain/usecases/submit_review.dart';
 import 'package:zinko_app/features/feedback/domain/usecases/submit_suggestion.dart';
-import 'feedback_event.dart';
-import 'feedback_state.dart';
+import 'package:zinko_app/features/feedback/presentation/bloc/feedback_event.dart';
+import 'package:zinko_app/features/feedback/presentation/bloc/feedback_state.dart';
 
 class FeedbackBloc extends Bloc<FeedbackEvent, FeedbackState> {
   final GetCafeReviews getCafeReviews;

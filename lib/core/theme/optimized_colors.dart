@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_colors.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
 /// Optimized color utilities to replace deprecated .withOpacity() calls
 /// These provide better performance and avoid precision loss

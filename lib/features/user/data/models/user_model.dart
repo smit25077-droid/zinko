@@ -1,6 +1,6 @@
-import '../../domain/entities/user_entity.dart';
-import '../../domain/entities/transaction_entity.dart';
-import 'transaction_model.dart';
+import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
+import 'package:zinko_app/features/user/domain/entities/transaction_entity.dart';
+import 'package:zinko_app/features/user/data/models/transaction_model.dart';
 
 class UserModel extends UserEntity {
   const UserModel({

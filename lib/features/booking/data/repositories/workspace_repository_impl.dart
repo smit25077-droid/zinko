@@ -1,9 +1,9 @@
-import '../../domain/entities/booking_request_entity.dart';
-import '../../domain/entities/workspace_entity.dart';
-import '../../domain/repositories/workspace_repository.dart';
-import '../datasources/booking_remote_data_source.dart';
-import '../datasources/workspace_local_data_source.dart';
-import '../models/booking_api_model.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/domain/repositories/workspace_repository.dart';
+import 'package:zinko_app/features/booking/data/datasources/booking_remote_data_source.dart';
+import 'package:zinko_app/features/booking/data/datasources/workspace_local_data_source.dart';
+import 'package:zinko_app/features/booking/data/models/booking_api_model.dart';
 
 class WorkspaceRepositoryImpl implements WorkspaceRepository {
   final WorkspaceLocalDataSource localDataSource;

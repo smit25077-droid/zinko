@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/chat_entity.dart';
-import '../../../../widgets/zinko_network_image.dart';
+import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
 
 class CallScreen extends StatelessWidget {
   static const String routeName = '/call';

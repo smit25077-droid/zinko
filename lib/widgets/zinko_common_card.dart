@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
 /// A performance-optimized glass card that feels premium without heavy device load.
 /// Uses gradients and highlights instead of BackdropFilter to ensure smooth performance.
@@ -14,6 +14,8 @@ class ZinkoCommonCard extends StatelessWidget {
   final bool isSelected;
   final bool showBorder;
   final Color? backgroundColor;
+  final Color? borderColor;
+  final List<Color>? gradientColors;
 
   const ZinkoCommonCard({
     super.key,
@@ -27,6 +29,8 @@ class ZinkoCommonCard extends StatelessWidget {
     this.isSelected = false,
     this.showBorder = true,
     this.backgroundColor,
+    this.borderColor,
+    this.gradientColors,
   });
 
   @override
@@ -66,16 +70,16 @@ class ZinkoCommonCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(borderRadius),
                 border: showBorder
                     ? Border.all(
-                        color: isSelected 
+                        color: borderColor ?? (isSelected 
                             ? AppColors.brightBlue.withValues(alpha: 0.5)
-                            : Colors.white.withValues(alpha: 0.1),
+                            : Colors.white.withValues(alpha: 0.1)),
                         width: 1.5,
                       )
                     : null,
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
+                  colors: gradientColors ?? [
                     (backgroundColor ?? AppColors.midnightNavy).withValues(alpha: 0.8),
                     (backgroundColor ?? AppColors.midnightNavy).withValues(alpha: 0.4),
                   ],

@@ -3,20 +3,37 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/features/cafe/data/mappers/cafe_mapper.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
-import '../../domain/entities/workspace_entity.dart';
-import '../bloc/workspace_bloc.dart';
-import '../bloc/workspace_event.dart';
-import '../bloc/workspace_state.dart';
-import 'workspace_detail_screen.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
-class WishlistScreen extends StatelessWidget {
+class WishlistScreen extends StatefulWidget {
   static const String routeName = '/wishlist';
   const WishlistScreen({super.key});
+
+  @override
+  State<WishlistScreen> createState() => _WishlistScreenState();
+}
+
+class _WishlistScreenState extends State<WishlistScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final userState = context.read<UserBloc>().state;
+    if (userState is UserLoaded) {
+      context.read<CafeBloc>().add(GetWishlistEvent(userCode: userState.user.userCode));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,23 +62,23 @@ class WishlistScreen extends StatelessWidget {
       ),
       body: ZinkoBackground(
         child: SafeArea(
-          child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
+          child: BlocBuilder<CafeBloc, CafeState>(
             builder: (context, state) {
-              if (state is WorkspaceLoading) {
+              if (state is CafeLoading) {
                 return Center(
                     child: CircularProgressIndicator(
                         color: GlassTheme.textColor(context)));
               }
-              if (state is WorkspaceLoaded) {
-                final favorites =
-                    state.workspaces.where((w) => w.isFavorite).toList();
+              if (state is CafeWishlistLoaded) {
+                final favorites = state.wishlist;
                 if (favorites.isEmpty) return _buildEmptyState(context);
                 return ListView.builder(
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                   physics: const BouncingScrollPhysics(),
                   itemCount: favorites.length,
                   itemBuilder: (context, index) {
-                    final workspace = favorites[index];
+                    final cafe = favorites[index];
+                    final workspace = CafeMapper.toWorkspaceEntity(cafe);
                     return GestureDetector(
                       onTap: () => Navigator.pushNamed(
                           context, WorkspaceDetailScreen.routeName,
@@ -69,19 +86,20 @@ class WishlistScreen extends StatelessWidget {
                       child: _WishlistCard(
                         workspace: workspace,
                         onRemove: () {
-                          context
-                              .read<WorkspaceBloc>()
-                              .add(ToggleFavoriteWorkspaceEvent(workspace.id));
+                          final userState = context.read<UserBloc>().state;
+                          if (userState is UserLoaded) {
+                            context.read<CafeBloc>().add(ToggleWishlistEvent(
+                                  cafeId: cafe.cafeId,
+                                  userCode: userState.user.userCode,
+                                ));
+                          }
                         },
-                      )
-                          .animate()
-                          .fadeIn(delay: (index * 80).ms)
-                          ,
+                      ).animate().fadeIn(delay: (index * 80).ms),
                     );
                   },
                 );
               }
-              if (state is WorkspaceError) {
+              if (state is CafeError) {
                 return Center(
                     child: Text(state.message,
                         style:

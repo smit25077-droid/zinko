@@ -4,18 +4,18 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
-import '../../domain/entities/workspace_entity.dart';
-import '../bloc/workspace_bloc.dart';
-import '../bloc/workspace_state.dart';
-import 'review_booking_screen.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
+import 'package:zinko_app/features/booking/presentation/pages/review_booking_screen.dart';
 
-import '../bloc/selection/booking_selection_bloc.dart';
-import '../bloc/selection/booking_selection_event.dart';
-import '../bloc/selection/booking_selection_state.dart';
-import '../../../../injection_container.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/selection/booking_selection_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/selection/booking_selection_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/selection/booking_selection_state.dart';
+import 'package:zinko_app/injection_container.dart';
 
 class BookingScreen extends StatelessWidget {
   static const String routeName = '/booking';

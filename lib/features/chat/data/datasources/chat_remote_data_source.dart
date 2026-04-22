@@ -1,5 +1,5 @@
-import '../models/chat_model.dart';
-import '../../../../models/app_models.dart' hide ChatModel;
+import 'package:zinko_app/features/chat/data/models/chat_model.dart';
+import 'package:zinko_app/models/app_models.dart' hide ChatModel;
 
 abstract class ChatRemoteDataSource {
   Future<List<ChatModel>> getChats();

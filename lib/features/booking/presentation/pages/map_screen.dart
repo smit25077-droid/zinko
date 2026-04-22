@@ -2,29 +2,30 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../core/theme/app_colors.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/entities/workspace_entity.dart';
-import '../bloc/workspace_bloc.dart';
-import '../bloc/workspace_state.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/bloc/user_state.dart';
-import '../../../user/domain/entities/person_entity.dart';
-import 'workspace_detail_screen.dart';
-import '../../../user/presentation/pages/person_profile_screen.dart';
-import '../../../community/presentation/bloc/community_bloc.dart';
-import '../../../community/presentation/bloc/community_event.dart';
-import '../../../community/presentation/bloc/community_state.dart';
-import '../../../user/presentation/pages/subscription_plans_screen.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../../../../models/app_models.dart' show ZinkoChat;
-import '../../../chat/presentation/pages/chat_screen.dart';
-import '../../../../injection_container.dart' as di;
-import '../bloc/map/map_bloc.dart';
-import '../bloc/map/map_event.dart';
-import '../bloc/map/map_state.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/features/user/presentation/pages/person_profile_screen.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_state.dart';
+import 'package:zinko_app/features/user/presentation/pages/subscription_plans_screen.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/models/app_models.dart' show ZinkoChat;
+import 'package:zinko_app/features/chat/presentation/pages/chat_screen.dart';
+import 'package:zinko_app/injection_container.dart' as di;
+import 'package:zinko_app/features/booking/presentation/bloc/map/map_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/map/map_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/map/map_state.dart';
+import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 
 class MapScreen extends StatelessWidget {
   static const String routeName = '/map';
@@ -711,9 +712,14 @@ class _PersonDetailsSheet extends StatelessWidget {
               _ActionElevatedButton(
                 label: 'UPGRADE NOW',
                 onTap: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(
-                      context, SubscriptionPlansScreen.routeName);
+                  final userState = context.read<UserBloc>().state;
+                  if (userState is UserLoaded && !userState.user.isProfileComplete) {
+                    ZinkoProfileCompletionDialog.show(context, userState.user);
+                  } else {
+                    Navigator.pop(context);
+                    Navigator.pushNamed(
+                        context, SubscriptionPlansScreen.routeName);
+                  }
                 },
               ),
             ],

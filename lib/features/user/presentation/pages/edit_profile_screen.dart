@@ -1,20 +1,20 @@
-import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/widgets/global_network_overlay.dart';
-import '../bloc/user_bloc.dart';
-import '../bloc/user_event.dart';
-import '../bloc/user_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 import 'package:intl/intl.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_text_field.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_app_bar.dart';
-import '../bloc/edit_profile_form_bloc.dart';
-import '../../../../utils/zinko_flushbar.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_text_field.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
+import 'package:zinko_app/features/user/presentation/bloc/edit_profile_form_bloc.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
 
 class EditProfileScreen extends StatelessWidget {
   static const String routeName = '/edit-profile';
@@ -280,99 +280,81 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                         //       : const SizedBox()),
                         // ),
                         // const SizedBox(height: 24),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(32),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(24),
-                              decoration: BoxDecoration(
-                                color: GlassTheme.glassColor(context),
-                                borderRadius: BorderRadius.circular(32),
-                                border: Border.all(
-                                  color: GlassTheme.glassBorder(context),
-                                  width: 1.2,
-                                ),
+                        ZinkoCommonCard(
+                          padding: const EdgeInsets.all(24),
+                          child: Column(
+                            children: [
+                              ZinkoTextField(
+                                label: 'FULL NAME',
+                                controller: _fullNameController,
+                                icon: Icons.person_outline_rounded,
+                                isPascalCase: true,
                               ),
-                              child: Column(
-                                children: [
-                                  ZinkoTextField(
-                                    label: 'FULL NAME',
-                                    controller: _fullNameController,
-                                    icon: Icons.person_outline_rounded,
-                                    isPascalCase: true,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'JOB TITLE',
-                                    controller: _roleController,
-                                    icon: Icons.badge_outlined,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'EMAIL ADDRESS',
-                                    controller: _emailController,
-                                    icon: Icons.alternate_email_rounded,
-                                    keyboardType: TextInputType.emailAddress,
-                                    readOnly: true,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'PHONE NUMBER',
-                                    controller: _phoneController,
-                                    icon: Icons.phone_android_rounded,
-                                    keyboardType: TextInputType.phone,
-                                    readOnly: true,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'CITY',
-                                    controller: _cityController,
-                                    icon: Icons.location_city_rounded,
-                                    isPascalCase: true,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'STATE',
-                                    controller: _stateController,
-                                    icon: Icons.map_rounded,
-                                    isPascalCase: true,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  _buildGenderRadio(context, formState),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'BIRTHDATE',
-                                    controller: TextEditingController(
-                                        text: formState.birthdate),
-                                    icon: Icons.calendar_today_rounded,
-                                    hintText: 'Select Birthday',
-                                    onTap: () => _selectDate(context),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'COMPANY NAME',
-                                    controller: _companyNameController,
-                                    icon: Icons.business_rounded,
-                                    isRequired: false,
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ZinkoTextField(
-                                    label: 'BIO',
-                                    controller: _bioController,
-                                    icon: Icons.notes_rounded,
-                                    maxLines: 3,
-                                    isRequired: false,
-                                  ),
-                                ],
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'JOB TITLE',
+                                controller: _roleController,
+                                icon: Icons.badge_outlined,
                               ),
-                            ),
-                          )
-                              .animate(delay: 200.ms)
-                              .fadeIn()
-                              ,
-                        ),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'EMAIL ADDRESS',
+                                controller: _emailController,
+                                icon: Icons.alternate_email_rounded,
+                                keyboardType: TextInputType.emailAddress,
+                                readOnly: true,
+                              ),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'PHONE NUMBER',
+                                controller: _phoneController,
+                                icon: Icons.phone_android_rounded,
+                                keyboardType: TextInputType.phone,
+                                readOnly: true,
+                              ),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'CITY',
+                                controller: _cityController,
+                                icon: Icons.location_city_rounded,
+                                isPascalCase: true,
+                              ),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'STATE',
+                                controller: _stateController,
+                                icon: Icons.map_rounded,
+                                isPascalCase: true,
+                              ),
+                              const SizedBox(height: 20),
+                              _buildGenderRadio(context, formState),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'BIRTHDATE',
+                                controller: TextEditingController(
+                                    text: formState.birthdate),
+                                icon: Icons.calendar_today_rounded,
+                                hintText: 'Select Birthday',
+                                onTap: () => _selectDate(context),
+                              ),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'COMPANY NAME',
+                                controller: _companyNameController,
+                                icon: Icons.business_rounded,
+                                isRequired: false,
+                              ),
+                              const SizedBox(height: 20),
+                              ZinkoTextField(
+                                label: 'BIO',
+                                controller: _bioController,
+                                icon: Icons.notes_rounded,
+                                maxLines: 3,
+                                isRequired: false,
+                              ),
+                            ],
+                          ),
+                        ).animate(delay: 200.ms).fadeIn(),
                         const SizedBox(height: 40),
                       ],
                     ),

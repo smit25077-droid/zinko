@@ -1,6 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import '../utils/glass_theme.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
 
 class ZinkoCommonBottomSheet extends StatelessWidget {
   final String title;

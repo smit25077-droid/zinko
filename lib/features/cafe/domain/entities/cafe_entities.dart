@@ -20,6 +20,7 @@ class Cafe extends Equatable {
   final List<CafeImage> images;
   final List<CafeTimeSlot> timeSlots;
   final List<CafeWorkspace> workspace;
+  final bool isLiked;
 
   const Cafe({
     required this.cafeId,
@@ -41,7 +42,54 @@ class Cafe extends Equatable {
     required this.images,
     required this.timeSlots,
     required this.workspace,
+    this.isLiked = false,
   });
+
+  Cafe copyWith({
+    int? cafeId,
+    String? cafeName,
+    String? description,
+    String? address,
+    String? city,
+    String? pincode,
+    String? latitude,
+    String? longitude,
+    String? phoneNo,
+    String? email,
+    String? ownerName,
+    String? ownerPhoneNo,
+    String? ownerEmail,
+    String? venueType,
+    double? hourRate,
+    List<CafeAmenity>? amenities,
+    List<CafeImage>? images,
+    List<CafeTimeSlot>? timeSlots,
+    List<CafeWorkspace>? workspace,
+    bool? isLiked,
+  }) {
+    return Cafe(
+      cafeId: cafeId ?? this.cafeId,
+      cafeName: cafeName ?? this.cafeName,
+      description: description ?? this.description,
+      address: address ?? this.address,
+      city: city ?? this.city,
+      pincode: pincode ?? this.pincode,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      phoneNo: phoneNo ?? this.phoneNo,
+      email: email ?? this.email,
+      ownerName: ownerName ?? this.ownerName,
+      ownerPhoneNo: ownerPhoneNo ?? this.ownerPhoneNo,
+      ownerEmail: ownerEmail ?? this.ownerEmail,
+      venueType: venueType ?? this.venueType,
+      hourRate: hourRate ?? this.hourRate,
+      amenities: amenities ?? this.amenities,
+      images: images ?? this.images,
+      timeSlots: timeSlots ?? this.timeSlots,
+      workspace: workspace ?? this.workspace,
+      isLiked: isLiked ?? this.isLiked,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -64,6 +112,7 @@ class Cafe extends Equatable {
         images,
         timeSlots,
         workspace,
+        isLiked,
       ];
 }
 

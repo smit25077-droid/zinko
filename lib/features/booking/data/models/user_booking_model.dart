@@ -1,4 +1,4 @@
-import '../../domain/entities/user_booking_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 
 class UserBookingModel extends UserBookingEntity {
   const UserBookingModel({

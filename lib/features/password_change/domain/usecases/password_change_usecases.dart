@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../repositories/password_change_repository.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/password_change/domain/repositories/password_change_repository.dart';
 
 class SendPasswordResetOtp implements UseCase<bool, String> {
   final PasswordChangeRepository repository;

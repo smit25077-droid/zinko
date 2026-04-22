@@ -2,13 +2,13 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../../../user/domain/entities/person_entity.dart';
-import '../../../community/presentation/bloc/community_bloc.dart';
-import '../../../community/presentation/bloc/community_event.dart';
-import '../../../community/presentation/bloc/community_state.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_state.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
 
 class ConnectionRequestsScreen extends StatelessWidget {
   static const String routeName = '/connection-requests';

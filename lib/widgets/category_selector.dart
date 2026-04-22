@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../core/theme/app_colors.dart';
-import '../utils/glass_theme.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../core/bloc/category_bloc.dart';
+import 'package:zinko_app/core/bloc/category_bloc.dart';
 
 class CategorySelector extends StatelessWidget implements PreferredSizeWidget {
   final List<String> categories;

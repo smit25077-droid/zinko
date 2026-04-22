@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../../../core/usecases/usecase.dart';
-import '../entities/user_booking_entity.dart';
-import '../repositories/booking_repository.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/core/usecases/usecase.dart';
+import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
+import 'package:zinko_app/features/booking/domain/repositories/booking_repository.dart';
 
 class GetUserBookings implements UseCase<List<UserBookingEntity>, NoParams> {
   final BookingRepository repository;

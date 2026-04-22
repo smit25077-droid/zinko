@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/booking_entity.dart';
-import '../../domain/repositories/booking_repository.dart';
-import '../datasources/booking_remote_data_source.dart';
-import '../models/booking_model.dart';
-import '../../domain/entities/user_booking_entity.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_entity.dart';
+import 'package:zinko_app/features/booking/domain/repositories/booking_repository.dart';
+import 'package:zinko_app/features/booking/data/datasources/booking_remote_data_source.dart';
+import 'package:zinko_app/features/booking/data/models/booking_model.dart';
+import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 
 class BookingRepositoryImpl implements BookingRepository {
   final BookingRemoteDataSource remoteDataSource;

@@ -4,7 +4,7 @@
 // The actual logic lives in AppProvider (providers/app_provider.dart).
 
 import 'package:flutter/material.dart';
-import '../models/app_models.dart';
+import 'package:zinko_app/models/app_models.dart';
 
 class CommunityProvider with ChangeNotifier {
   final List<ZinkoConnection> _connectionRequests = [

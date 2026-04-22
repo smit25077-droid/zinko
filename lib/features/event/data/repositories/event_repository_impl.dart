@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/event_entity.dart';
-import '../../domain/repositories/event_repository.dart';
-import '../datasources/event_remote_data_source.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
+import 'package:zinko_app/features/event/domain/repositories/event_repository.dart';
+import 'package:zinko_app/features/event/data/datasources/event_remote_data_source.dart';
 
 class EventRepositoryImpl implements EventRepository {
   final EventRemoteDataSource remoteDataSource;

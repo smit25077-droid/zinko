@@ -1,11 +1,11 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import '../../../../core/error/failures.dart';
-import '../../domain/entities/cafe_review_entity.dart';
-import '../../domain/repositories/feedback_repository.dart';
-import '../datasources/feedback_remote_data_source.dart';
-import '../models/cafe_review_request_model.dart';
-import '../models/cafe_suggestion_request_model.dart';
+import 'package:zinko_app/core/error/failures.dart';
+import 'package:zinko_app/features/feedback/domain/entities/cafe_review_entity.dart';
+import 'package:zinko_app/features/feedback/domain/repositories/feedback_repository.dart';
+import 'package:zinko_app/features/feedback/data/datasources/feedback_remote_data_source.dart';
+import 'package:zinko_app/features/feedback/data/models/cafe_review_request_model.dart';
+import 'package:zinko_app/features/feedback/data/models/cafe_suggestion_request_model.dart';
 
 class FeedbackRepositoryImpl implements FeedbackRepository {
   final FeedbackRemoteDataSource remoteDataSource;

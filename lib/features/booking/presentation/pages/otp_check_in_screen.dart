@@ -4,13 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:pinput/pinput.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
-import '../bloc/booking_bloc.dart';
-import '../bloc/booking_event.dart';
-import '../bloc/booking_state.dart';
-import 'cafe_menu_screen.dart';
-import '../../../../utils/glass_theme.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_state.dart';
+import 'package:zinko_app/features/booking/presentation/pages/cafe_menu_screen.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 
 class OTPCheckInScreen extends StatefulWidget {
   static const String routeName = '/otp-check-in';

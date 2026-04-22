@@ -1,4 +1,4 @@
-import 'workspace_model.dart';
+import 'package:zinko_app/features/booking/data/models/workspace_model.dart';
 
 class WorkspaceSearchResponseModel {
   final int statusCode;

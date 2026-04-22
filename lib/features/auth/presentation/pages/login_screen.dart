@@ -3,16 +3,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
-import '../../../password_change/presentation/pages/password_change_screen.dart';
-import '../bloc/auth_bloc.dart';
-import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
-import '../../../../utils/zinko_flushbar.dart';
-import './register_screen.dart';
-import '../../../booking/presentation/pages/home_screen.dart';
-import './login_form_bloc.dart';
-import '../../data/models/auth_requests.dart';
-import '../../../../widgets/zinko_background.dart';
+import 'package:zinko_app/features/password_change/presentation/pages/password_change_screen.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/features/auth/presentation/pages/register_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
+import 'package:zinko_app/features/auth/presentation/pages/login_form_bloc.dart';
+import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
@@ -39,6 +41,16 @@ class _LoginContentState extends State<_LoginContent> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _clearLocalData();
+  }
+
+  Future<void> _clearLocalData() async {
+    await sl<SharedPreferences>().clear();
+  }
 
   @override
   void dispose() {
@@ -163,14 +175,14 @@ class _LoginContentState extends State<_LoginContent> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFieldLabel('UserName'),
+                    _buildFieldLabel('UserName Or Email'),
                     const SizedBox(height: 10),
                     _ModernTextField(
                       controller: _userNameController,
-                      hint: 'Enter your user name',
+                      hint: 'Enter your user name Or Email',
                       icon: Icons.person_outline_rounded,
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'User Name is required';
+                        if (value == null || value.isEmpty) return 'User Name Or Email is required';
                         return null;
                       },
                     ),

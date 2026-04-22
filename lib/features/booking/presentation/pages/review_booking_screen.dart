@@ -3,28 +3,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
-import 'home_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
 
-import '../../domain/entities/workspace_entity.dart';
-import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
-import '../../../user/presentation/bloc/user_bloc.dart';
-import '../../../user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 
-import '../bloc/create_booking/create_booking_bloc.dart';
-import '../../domain/entities/booking_request_entity.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
-import '../../../../widgets/zinko_common_dialog.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/optimized_colors.dart';
-import '../../../../widgets/zinko_background.dart';
-import '../../../../widgets/zinko_network_image.dart';
-import '../../../../utils/zinko_flushbar.dart';
-import '../../../../core/di/service_locator.dart';
-import '../../../../features/wallet/presentation/bloc/wallet_bloc.dart';
-import '../../../../features/wallet/presentation/bloc/wallet_event.dart';
-import '../../../../features/wallet/presentation/bloc/wallet_state.dart';
-import '../../../../features/wallet/presentation/pages/wallet_screen.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/create_booking/create_booking_bloc.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/widgets/zinko_common_dialog.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_event.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_state.dart';
+import 'package:zinko_app/features/wallet/presentation/pages/wallet_screen.dart';
 
 class ReviewBookingScreen extends StatelessWidget {
   static const String routeName = '/review-booking';

@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'api_endpoints.dart';
-import 'auth_interceptor.dart';
+import 'package:zinko_app/core/network/api_endpoints.dart';
+import 'package:zinko_app/core/network/auth_interceptor.dart';
 
 class DioClient {
   final Dio _dio;

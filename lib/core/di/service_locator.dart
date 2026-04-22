@@ -3,94 +3,96 @@ import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
-import '../network/dio_client.dart';
-import '../bloc/navigation/navigation_bloc.dart';
-import '../../features/booking/presentation/bloc/map/map_bloc.dart';
-import '../../features/user/data/datasources/user_remote_data_source.dart';
-import '../../features/user/data/repositories/user_repository_impl.dart';
-import '../../features/user/domain/repositories/user_repository.dart';
-import '../../features/booking/data/datasources/booking_remote_data_source.dart';
-import '../../features/booking/data/repositories/booking_repository_impl.dart';
-import '../../features/booking/domain/repositories/booking_repository.dart';
-import '../../features/booking/domain/usecases/add_booking.dart';
-import '../../features/booking/domain/usecases/complete_booking.dart';
-import '../../features/booking/domain/usecases/get_bookings.dart';
-import '../../features/booking/domain/usecases/get_user_bookings.dart';
-import '../../features/booking/presentation/bloc/booking_bloc.dart';
-import '../../features/booking/presentation/bloc/selection/booking_selection_bloc.dart';
-import '../../features/booking/presentation/bloc/cafe/cafe_menu_bloc.dart';
-import '../../features/user/domain/usecases/get_user_profile.dart';
-import '../../features/user/domain/usecases/update_user_profile.dart';
-import '../../features/user/domain/usecases/add_money.dart';
-import '../../features/user/domain/usecases/redeem_referral.dart';
-import '../../features/user/domain/usecases/update_visibility.dart';
-import '../../features/user/domain/usecases/send_email_otp.dart';
-import '../../features/user/domain/usecases/verify_email_otp.dart';
-import '../../features/user/domain/usecases/delete_user.dart';
-import '../../features/user/domain/usecases/change_password.dart';
-import '../../features/user/presentation/bloc/user_bloc.dart';
-import '../../features/booking/domain/usecases/user_check_in.dart';
-import '../../features/community/domain/repositories/community_repository.dart';
-import '../../features/community/data/repositories/community_repository_impl.dart';
-import '../../features/community/data/datasources/community_remote_data_source.dart';
-import '../../features/community/domain/usecases/post_usecases.dart';
-import '../../features/community/domain/usecases/group_usecases.dart';
-import '../../features/community/domain/usecases/person_usecases.dart';
-import '../../features/community/presentation/bloc/community_bloc.dart';
-import '../../features/booking/presentation/bloc/create_booking/create_booking_bloc.dart';
-import '../../features/booking/presentation/bloc/workspace_bloc.dart';
-import '../../features/booking/domain/usecases/create_booking.dart';
-import '../../features/booking/domain/usecases/get_workspaces.dart';
-import '../../features/booking/domain/usecases/search_workspaces.dart';
-import '../../features/booking/domain/usecases/watch_workspaces.dart';
-import '../../features/booking/domain/repositories/workspace_repository.dart';
-import '../../features/booking/data/repositories/workspace_repository_impl.dart';
-import '../../features/booking/data/datasources/workspace_local_data_source.dart';
-import '../../features/event/domain/repositories/event_repository.dart';
-import '../../features/event/data/repositories/event_repository_impl.dart';
-import '../../features/event/data/datasources/event_remote_data_source.dart';
-import '../../features/event/domain/usecases/event_usecases.dart';
-import '../../features/event/presentation/bloc/event_bloc.dart';
-import '../../features/chat/domain/repositories/chat_repository.dart';
-import '../../features/chat/data/repositories/chat_repository_impl.dart';
-import '../../features/chat/data/datasources/chat_remote_data_source.dart';
-import '../../features/chat/domain/usecases/chat_usecases.dart';
-import '../../features/chat/presentation/bloc/chat_bloc.dart';
-import '../../features/auth/presentation/bloc/auth_bloc.dart';
-import '../../features/auth/domain/usecases/login_usecase.dart';
-import '../../features/auth/domain/usecases/register_usecase.dart';
-import '../../features/auth/domain/repositories/auth_repository.dart';
-import '../../features/auth/data/repositories/auth_repository_impl.dart';
-import '../../features/auth/data/datasources/auth_remote_data_source.dart';
-import '../../features/auth/data/datasources/auth_local_data_source.dart';
-import '../../features/cafe/domain/repositories/cafe_repository.dart';
-import '../../features/cafe/data/repositories/cafe_repository_impl.dart';
-import '../../features/cafe/data/datasources/cafe_remote_data_source.dart';
-import '../../features/cafe/domain/usecases/search_cafes.dart';
-import '../../features/cafe/presentation/bloc/cafe_bloc.dart';
+import 'package:zinko_app/core/network/dio_client.dart';
+import 'package:zinko_app/core/bloc/navigation/navigation_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/map/map_bloc.dart';
+import 'package:zinko_app/features/user/data/datasources/user_remote_data_source.dart';
+import 'package:zinko_app/features/user/data/repositories/user_repository_impl.dart';
+import 'package:zinko_app/features/user/domain/repositories/user_repository.dart';
+import 'package:zinko_app/features/booking/data/datasources/booking_remote_data_source.dart';
+import 'package:zinko_app/features/booking/data/repositories/booking_repository_impl.dart';
+import 'package:zinko_app/features/booking/domain/repositories/booking_repository.dart';
+import 'package:zinko_app/features/booking/domain/usecases/add_booking.dart';
+import 'package:zinko_app/features/booking/domain/usecases/complete_booking.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_bookings.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_user_bookings.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/selection/booking_selection_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/cafe/cafe_menu_bloc.dart';
+import 'package:zinko_app/features/user/domain/usecases/get_user_profile.dart';
+import 'package:zinko_app/features/user/domain/usecases/update_user_profile.dart';
+import 'package:zinko_app/features/user/domain/usecases/add_money.dart';
+import 'package:zinko_app/features/user/domain/usecases/redeem_referral.dart';
+import 'package:zinko_app/features/user/domain/usecases/update_visibility.dart';
+import 'package:zinko_app/features/user/domain/usecases/send_email_otp.dart';
+import 'package:zinko_app/features/user/domain/usecases/verify_email_otp.dart';
+import 'package:zinko_app/features/user/domain/usecases/delete_user.dart';
+import 'package:zinko_app/features/user/domain/usecases/change_password.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
+import 'package:zinko_app/features/booking/domain/usecases/user_check_in.dart';
+import 'package:zinko_app/features/community/domain/repositories/community_repository.dart';
+import 'package:zinko_app/features/community/data/repositories/community_repository_impl.dart';
+import 'package:zinko_app/features/community/data/datasources/community_remote_data_source.dart';
+import 'package:zinko_app/features/community/domain/usecases/post_usecases.dart';
+import 'package:zinko_app/features/community/domain/usecases/group_usecases.dart';
+import 'package:zinko_app/features/community/domain/usecases/person_usecases.dart';
+import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/create_booking/create_booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/domain/usecases/create_booking.dart';
+import 'package:zinko_app/features/booking/domain/usecases/get_workspaces.dart';
+import 'package:zinko_app/features/booking/domain/usecases/search_workspaces.dart';
+import 'package:zinko_app/features/booking/domain/usecases/watch_workspaces.dart';
+import 'package:zinko_app/features/booking/domain/repositories/workspace_repository.dart';
+import 'package:zinko_app/features/booking/data/repositories/workspace_repository_impl.dart';
+import 'package:zinko_app/features/booking/data/datasources/workspace_local_data_source.dart';
+import 'package:zinko_app/features/event/domain/repositories/event_repository.dart';
+import 'package:zinko_app/features/event/data/repositories/event_repository_impl.dart';
+import 'package:zinko_app/features/event/data/datasources/event_remote_data_source.dart';
+import 'package:zinko_app/features/event/domain/usecases/event_usecases.dart';
+import 'package:zinko_app/features/event/presentation/bloc/event_bloc.dart';
+import 'package:zinko_app/features/chat/domain/repositories/chat_repository.dart';
+import 'package:zinko_app/features/chat/data/repositories/chat_repository_impl.dart';
+import 'package:zinko_app/features/chat/data/datasources/chat_remote_data_source.dart';
+import 'package:zinko_app/features/chat/domain/usecases/chat_usecases.dart';
+import 'package:zinko_app/features/chat/presentation/bloc/chat_bloc.dart';
+import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:zinko_app/features/auth/domain/usecases/login_usecase.dart';
+import 'package:zinko_app/features/auth/domain/usecases/register_usecase.dart';
+import 'package:zinko_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:zinko_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:zinko_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:zinko_app/features/auth/data/datasources/auth_local_data_source.dart';
+import 'package:zinko_app/features/cafe/domain/repositories/cafe_repository.dart';
+import 'package:zinko_app/features/cafe/data/repositories/cafe_repository_impl.dart';
+import 'package:zinko_app/features/cafe/data/datasources/cafe_remote_data_source.dart';
+import 'package:zinko_app/features/cafe/domain/usecases/search_cafes.dart';
+import 'package:zinko_app/features/cafe/domain/usecases/toggle_wishlist.dart';
+import 'package:zinko_app/features/cafe/domain/usecases/get_wishlist.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
 // Password Change imports
-import '../../features/password_change/data/datasources/password_change_remote_data_source.dart';
-import '../../features/password_change/data/repositories/password_change_repository_impl.dart';
-import '../../features/password_change/domain/repositories/password_change_repository.dart';
-import '../../features/password_change/domain/usecases/password_change_usecases.dart';
-import '../../features/password_change/presentation/bloc/password_change_bloc.dart';
+import 'package:zinko_app/features/password_change/data/datasources/password_change_remote_data_source.dart';
+import 'package:zinko_app/features/password_change/data/repositories/password_change_repository_impl.dart';
+import 'package:zinko_app/features/password_change/domain/repositories/password_change_repository.dart';
+import 'package:zinko_app/features/password_change/domain/usecases/password_change_usecases.dart';
+import 'package:zinko_app/features/password_change/presentation/bloc/password_change_bloc.dart';
 
 // Wallet imports
-import '../../features/wallet/data/datasources/wallet_remote_data_source.dart';
-import '../../features/wallet/data/repositories/wallet_repository_impl.dart';
-import '../../features/wallet/domain/repositories/wallet_repository.dart';
-import '../../features/wallet/domain/usecases/get_wallet_balance.dart';
-import '../../features/wallet/domain/usecases/get_wallet_transactions.dart';
-import '../../features/wallet/presentation/bloc/wallet_bloc.dart';
+import 'package:zinko_app/features/wallet/data/datasources/wallet_remote_data_source.dart';
+import 'package:zinko_app/features/wallet/data/repositories/wallet_repository_impl.dart';
+import 'package:zinko_app/features/wallet/domain/repositories/wallet_repository.dart';
+import 'package:zinko_app/features/wallet/domain/usecases/get_wallet_balance.dart';
+import 'package:zinko_app/features/wallet/domain/usecases/get_wallet_transactions.dart';
+import 'package:zinko_app/features/wallet/presentation/bloc/wallet_bloc.dart';
 
 // Feedback imports
-import '../../features/feedback/data/datasources/feedback_remote_data_source.dart';
-import '../../features/feedback/data/repositories/feedback_repository_impl.dart';
-import '../../features/feedback/domain/repositories/feedback_repository.dart';
-import '../../features/feedback/domain/usecases/get_cafe_reviews.dart';
-import '../../features/feedback/domain/usecases/submit_review.dart';
-import '../../features/feedback/domain/usecases/submit_suggestion.dart';
-import '../../features/feedback/presentation/bloc/feedback_bloc.dart';
+import 'package:zinko_app/features/feedback/data/datasources/feedback_remote_data_source.dart';
+import 'package:zinko_app/features/feedback/data/repositories/feedback_repository_impl.dart';
+import 'package:zinko_app/features/feedback/domain/repositories/feedback_repository.dart';
+import 'package:zinko_app/features/feedback/domain/usecases/get_cafe_reviews.dart';
+import 'package:zinko_app/features/feedback/domain/usecases/submit_review.dart';
+import 'package:zinko_app/features/feedback/domain/usecases/submit_suggestion.dart';
+import 'package:zinko_app/features/feedback/presentation/bloc/feedback_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -328,11 +330,16 @@ class ServiceLocator {
     sl.registerFactory(() => MapBloc(getWorkspaces: sl(), getPeople: sl()));
 
     //! Features - Cafe
-    // BLoC
-    sl.registerFactory(() => CafeBloc(searchCafes: sl()));
+    sl.registerFactory(() => CafeBloc(
+          searchCafes: sl(),
+          toggleWishlist: sl(),
+          getWishlist: sl(),
+        ));
 
     // Use cases
     sl.registerLazySingleton(() => SearchCafes(repository: sl()));
+    sl.registerLazySingleton(() => ToggleWishlist(repository: sl()));
+    sl.registerLazySingleton(() => GetWishlist(repository: sl()));
 
     // Repository
     sl.registerLazySingleton<CafeRepository>(

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../domain/entities/chat_entity.dart';
+import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
 
 abstract class ChatState extends Equatable {
   const ChatState();

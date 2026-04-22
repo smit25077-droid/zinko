@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../../core/network/api_endpoints.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/booking_api_model.dart';
-import '../models/booking_model.dart';
-import '../models/user_booking_model.dart';
-import '../models/workspace_model.dart';
+import 'package:zinko_app/core/network/api_endpoints.dart';
+import 'package:zinko_app/core/network/dio_client.dart';
+import 'package:zinko_app/features/booking/data/models/booking_api_model.dart';
+import 'package:zinko_app/features/booking/data/models/booking_model.dart';
+import 'package:zinko_app/features/booking/data/models/user_booking_model.dart';
+import 'package:zinko_app/features/booking/data/models/workspace_model.dart';
 
 abstract class BookingRemoteDataSource {
   Future<List<BookingModel>> getBookings();

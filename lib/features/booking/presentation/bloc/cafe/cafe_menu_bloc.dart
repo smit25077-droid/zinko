@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'cafe_menu_event.dart';
-import 'cafe_menu_state.dart';
-import '../booking_bloc.dart';
-import '../booking_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/cafe/cafe_menu_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/cafe/cafe_menu_state.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
 
 class CafeMenuBloc extends Bloc<CafeMenuEvent, CafeMenuState> {
   final BookingBloc bookingBloc;

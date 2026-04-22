@@ -1,5 +1,5 @@
-import '../entities/workspace_entity.dart';
-import '../entities/booking_request_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
 
 abstract class WorkspaceRepository {
   Future<List<WorkspaceEntity>> getWorkspaces();

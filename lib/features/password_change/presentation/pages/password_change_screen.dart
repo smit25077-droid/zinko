@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
-import '../../../../utils/zinko_flushbar.dart';
-import '../../../../utils/glass_theme.dart';
-import '../bloc/password_change_bloc.dart';
-import '../../../../injection_container.dart';
-import '../../../../widgets/zinko_success_overlay.dart';
-import '../../../../core/routes/app_router.dart';
-import '../../../../widgets/zinko_app_bar.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/features/password_change/presentation/bloc/password_change_bloc.dart';
+import 'package:zinko_app/injection_container.dart';
+import 'package:zinko_app/widgets/zinko_success_overlay.dart';
+import 'package:zinko_app/core/routes/app_router.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 
 class PasswordChangeScreen extends StatefulWidget {
   static const String routeName = '/password-change';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'zinko_common_card.dart';
-import '../core/theme/app_colors.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/core/theme/app_colors.dart';
 
 class CategoryCard extends StatelessWidget {
   final String category;

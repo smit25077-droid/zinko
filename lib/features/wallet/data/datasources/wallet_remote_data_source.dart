@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/network/api_endpoints.dart';
-import '../../../../core/network/dio_client.dart';
-import '../models/wallet_balance_model.dart';
-import '../models/wallet_transaction_model.dart';
+import 'package:zinko_app/core/network/dio_client.dart';
+import 'package:zinko_app/features/wallet/data/models/wallet_balance_model.dart';
+import 'package:zinko_app/features/wallet/data/models/wallet_transaction_model.dart';
 
 abstract class WalletRemoteDataSource {
   Future<WalletBalanceModel> getBalance();
