@@ -56,10 +56,9 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
 
       try {
         await toggleWishlist(event.cafeId, event.userCode);
-        // We could emit a "Success" state or just keep the optimistic update
       } catch (e) {
         // Revert on error
-        emit(CafeLoaded(cafes: currentState.cafes));
+        emit(CafeLoaded(cafes: currentState.cafes, categories: currentState.categories));
         emit(CafeError(message: e.toString()));
       }
     } else if (currentState is CafeWishlistLoaded) {
@@ -87,7 +86,17 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
     emit(CafeLoading());
     try {
       final cafes = await searchCafes(event.keyword);
-      emit(CafeLoaded(cafes: cafes));
+      
+      // Dynamic category selection
+      final dynamicCategories = cafes
+          .map((c) => c.venueType)
+          .where((t) => t.trim().isNotEmpty)
+          .toSet()
+          .toList();
+      
+      final finalCategories = ['All', ...dynamicCategories];
+      
+      emit(CafeLoaded(cafes: cafes, categories: finalCategories));
     } catch (e) {
       emit(CafeError(message: e.toString()));
     }

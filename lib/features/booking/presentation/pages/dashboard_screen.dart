@@ -34,14 +34,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final ScrollController _scrollController = ScrollController();
   final bool _isLoadingMore = false;
 
-  final List<String> _defaultCategories = const [
-    'All',
-    'Cafes',
-    'Coworking',
-    'Offices',
-    'Studios',
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -66,8 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     await Future.delayed(const Duration(seconds: 1));
   }
 
-  void _goSeeAll() =>
-      Navigator.pushNamed(context, AllWorkspacesScreen.routeName);
+  void _goSeeAll() => Navigator.pushNamed(context, AllWorkspacesScreen.routeName);
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +88,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SliverToBoxAdapter(child: SizedBox(height: 4)),
                     const SliverToBoxAdapter(child: _Title()),
                     const SliverToBoxAdapter(child: SizedBox(height: 8)),
-                    
                     SliverToBoxAdapter(
                       child: _SectionHeader(title: 'RECOMMENDED', onSeeAll: _goSeeAll),
                     ),
@@ -131,22 +121,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                       ),
                     ),
-
                     SliverToBoxAdapter(
                       child: BlocBuilder<CafeBloc, CafeState>(
                         builder: (context, cafeState) {
-                          List<String> displayCategories = _defaultCategories;
-                          
+                          List<String> displayCategories = ['All'];
+
                           if (cafeState is CafeLoaded) {
-                            final dynamicTypes = cafeState.cafes
-                                .map((c) => c.venueType)
-                                .where((t) => t.trim().isNotEmpty)
-                                .toSet()
-                                .toList();
-                                
-                            if (dynamicTypes.isNotEmpty) {
-                              displayCategories = ['All', ...dynamicTypes];
-                            }
+                            displayCategories = cafeState.categories;
                           }
 
                           return _CategoryChips(
@@ -162,12 +143,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                       ),
                     ),
-
                     SliverToBoxAdapter(
                       child: _SectionHeader(title: 'NEARBY PLACES', onSeeAll: _goSeeAll),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 4)),
-
                     if (selectedCategory == 'Cafes' || selectedCategory == 'All')
                       BlocBuilder<CafeBloc, CafeState>(
                         builder: (context, cafeState) {
@@ -209,10 +188,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       )
                     else
                       _SliverNearbyList(
-                        nearby: workspaces
-                            .toList(),
+                        nearby: workspaces.toList(),
                       ),
-
                     if (_isLoadingMore)
                       const SliverToBoxAdapter(
                         child: Padding(
@@ -250,9 +227,7 @@ class _SliverNearbyList extends StatelessWidget {
               workspace: w,
               onFavTap: () => onFavTap != null
                   ? onFavTap!(w.id)
-                  : context
-                      .read<WorkspaceBloc>()
-                      .add(ToggleFavoriteWorkspaceEvent(w.id)),
+                  : context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(w.id)),
             ).animate().fadeIn(delay: (index * 30).ms);
           },
           childCount: nearby.length > 8 ? 8 : nearby.length,
@@ -289,8 +264,7 @@ class _TopBar extends StatelessWidget {
                     height: 44,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(
-                          color: AppColors.brightBlue.withValues(alpha: 0.5), width: 1.5),
+                      border: Border.all(color: AppColors.brightBlue.withValues(alpha: 0.5), width: 1.5),
                       boxShadow: [
                         BoxShadow(
                           color: AppColors.brightBlue.withValues(alpha: 0.1),
@@ -311,8 +285,7 @@ class _TopBar extends StatelessWidget {
                               shape: BoxShape.circle,
                               color: AppColors.midnightNavy,
                             ),
-                            child: const Icon(Icons.person,
-                                color: AppColors.white)),
+                            child: const Icon(Icons.person, color: AppColors.white)),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -326,19 +299,14 @@ class _TopBar extends StatelessWidget {
                               letterSpacing: 1.2)),
                       Text('${firstName.toUpperCase()} 👋',
                           style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: GlassTheme.textColor(context))),
+                              fontSize: 16, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context))),
                     ],
                   ),
                 ],
               ),
               _GlassIconButton(
                 icon: Icons.notifications_none_rounded,
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const NotificationsScreen())),
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
               ),
             ],
           ),
@@ -405,17 +373,11 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Text(title,
               style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                  color: GlassTheme.textColor(context),
-                  letterSpacing: 1.5)),
+                  fontSize: 12, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context), letterSpacing: 1.5)),
           TextButton(
             onPressed: onSeeAll,
             child: Text('SEE ALL',
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 11,
-                    color: GlassTheme.textColor(context))),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: GlassTheme.textColor(context))),
           ),
         ],
       ),
@@ -444,16 +406,10 @@ class _RecommendedList extends StatelessWidget {
             width: 280,
             margin: const EdgeInsets.only(right: 20),
             padding: EdgeInsets.zero,
-            onTap: () => Navigator.pushNamed(
-                context, WorkspaceDetailScreen.routeName,
-                arguments: w),
+            onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: w),
             child: Stack(
               children: [
-                ZinkoNetworkImage(
-                    imageUrl: w.imageUrl,
-                    width: 280,
-                    height: double.infinity,
-                    borderRadius: 24),
+                ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 24),
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -461,10 +417,7 @@ class _RecommendedList extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         stops: const [0.4, 1.0],
-                        colors: [
-                          AppColors.transparent,
-                          AppColors.midnightNavy.withValues(alpha: 0.9)
-                        ],
+                        colors: [AppColors.transparent, AppColors.midnightNavy.withValues(alpha: 0.9)],
                       ),
                     ),
                   ),
@@ -478,29 +431,21 @@ class _RecommendedList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(w.name,
-                          style: const TextStyle(
-                              color: AppColors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w900)),
+                          style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_rounded,
-                              color: AppColors.white, size: 12),
+                          const Icon(Icons.location_on_rounded, color: AppColors.white, size: 12),
                           const SizedBox(width: 4),
                           Expanded(
                               child: Text(w.location,
                                   style: const TextStyle(
-                                      color: AppColors.white,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600),
+                                      color: AppColors.white, fontSize: 12, fontWeight: FontWeight.w600),
                                   overflow: TextOverflow.ellipsis)),
                           const SizedBox(width: 8),
                           Text('£${w.price}',
-                              style: const TextStyle(
-                                  color: AppColors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900)),
+                              style:
+                                  const TextStyle(color: AppColors.white, fontSize: 14, fontWeight: FontWeight.w900)),
                         ],
                       ),
                     ],
@@ -520,10 +465,7 @@ class _CategoryChips extends StatelessWidget {
   final String selected;
   final void Function(String) onSelect;
 
-  const _CategoryChips(
-      {required this.categories,
-      required this.selected,
-      required this.onSelect});
+  const _CategoryChips({required this.categories, required this.selected, required this.onSelect});
 
   @override
   Widget build(BuildContext context) {
@@ -547,14 +489,9 @@ class _CategoryChips extends StatelessWidget {
                 margin: const EdgeInsets.only(right: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.brightBlue
-                      : AppColors.midnightNavy.withValues(alpha: 0.1),
+                  color: isSelected ? AppColors.brightBlue : AppColors.midnightNavy.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: isSelected
-                          ? AppColors.brightBlue
-                          : Colors.white.withValues(alpha: 0.1)),
+                  border: Border.all(color: isSelected ? AppColors.brightBlue : Colors.white.withValues(alpha: 0.1)),
                 ),
                 alignment: Alignment.center,
                 child: Text(
@@ -562,9 +499,7 @@ class _CategoryChips extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w900,
-                      color: isSelected
-                          ? AppColors.white
-                          : AppColors.white.withValues(alpha: 0.5),
+                      color: isSelected ? AppColors.white : AppColors.white.withValues(alpha: 0.5),
                       letterSpacing: 0.5),
                 ),
               ),
@@ -587,8 +522,7 @@ class _NearbyCard extends StatelessWidget {
     return ZinkoCommonCard(
       margin: const EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.zero,
-      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName,
-          arguments: workspace),
+      onTap: () => Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: workspace),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -597,19 +531,14 @@ class _NearbyCard extends StatelessWidget {
             child: Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(24)),
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                   child: ZinkoNetworkImage(
-                      imageUrl: workspace.imageUrl,
-                      width: double.infinity,
-                      height: 140,
-                      fit: BoxFit.cover),
+                      imageUrl: workspace.imageUrl, width: double.infinity, height: 140, fit: BoxFit.cover),
                 ),
                 Positioned(
                   top: 12,
                   right: 12,
-                  child: _GlassFavButton(
-                      isFavorite: workspace.isFavorite, onTap: onFavTap),
+                  child: _GlassFavButton(isFavorite: workspace.isFavorite, onTap: onFavTap),
                 ),
                 const SizedBox(),
               ],
@@ -627,19 +556,13 @@ class _NearbyCard extends StatelessWidget {
                       Expanded(
                         child: Text(workspace.name,
                             style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.white,
-                                letterSpacing: -0.5),
+                                fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
                             overflow: TextOverflow.ellipsis),
                       ),
                       Flexible(
-                        child: Text(
-                            '£${workspace.price}',
-                            style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w900,
-                                color: AppColors.brightBlue),
+                        child: Text('£${workspace.price}',
+                            style:
+                                const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.brightBlue),
                             overflow: TextOverflow.ellipsis),
                       ),
                     ],
@@ -647,24 +570,17 @@ class _NearbyCard extends StatelessWidget {
                 else
                   Text(workspace.name,
                       style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.white,
-                          letterSpacing: -0.5),
+                          fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
                       overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 6),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_rounded,
-                        size: 12, color: OptimizedColors.white70),
+                    const Icon(Icons.location_on_rounded, size: 12, color: OptimizedColors.white70),
                     const SizedBox(width: 4),
                     Expanded(
-                      child: Text(
-                          workspace.location,
+                      child: Text(workspace.location,
                           style: const TextStyle(
-                              fontSize: 13,
-                              color: OptimizedColors.white70,
-                              fontWeight: FontWeight.w600),
+                              fontSize: 13, color: OptimizedColors.white70, fontWeight: FontWeight.w600),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1),
                     ),
@@ -678,10 +594,8 @@ class _NearbyCard extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                          color: AppColors.brightBlue.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Icon(icon,
-                          size: 14, color: AppColors.brightBlue),
+                          color: AppColors.brightBlue.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                      child: Icon(icon, size: 14, color: AppColors.brightBlue),
                     );
                   }).toList(),
                 ),
@@ -716,9 +630,7 @@ class _GlassFavButton extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(18),
           child: Icon(
-            isFavorite
-                ? Icons.favorite_rounded
-                : Icons.favorite_border_rounded,
+            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
             color: isFavorite ? AppColors.error : AppColors.white,
             size: 18,
           ),
@@ -832,14 +744,16 @@ class _VerticalShimmer extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
-        children: List.generate(3, (index) => Container(
-          height: 180,
-          margin: const EdgeInsets.only(bottom: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(24),
-          ),
-        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms)),
+        children: List.generate(
+            3,
+            (index) => Container(
+                  height: 180,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms)),
       ),
     );
   }

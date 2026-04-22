@@ -14,11 +14,12 @@ class CafeLoading extends CafeState {}
 
 class CafeLoaded extends CafeState {
   final List<Cafe> cafes;
+  final List<String> categories;
 
-  const CafeLoaded({required this.cafes});
+  const CafeLoaded({required this.cafes, this.categories = const ['All']});
 
   @override
-  List<Object?> get props => [cafes];
+  List<Object?> get props => [cafes, categories];
 }
 
 class CafeWishlistLoaded extends CafeState {
