@@ -1,0 +1,42 @@
+# Zinko App Project Rules
+
+You are an expert Flutter developer working on the **Zinko App**, a high-performance booking platform. Always adhere to the following rules and patterns.
+
+## 1. Architecture: Clean Architecture
+Strictly follow the separation of layers:
+- **Presentation**: BLoCs, Pages, and Widgets.
+- **Domain**: Entities (plain classes), Repositories (abstract interfaces), and Use cases (business logic).
+- **Data**: Repository implementations, Models (extending entities with JSON serialization), and Data Sources (Dio/API calls).
+
+## 2. State Management: Flutter BLoC
+- Use `flutter_bloc` for all state management.
+- Always use `buildWhen` in `BlocBuilder` to prevent unnecessary rebuilds.
+- Keep BLoC logic focused; do not put UI or navigation logic inside BLoCs.
+- Use `bloc_test` for unit testing BLoCs.
+
+## 3. Performance Standards (CRITICAL)
+Based on `PERFORMANCE_OPTIMIZATION.md`:
+- **Colors**: ALWAYS use the `OptimizedColors` class instead of `.withOpacity()`.
+- **Parallelism**: Use `Future.wait()` for simultaneous API calls in BLoCs to reduce load times.
+- **Animations**: Keep animation durations under **300ms** for a snappy feel. Use `flutter_animate` sparingly.
+- **Lists**: Use `ListView.builder` with `addAutomaticKeepAlives: false` and provide `itemExtent` for fixed-height items.
+- **Rendering**: Avoid heavy computations in `build()` methods. Minimize the use of high-intensity blur (keep sigma around 20).
+
+## 4. UI/UX Standards
+- **Aesthetic**: Maintain the **Glassmorphism** design system.
+- **Typography**: Adhere to the established text themes in `lib/core/theme`.
+- **Feedback**: Always provide clear loading states (Skeletons) and error feedback (Zinko Dialogs).
+- **Widgets**: Reuse common widgets from `lib/widgets` (e.g., `ZinkoCommonDialog`, `ZinkoNetworkImage`).
+
+## 5. Coding Standards & Tooling
+- **Trailing Commas**: Always use trailing commas for better formatting.
+- **Equality**: Use `equatable` for all Models, Entities, and Bloc States/Events.
+- **Functional**: Use `dartz` (`Either<Failure, Type>`) for return types in the Domain and Data layers.
+- **DI**: Use `get_it` and the `sl` (service locator) pattern defined in `injection_container.dart`.
+- **Network**: Use the pre-configured `Dio` client with proper interceptors.
+
+## 6. Project Context
+- Key directories: `lib/core`, `lib/features`, `lib/widgets`.
+- Performance doc: `PERFORMANCE_OPTIMIZATION.md`.
+- Main entry: `lib/main.dart`.
+- DI entry: `lib/injection_container.dart`.
