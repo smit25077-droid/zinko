@@ -49,7 +49,7 @@ class WorkspaceLocalDataSourceImpl implements WorkspaceLocalDataSource {
           cafeWorkSpaces: workspace.cafeWorkSpaces,
         ),
       );
-      _controller.add(List.unmodifiable(_workspaces));
+      _controller.add(List.from(_workspaces));
     }
   }
 
@@ -57,10 +57,7 @@ class WorkspaceLocalDataSourceImpl implements WorkspaceLocalDataSource {
   Future<void> toggleBookmark(String id) async {
     final index = _workspaces.indexWhere((w) => w.id == id);
     if (index != -1) {
-      // final w = _workspaces[index];
-      // Since isBookmarked is removed, this method is currently a no-op or should be removed.
-      // I will keep it as a no-op for now to avoid breaking the interface if it's used elsewhere.
-      _controller.add(List.unmodifiable(_workspaces));
+      _controller.add(List.from(_workspaces));
     }
   }
 }

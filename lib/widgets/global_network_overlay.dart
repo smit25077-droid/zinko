@@ -96,51 +96,51 @@ class _OverlayContentState extends State<_OverlayContent>
           children: [
             widget.child,
             // Animated top banner
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: SlideTransition(
-                position: _bannerSlide,
-                child: SafeArea(
-                  bottom: false,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: ClipRRect(
-                      child: Container(
-                        color: const Color(0xFFC62828),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.wifi_off_rounded,
-                                color: Colors.white, size: 16),
-                            const SizedBox(width: 10),
-                            const Expanded(
-                              child: Text(
-                                'No Internet Connection',
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: const BoxDecoration(
-                                  color: Colors.white54,
-                                  shape: BoxShape.circle),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // Positioned(
+            //   top: 0,
+            //   left: 0,
+            //   right: 0,
+            //   child: SlideTransition(
+            //     position: _bannerSlide,
+            //     child: SafeArea(
+            //       bottom: false,
+            //       child: Material(
+            //         color: Colors.transparent,
+            //         child: ClipRRect(
+            //           child: Container(
+            //             color: const Color(0xFFC62828),
+            //             padding: const EdgeInsets.symmetric(
+            //                 horizontal: 16, vertical: 10),
+            //             child: Row(
+            //               children: [
+            //                 const Icon(Icons.wifi_off_rounded,
+            //                     color: Colors.white, size: 16),
+            //                 const SizedBox(width: 10),
+            //                 const Expanded(
+            //                   child: Text(
+            //                     'No Internet Connection',
+            //                     style: TextStyle(
+            //                         color: Colors.white,
+            //                         fontSize: 13,
+            //                         fontWeight: FontWeight.w700),
+            //                   ),
+            //                 ),
+            //                 const SizedBox(width: 8),
+            //                 Container(
+            //                   width: 8,
+            //                   height: 8,
+            //                   decoration: const BoxDecoration(
+            //                       color: Colors.white54,
+            //                       shape: BoxShape.circle),
+            //                 ),
+            //               ],
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ),

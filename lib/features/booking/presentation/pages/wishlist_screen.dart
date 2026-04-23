@@ -12,7 +12,7 @@ import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
-import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/cafe_detail_screen.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';

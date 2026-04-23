@@ -1,4 +1,6 @@
+import 'package:zinko_app/features/booking/data/models/workspace_model.dart';
 import 'package:zinko_app/features/cafe/domain/entities/cafe_entities.dart';
+import 'package:zinko_app/features/booking/data/models/workspace_model.dart';
 
 class CafeModel extends Cafe {
   const CafeModel({
@@ -21,6 +23,7 @@ class CafeModel extends Cafe {
     required super.images,
     required super.timeSlots,
     required super.workspace,
+    super.reviews = const [],
     super.isLiked = false,
   });
 
@@ -57,6 +60,9 @@ class CafeModel extends Cafe {
               ?.map((e) => CafeWorkspaceModel.fromJson(e))
               .toList() ??
           [],
+      reviews: (json['cafe_reviews'] as List? ?? [])
+          .map((r) => WorkspaceReviewModel.fromJson(r))
+          .toList(),
       isLiked: json['is_wishlist'] ?? false,
     );
   }

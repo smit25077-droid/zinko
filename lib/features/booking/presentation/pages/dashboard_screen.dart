@@ -9,8 +9,8 @@ import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dar
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
-import 'package:zinko_app/features/booking/presentation/pages/all_workspaces_screen.dart';
-import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/search_cafe_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/cafe_detail_screen.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
@@ -117,18 +117,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                       child: profileImage.isNotEmpty
                                           ? ZinkoNetworkImage(
-                                        imageUrl: profileImage,
-                                        width: 44,
-                                        height: 44,
-                                        borderRadius: 22,
-                                        fit: BoxFit.cover,
-                                      )
+                                              imageUrl: profileImage,
+                                              width: 44,
+                                              height: 44,
+                                              borderRadius: 22,
+                                              fit: BoxFit.cover,
+                                            )
                                           : Container(
-                                          decoration: const BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: AppColors.backgroundDark,
-                                          ),
-                                          child: const Icon(Icons.person, color: AppColors.white)),
+                                              decoration: const BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: AppColors.backgroundDark,
+                                              ),
+                                              child: const Icon(Icons.person, color: AppColors.white)),
                                     ),
                                     const SizedBox(width: 12),
                                     Column(
@@ -140,23 +140,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 fontWeight: FontWeight.w900,
                                                 color: OptimizedColors.white50,
                                                 letterSpacing: 1.2)),
-                                        Text('${firstName.toUpperCase()} 👋',
+                                        Text(firstName.toUpperCase(),
                                             style: TextStyle(
-                                                fontSize: 16, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context))),
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w900,
+                                                color: GlassTheme.textColor(context))),
                                       ],
                                     ),
                                   ],
                                 ),
                                 _GlassIconButton(
                                   icon: Icons.notifications_none_rounded,
-                                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
+                                  onTap: () => Navigator.push(
+                                      context, MaterialPageRoute(builder: (_) => const NotificationsScreen())),
                                 ),
                               ],
                             ),
                           );
                         },
                       ),
-
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 24),
                         child: Text(
@@ -205,7 +207,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _SectionHeader(title: 'RECOMMENDED', onSeeAll: _goSeeAll),
+                      _SectionHeader(
+                        title: 'RECOMMENDED',
+                      ),
                       BlocBuilder<CafeBloc, CafeState>(
                         buildWhen: (p, c) => c is CafeLoading || c is CafeLoaded || c is CafeError,
                         builder: (context, cafeState) {
@@ -240,12 +244,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 12),
                       _SectionHeader(
                         title: 'NEARBY PLACES',
-                        onSeeAll: _goSeeAll,
-                        trailing: _FilterAction(
-                          onTap: () {
-                            // TODO: Implement filter bottom sheet
-                          },
-                        ),
                       ),
                       const SizedBox(height: 4),
                       BlocBuilder<CafeBloc, CafeState>(
@@ -337,7 +335,6 @@ class _NearbyList extends StatelessWidget {
   }
 }
 
-
 class _GlassIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -359,13 +356,11 @@ class _GlassIconButton extends StatelessWidget {
   }
 }
 
-
 class _SectionHeader extends StatelessWidget {
   final String title;
-  final VoidCallback onSeeAll;
-  final Widget? trailing;
-
-  const _SectionHeader({required this.title, required this.onSeeAll, this.trailing});
+  const _SectionHeader({
+    required this.title,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -374,25 +369,12 @@ class _SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            children: [
-              Text(title,
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w900,
-                      color: GlassTheme.textColor(context),
-                      letterSpacing: 1.5)),
-              if (trailing != null) ...[
-                const SizedBox(width: 8),
-                trailing!,
-              ],
-            ],
-          ),
-          TextButton(
-            onPressed: onSeeAll,
-            child: Text('SEE ALL',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 11, color: GlassTheme.textColor(context))),
-          ),
+          Text(title,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w900,
+                  color: GlassTheme.textColor(context),
+                  letterSpacing: 1.5)),
         ],
       ),
     );
@@ -421,23 +403,23 @@ class _RecommendedList extends StatelessWidget {
             width: 280,
             margin: const EdgeInsets.only(right: 20),
             padding: EdgeInsets.zero,
-          onTap: () {
-            final tag = 'hero_rec_${w.id}';
-            Navigator.pushNamed(
-              context,
-              WorkspaceDetailScreen.routeName,
-              arguments: {
-                'workspace': w,
-                'heroTag': tag,
-              },
-            );
-          },
-          child: Stack(
-            children: [
-              Hero(
-                tag: 'hero_rec_${w.id}',
-                child: ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 24),
-              ),
+            onTap: () {
+              final tag = 'hero_rec_${w.id}';
+              Navigator.pushNamed(
+                context,
+                WorkspaceDetailScreen.routeName,
+                arguments: {
+                  'workspace': w,
+                  'heroTag': tag,
+                },
+              );
+            },
+            child: Stack(
+              children: [
+                Hero(
+                  tag: 'hero_rec_${w.id}',
+                  child: ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 24),
+                ),
                 Positioned.fill(
                   child: Container(
                     decoration: BoxDecoration(
@@ -463,7 +445,8 @@ class _RecommendedList extends StatelessWidget {
                         child: Material(
                           color: Colors.transparent,
                           child: Text(w.name,
-                              style: const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
+                              style:
+                                  const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -493,7 +476,6 @@ class _RecommendedList extends StatelessWidget {
     );
   }
 }
-
 
 class _NearbyCard extends StatelessWidget {
   final WorkspaceEntity workspace;
@@ -556,7 +538,10 @@ class _NearbyCard extends StatelessWidget {
                             color: Colors.transparent,
                             child: Text(workspace.name,
                                 style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w900,
+                                    color: AppColors.white,
+                                    letterSpacing: -0.5),
                                 overflow: TextOverflow.ellipsis),
                           ),
                         ),

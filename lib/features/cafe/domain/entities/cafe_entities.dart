@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart' as booking;
 
 class Cafe extends Equatable {
   final int cafeId;
@@ -20,6 +21,7 @@ class Cafe extends Equatable {
   final List<CafeImage> images;
   final List<CafeTimeSlot> timeSlots;
   final List<CafeWorkspace> workspace;
+  final List<booking.WorkspaceReviewEntity> reviews;
   final bool isLiked;
 
   const Cafe({
@@ -42,6 +44,7 @@ class Cafe extends Equatable {
     required this.images,
     required this.timeSlots,
     required this.workspace,
+    this.reviews = const [],
     this.isLiked = false,
   });
 
@@ -60,11 +63,7 @@ class Cafe extends Equatable {
     String? ownerPhoneNo,
     String? ownerEmail,
     String? venueType,
-    double? hourRate,
-    List<CafeAmenity>? amenities,
-    List<CafeImage>? images,
-    List<CafeTimeSlot>? timeSlots,
-    List<CafeWorkspace>? workspace,
+    List<booking.WorkspaceReviewEntity>? reviews,
     bool? isLiked,
   }) {
     return Cafe(
@@ -87,6 +86,7 @@ class Cafe extends Equatable {
       images: images ?? this.images,
       timeSlots: timeSlots ?? this.timeSlots,
       workspace: workspace ?? this.workspace,
+      reviews: reviews ?? this.reviews,
       isLiked: isLiked ?? this.isLiked,
     );
   }
@@ -112,6 +112,7 @@ class Cafe extends Equatable {
         images,
         timeSlots,
         workspace,
+        reviews,
         isLiked,
       ];
 }

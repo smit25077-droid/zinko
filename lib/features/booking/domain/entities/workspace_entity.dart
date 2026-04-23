@@ -155,21 +155,42 @@ class CafeWorkSpace extends Equatable {
 }
 
 class WorkspaceReviewEntity extends Equatable {
+  final int id;
+  final int cafeId;
+  final String? cafeName;
   final String userName;
   final String avatarUrl;
   final double rating;
   final String comment;
   final String date;
+  final int userId;
+  final bool isPublish;
 
   const WorkspaceReviewEntity({
+    required this.id,
+    required this.cafeId,
+    this.cafeName,
     required this.userName,
     required this.avatarUrl,
     required this.rating,
     required this.comment,
     required this.date,
+    required this.userId,
+    required this.isPublish,
   });
 
   @override
-  List<Object?> get props => [userName, avatarUrl, rating, comment, date];
+  List<Object?> get props => [
+        id,
+        cafeId,
+        cafeName,
+        userName,
+        avatarUrl,
+        rating,
+        comment,
+        date,
+        userId,
+        isPublish,
+      ];
 }
 

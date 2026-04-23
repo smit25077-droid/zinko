@@ -44,24 +44,34 @@ class ZinkoAppBar extends StatelessWidget implements PreferredSizeWidget {
           elevation: elevation,
           surfaceTintColor: Colors.transparent,
           leading: leading ?? (showBackButton && Navigator.canPop(context)
-              ? Center(
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 12),
-                    decoration: BoxDecoration(
-                      color: GlassTheme.glassColor(context),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: GlassTheme.glassBorder(context)),
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: GlassTheme.textColor(context),
-                        size: 16,
-                      ),
-                      onPressed: onBackTap ?? () => Navigator.pop(context),
-                    ),
-                  ),
-                )
+              ?
+
+          IconButton(
+            icon: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: GlassTheme.textColor(context),
+              size: 16,
+            ),
+            onPressed: onBackTap ?? () => Navigator.pop(context),
+          )
+          // Center(
+          //         child: Container(
+          //           margin: const EdgeInsets.only(left: 12),
+          //           decoration: BoxDecoration(
+          //             color: GlassTheme.glassColor(context),
+          //             borderRadius: BorderRadius.circular(12),
+          //             border: Border.all(color: GlassTheme.glassBorder(context)),
+          //           ),
+          //           child: IconButton(
+          //             icon: Icon(
+          //               Icons.arrow_back_ios_new_rounded,
+          //               color: GlassTheme.textColor(context),
+          //               size: 16,
+          //             ),
+          //             onPressed: onBackTap ?? () => Navigator.pop(context),
+          //           ),
+          //         ),
+          //       )
               : null),
           actions: actions,
         ),

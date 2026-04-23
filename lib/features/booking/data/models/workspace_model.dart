@@ -41,17 +41,40 @@ class WorkspaceModel extends WorkspaceEntity {
         ? imagesList[0]
         : 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&q=80&w=800';
 
-    final amenitiesJson = json['cafe_amenitites'] as List? ?? [];
+    final amenitiesJson = (json['cafe_amenitites'] as List? ??
+        json['cafe_amenities'] as List? ??
+        json['amenities'] as List? ??
+        []);
+
+    final reviewsJson = (json['cafe_reviews'] as List? ??
+        json['reviews'] as List? ??
+        json['review'] as List? ??
+        []);
+
+    final timeSlotsJson = (json['cafe_time_slots'] as List? ??
+        json['time_slots'] as List? ??
+        json['slots'] as List? ??
+        []);
+
+    final workSpacesJson = (json['cafe_work_space'] as List? ??
+        json['cafe_work_spaces'] as List? ??
+        json['cafe_workspaces'] as List? ??
+        json['work_spaces'] as List? ??
+        []);
 
     return WorkspaceModel(
-      id: json['cafe_id'].toString(),
-      name: json['cafe_name'] ?? 'Unknown Cafe',
-      location: json['address'] ?? '',
-      price: json['hour_rate']?.toString() ?? '0',
+      id: (json['cafe_id'] ?? json['id'] ?? '').toString(),
+      name: json['cafe_name']?.toString() ??
+          json['name']?.toString() ??
+          'Unknown Cafe',
+      location: json['address']?.toString() ??
+          json['location']?.toString() ??
+          '',
+      price: (json['hour_rate'] ?? json['price'] ?? '0').toString(),
       imageUrl: firstImageUrl,
       images: imagesList.isEmpty ? [firstImageUrl] : imagesList,
       amenities: amenitiesJson.map((a) {
-        final name = a['amenities_name']?.toString().toLowerCase() ?? '';
+        final name = (a['amenities_name'] ?? a['name'])?.toString().toLowerCase() ?? '';
         if (name.contains('wifi')) return Icons.wifi;
         if (name.contains('coffee')) return Icons.coffee;
         if (name.contains('tea')) return Icons.emoji_food_beverage;
@@ -59,30 +82,36 @@ class WorkspaceModel extends WorkspaceEntity {
         return Icons.check_circle_outline;
       }).toList(),
       amenityNames: amenitiesJson
-          .map((a) => a['amenities_name']?.toString() ?? '')
+          .map((a) => (a['amenities_name'] ?? a['name'])?.toString() ?? '')
           .toList(),
-      description: json['description'] ?? '',
-      phone: json['phone_no']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      phone: (json['phone_no'] ?? json['phone'] ?? '').toString(),
       email: json['email']?.toString() ?? '',
-      tablesLeft: (json['cafe_work_space'] as List? ?? [])
+      tablesLeft: workSpacesJson
           .where((w) => (w['is_active'] == true ||
               w['is_active'] == 1 ||
               w['is_active'] == '1'))
           .length,
-      totalSlots: (json['cafe_work_space'] as List? ?? []).length,
-      isFavorite: json['is_wishlist'] == true || json['is_wishlist'] == 1,
-      lat: double.tryParse(json['latitude']?.toString() ?? '0') ?? 0.0,
-      lng: double.tryParse(json['longitude']?.toString() ?? '0') ?? 0.0,
-      reviews: (json['cafe_reviews'] as List? ?? [])
+      totalSlots: workSpacesJson.length,
+      isFavorite: json['is_wishlist'] == true ||
+          json['is_wishlist'] == 1 ||
+          json['is_favorite'] == true ||
+          json['is_favorite'] == 1,
+      lat: double.tryParse(json['latitude']?.toString() ??
+              json['lat']?.toString() ??
+              '0') ??
+          0.0,
+      lng: double.tryParse(json['longitude']?.toString() ??
+              json['lng']?.toString() ??
+              '0') ??
+          0.0,
+      reviews: reviewsJson
           .map((r) => WorkspaceReviewModel.fromJson(r))
           .toList(),
-      cafeTimeSlots: (json['cafe_time_slots'] as List? ?? [])
+      cafeTimeSlots: timeSlotsJson
           .map((s) => CafeTimeSlotModel.fromJson(s))
           .toList(),
-      cafeWorkSpaces: (json['cafe_work_space'] as List? ??
-              json['cafe_workspaces'] as List? ??
-              json['cafe_workspace'] as List? ??
-              [])
+      cafeWorkSpaces: workSpacesJson
           .map((w) => CafeWorkSpaceModel.fromJson(w))
           .toList(),
     );
@@ -115,20 +144,31 @@ class WorkspaceModel extends WorkspaceEntity {
 
 class WorkspaceReviewModel extends WorkspaceReviewEntity {
   const WorkspaceReviewModel({
+    required super.id,
+    required super.cafeId,
+    super.cafeName,
     required super.userName,
     required super.avatarUrl,
     required super.rating,
     required super.comment,
     required super.date,
+    required super.userId,
+    required super.isPublish,
   });
 
   factory WorkspaceReviewModel.fromJson(Map<String, dynamic> json) {
     return WorkspaceReviewModel(
-      userName: json['user_name'] ?? 'Anonymous',
-      avatarUrl: 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(json['user_name'] ?? 'A')}&background=random',
+      id: int.tryParse(json['cafe_review_id']?.toString() ?? '0') ?? 0,
+      cafeId: int.tryParse(json['cafe_id']?.toString() ?? '0') ?? 0,
+      cafeName: json['cafe_name']?.toString(),
+      userName: json['user_name']?.toString() ?? 'Anonymous',
+      avatarUrl:
+          'https://ui-avatars.com/api/?name=${Uri.encodeComponent(json['user_name']?.toString() ?? 'A')}&background=random',
       rating: double.tryParse(json['review_star']?.toString() ?? '0') ?? 0.0,
-      comment: json['review_text'] ?? '',
-      date: json['review_date'] ?? '',
+      comment: json['review_text']?.toString() ?? '',
+      date: json['review_date']?.toString() ?? '',
+      userId: int.tryParse(json['user_id']?.toString() ?? '0') ?? 0,
+      isPublish: json['is_publish'] == true || json['is_publish'] == 1 || json['is_publish'] == '1',
     );
   }
 }
@@ -146,12 +186,17 @@ class CafeTimeSlotModel extends CafeTimeSlot {
 
   factory CafeTimeSlotModel.fromJson(Map<String, dynamic> json) {
     return CafeTimeSlotModel(
-      id: json['cafe_time_slots_id'] ?? 0,
-      cafeId: json['cafe_id'] ?? 0,
-      cafeName: json['cafe_name'],
-      startTime: json['start_time'] ?? '',
-      endTime: json['end_time'] ?? '',
-      weekDay: json['week_day'] ?? '',
+      id: int.tryParse(json['cafe_time_slots_id']?.toString() ??
+              json['id']?.toString() ??
+              '0') ??
+          0,
+      cafeId: int.tryParse(
+              json['cafe_id']?.toString() ?? json['cafeId']?.toString() ?? '0') ??
+          0,
+      cafeName: json['cafe_name']?.toString(),
+      startTime: json['start_time']?.toString() ?? '',
+      endTime: json['end_time']?.toString() ?? '',
+      weekDay: json['week_day']?.toString() ?? '',
     );
   }
 }
@@ -169,13 +214,22 @@ class CafeWorkSpaceModel extends CafeWorkSpace {
   factory CafeWorkSpaceModel.fromJson(Map<String, dynamic> json) {
     final active = json['is_active'];
     return CafeWorkSpaceModel(
-      id: json['cafe_workspaces_id'] ?? json['id'] ?? 0,
-      cafeId: json['cafe_id'] ?? 0,
-      cafeName: json['cafe_name'],
-      tableName: json['table_name'] ??
-          json['tableName'] ??
+      id: int.tryParse(json['cafe_workspaces_id']?.toString() ??
+              json['cafe_workspace_id']?.toString() ??
+              json['id']?.toString() ??
+              '0') ??
+          0,
+      cafeId: int.tryParse(
+              json['cafe_id']?.toString() ?? json['cafeId']?.toString() ?? '0') ??
+          0,
+      cafeName: json['cafe_name']?.toString(),
+      tableName: json['table_name']?.toString() ??
+          json['tableName']?.toString() ??
           'Table ${json['id'] ?? '??'}',
-      totalSeats: json['total_seats'] ?? json['totalSeats'] ?? 2,
+      totalSeats: int.tryParse(json['total_seats']?.toString() ??
+              json['total_seats']?.toString() ??
+              '2') ??
+          2,
       isActive: active == true || active == 1 || active == '1',
     );
   }

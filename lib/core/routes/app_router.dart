@@ -19,13 +19,13 @@ import 'package:zinko_app/features/community/presentation/pages/community_screen
 import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/wishlist_screen.dart';
 import 'package:zinko_app/features/user/presentation/pages/subscription_plans_screen.dart';
-import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/cafe_detail_screen.dart';
 import 'package:zinko_app/features/event/presentation/pages/event_detail_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/event_registration_success_screen.dart';
 import 'package:zinko_app/features/chat/presentation/pages/chat_screen.dart';
 import 'package:zinko_app/features/chat/presentation/pages/call_screen.dart';
 import 'package:zinko_app/features/community/presentation/pages/connection_requests_screen.dart';
-import 'package:zinko_app/features/booking/presentation/pages/all_workspaces_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/search_cafe_screen.dart';
 import 'package:zinko_app/features/notifications/presentation/pages/notifications_screen.dart';
 import 'package:zinko_app/features/wallet/presentation/pages/wallet_screen.dart';
 import 'package:zinko_app/features/user/presentation/pages/verification_screen.dart';

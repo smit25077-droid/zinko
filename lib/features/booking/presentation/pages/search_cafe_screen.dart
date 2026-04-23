@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_empty_state.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
-import 'package:zinko_app/features/booking/presentation/pages/workspace_detail_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/cafe_detail_screen.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
@@ -41,34 +42,11 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
+      appBar: ZinkoAppBar(title: 'Search Cafe'),
       body: ZinkoBackground(
         child: SafeArea(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    _GlassHeaderButton(
-                      icon: Icons.arrow_back_ios_new_rounded,
-                      onTap: () => Navigator.pop(context),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'ALL WORKSPACES',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: GlassTheme.textColor(context),
-                          fontWeight: FontWeight.w900,
-                          fontSize: 16,
-                          letterSpacing: 2.0,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 44),
-                  ],
-                ),
-              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Hero(

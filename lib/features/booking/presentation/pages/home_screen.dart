@@ -124,7 +124,7 @@ class _FloatingGlassDock extends StatelessWidget {
                 _ExpandingNavItem(
                     index: 3, current: currentIndex, icon: Icons.chat_bubble_rounded, label: 'COMMUNITY', onTap: onTap),
                 _ExpandingNavItem(
-                    index: 4, current: currentIndex, icon: Icons.person_rounded, label: 'ME', onTap: onTap),
+                    index: 4, current: currentIndex, icon: Icons.person_rounded, label: 'PROFILE', onTap: onTap),
               ],
             ),
           ),

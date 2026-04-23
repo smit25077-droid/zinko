@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,9 @@ import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_detail_bloc.dart';
 
 import 'package:collection/collection.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:zinko_app/features/feedback/presentation/pages/cafe_reviews_screen.dart';
 
 class WorkspaceDetailScreen extends StatelessWidget {
   static const String routeName = '/workspace-detail';
@@ -65,19 +69,18 @@ class _DetailContent extends StatefulWidget {
 }
 
 class _DetailContentState extends State<_DetailContent> with WidgetsBindingObserver {
-  late PageController _pageController;
+  late CarouselSliderController _carouselController;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _pageController = PageController();
+    _carouselController = CarouselSliderController();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -86,125 +89,82 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<WorkspaceDetailBloc, WorkspaceDetailState>(
-      listenWhen: (prev, curr) => prev.currentPage != curr.currentPage,
-      listener: (context, state) {
-        if (_pageController.hasClients) {
-          final currentPage = _pageController.page?.round() ?? 0;
-          if (currentPage != state.currentPage) {
-            _pageController.animateToPage(
-              state.currentPage,
-              duration: const Duration(milliseconds: 800),
-              curve: Curves.easeInOutCubic,
-            );
-          }
+    return BlocBuilder<WorkspaceBloc, WorkspaceState>(
+      buildWhen: (prev, curr) {
+        if (curr is WorkspaceLoaded) {
+          // Only rebuild if the current workspace we're viewing has changed
+          final oldW = (prev is WorkspaceLoaded)
+              ? prev.workspaces
+                  .firstWhereOrNull((w) => w.id == widget.workspace.id)
+              : null;
+          final newW =
+              curr.workspaces.firstWhereOrNull((w) => w.id == widget.workspace.id);
+          return oldW != newW;
         }
+        return false;
       },
-      child: BlocBuilder<WorkspaceBloc, WorkspaceState>(
-        builder: (context, state) {
-          final workspace = widget.workspace;
-          return Scaffold(
-            extendBodyBehindAppBar: false,
-            appBar: ZinkoAppBar(
-              title: workspace.name,
-              actions: [
-                IconButton(
-                  icon: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                          color: AppColors.white.withValues(alpha: 0.2)),
-                    ),
-                    child: BlocBuilder<CafeBloc, CafeState>(
-                      builder: (context, cafeState) {
-                        bool isLiked = workspace.isFavorite;
-                        if (cafeState is CafeLoaded) {
-                          final c = cafeState.cafes.firstWhereOrNull(
-                              (e) => e.cafeId.toString() == workspace.id);
-                          if (c != null) isLiked = c.isLiked;
-                        } else if (cafeState is CafeWishlistLoaded) {
-                          final c = cafeState.wishlist.firstWhereOrNull(
-                              (e) => e.cafeId.toString() == workspace.id);
-                          if (c != null) isLiked = c.isLiked;
-                        }
+      builder: (context, state) {
+        final workspace = (state is WorkspaceLoaded)
+            ? state.workspaces.firstWhere(
+                (w) => w.id == widget.workspace.id,
+                orElse: () => widget.workspace,
+              )
+            : widget.workspace;
 
-                        return Icon(
-                          isLiked
-                              ? Icons.favorite_rounded
-                              : Icons.favorite_border_rounded,
-                          color: isLiked ? Colors.redAccent : Colors.white,
-                          size: 20,
-                        );
-                      },
-                    ),
-                  ),
-                  onPressed: () {
-                    final userState = context.read<UserBloc>().state;
-                    if (userState is UserLoaded) {
-                      context.read<CafeBloc>().add(ToggleWishlistEvent(
-                            cafeId: int.parse(workspace.id),
-                            userCode: userState.user.userCode,
-                          ));
-                    }
-                  },
-                ),
-                const SizedBox(width: 8),
-              ],
-            ),
-            body: ZinkoBackground(
-              child: Stack(
+        return Scaffold(
+          appBar: ZinkoAppBar(
+            title: workspace.name,
+            actions: [
+              _FavoriteButton(workspace: workspace),
+              const SizedBox(width: 8),
+            ],
+          ),
+          body: ZinkoBackground(
+            child: ZinkoScrollBody(
+              padding: EdgeInsets.zero,
+              child: Column(
                 children: [
-                  SingleChildScrollView(
+                  _ImageCarousel(
+                    workspace: workspace,
+                    heroTag: widget.heroTag,
+                    carouselController: _carouselController,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildImageCarousel(context),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(20, 16, 20, 140),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _buildGlassHeader(),
-                              if (workspace.description.isNotEmpty) ...[
-                                const SizedBox(height: 12),
-                                _buildGlassDescription(),
-                              ],
-                              if (workspace.amenities.isNotEmpty) ...[
-                                const SizedBox(height: 12),
-                                _buildGlassAmenities(),
-                              ],
-                              if (workspace.lat != 0) ...[
-                                const SizedBox(height: 12),
-                                _buildGlassMap(),
-                              ],
-                              if (workspace.reviews.isNotEmpty) ...[
-                                const SizedBox(height: 12),
-                                _buildGlassReviews(),
-                              ],
-                            ],
-                          ),
-                        ),
+                        _buildGlassHeader(workspace),
+                        if (workspace.description.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          _buildGlassDescription(workspace),
+                        ],
+                        if (workspace.amenities.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          _buildGlassAmenities(workspace),
+                        ],
+                        if (workspace.lat != 0) ...[
+                          const SizedBox(height: 12),
+                          _buildGlassMap(workspace),
+                        ],
+                        if (workspace.reviews.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          _buildGlassReviews(workspace),
+                        ],
                       ],
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: _buildActionFAB(context),
                   ),
                 ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+          bottomNavigationBar: _buildActionFAB(context, workspace),
+        );
+      },
     );
   }
 
-  Widget _buildGlassHeader() {
-    final workspace = widget.workspace;
+  Widget _buildGlassHeader(WorkspaceEntity workspace) {
     return ZinkoCommonCard(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -254,11 +214,11 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-  Widget _buildGlassDescription() {
+  Widget _buildGlassDescription(WorkspaceEntity workspace) {
     return _buildSectionCard(
       title: 'ABOUT',
       child: Text(
-        widget.workspace.description,
+        workspace.description,
         style: const TextStyle(
           fontSize: 13,
           height: 1.5,
@@ -269,9 +229,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-
-  Widget _buildGlassAmenities() {
-    final workspace = widget.workspace;
+  Widget _buildGlassAmenities(WorkspaceEntity workspace) {
     return _buildSectionCard(
       title: 'AMENITIES',
       child: GridView.builder(
@@ -299,10 +257,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(workspace.amenityNames[index],
-                      style: const TextStyle(
-                          fontSize: 11,
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w600),
+                      style: const TextStyle(fontSize: 11, color: AppColors.white, fontWeight: FontWeight.w600),
                       overflow: TextOverflow.ellipsis),
                 ),
               ],
@@ -313,8 +268,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-  Widget _buildGlassMap() {
-    final workspace = widget.workspace;
+  Widget _buildGlassMap(WorkspaceEntity workspace) {
     final position = LatLng(workspace.lat, workspace.lng);
     return _buildSectionCard(
       title: 'LOCATION',
@@ -393,131 +347,34 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-  Widget _buildGlassReviews() {
-    final workspace = widget.workspace;
-    if (workspace.reviews.isEmpty) return const SizedBox.shrink();
-    final reviewsToShow = workspace.reviews.take(3).toList();
-    final hasMore = workspace.reviews.length > 3;
+  Widget _buildGlassReviews(WorkspaceEntity workspace) {
+    List<WorkspaceReviewEntity> reviews = workspace.reviews;
+    if (reviews.isEmpty) return const SizedBox.shrink();
+    final reviewsToShow = reviews.take(3).toList();
+    final hasMore = reviews.length > 3;
 
     return _buildSectionCard(
       title: 'REVIEWS',
       child: Column(
         children: [
-          ...reviewsToShow.map((r) => Container(
-                margin: const EdgeInsets.only(bottom: 10),
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: GlassTheme.textColor(context).withValues(alpha: 0.03),
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: GlassTheme.glassBorder(context)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 14,
-                          backgroundImage: NetworkImage(r.avatarUrl),
-                          backgroundColor: AppColors.backgroundDark,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(r.userName,
-                                  style: TextStyle(
-                                      color: GlassTheme.textColor(context),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w800)),
-                              Text(r.date,
-                                  style: TextStyle(
-                                      color: GlassTheme.tertiaryTextColor(context),
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.w600)),
-                            ],
-                          ),
-                        ),
-                        _buildCompactRatingBadge(r.rating, isSmall: true),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(r.comment,
-                        style: TextStyle(
-                            color: GlassTheme.textColor(context).withValues(alpha: 0.8),
-                            fontSize: 12,
-                            height: 1.4,
-                            fontWeight: FontWeight.w500)),
-                  ],
-                ),
-              )),
-          if (hasMore) ...[
-            const SizedBox(height: 12),
-            GestureDetector(
-              onTap: () => _showAllReviews(context, workspace.reviews),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.secondary.withValues(alpha: 0.2)),
-                ),
-                child: Center(
-                  child: Text(
-                    'SEE ALL ${workspace.reviews.length} REVIEWS',
-                    style: const TextStyle(
-                      color: AppColors.secondary,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.0,
-                    ),
-                  ),
-                ),
-              ),
-            ).animate().fadeIn(),
-          ],
-        ],
-      ),
-    );
-  }
-
-  void _showAllReviews(BuildContext context, List<WorkspaceReviewEntity> reviews) {
-    ZinkoCommonBottomSheet.show(
-      context: context,
-      title: 'ALL REVIEWS',
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                '${reviews.length} total',
-                style: TextStyle(
-                  color: AppColors.white50,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: ListView.builder(
-              padding: const EdgeInsets.only(bottom: 40),
-              physics: const BouncingScrollPhysics(),
-              itemCount: reviews.length,
-              itemBuilder: (context, index) {
-                final r = reviews[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 16),
+          ...reviewsToShow.map((r) => GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(
+                    context,
+                    CafeReviewsScreen.routeName,
+                    arguments: {
+                      'cafeId': int.tryParse(workspace.id) ?? 0,
+                      'cafeName': workspace.name,
+                    },
+                  );
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     color: AppColors.white.withValues(alpha: 0.03),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
+                    border: Border.all(color: AppColors.white.withValues(alpha: 0.08)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -535,13 +392,11 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(r.userName,
-                                    style: TextStyle(
-                                        color: AppColors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w800)),
+                                    style: const TextStyle(
+                                        color: AppColors.white, fontSize: 13, fontWeight: FontWeight.w800)),
                                 Text(r.date,
                                     style: TextStyle(
-                                        color: OptimizedColors.white50,
+                                        color: AppColors.white.withValues(alpha: 0.5),
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600)),
                               ],
@@ -554,15 +409,55 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                       Text(r.comment,
                           style: TextStyle(
                               color: AppColors.white.withValues(alpha: 0.8),
-                              fontSize: 13,
+                              fontSize: 12,
                               height: 1.5,
                               fontWeight: FontWeight.w500)),
                     ],
                   ),
+                ),
+              )),
+          if (hasMore) ...[
+            const SizedBox(height: 8),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(
+                  context,
+                  CafeReviewsScreen.routeName,
+                  arguments: {
+                    'cafeId': int.tryParse(workspace.id) ?? 0,
+                    'cafeName': workspace.name,
+                  },
                 );
               },
-            ),
-          ),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'SEE ALL ${workspace.reviews.length} REVIEWS',
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.arrow_forward_ios_rounded, size: 10, color: AppColors.primary),
+                    ],
+                  ),
+                ),
+              ),
+            ).animate().fadeIn(),
+          ],
         ],
       ),
     );
@@ -585,83 +480,10 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     );
   }
 
-  Widget _buildImageCarousel(BuildContext context) {
-    final workspace = widget.workspace;
-    return SizedBox(
-      height: 280,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          PageView.builder(
-            controller: _pageController,
-            onPageChanged: (index) => context
-                .read<WorkspaceDetailBloc>()
-                .add(UpdatePageIndex(index)),
-            itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
-            itemBuilder: (context, index) {
-              return Hero(
-                tag: widget.heroTag ?? 'workspace_image_${workspace.id}',
-                child: ZinkoNetworkImage(
-                  imageUrl: workspace.images.isEmpty
-                      ? workspace.imageUrl
-                      : workspace.images[index],
-                  fit: BoxFit.cover,
-                ),
-              );
-            },
-          ),
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                stops: const [0.0, 0.4, 1.0],
-                colors: [
-                  Colors.black.withValues(alpha: 0.6),
-                  Colors.transparent,
-                  Colors.black.withValues(alpha: 0.8),
-                ],
-              ),
-            ),
-          ),
-          if (workspace.images.length > 1)
-            Positioned(
-              bottom: 20,
-              left: 0,
-              right: 0,
-              child: BlocBuilder<WorkspaceDetailBloc, WorkspaceDetailState>(
-                builder: (context, state) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: workspace.images.asMap().entries.map((entry) {
-                      bool isSelected = state.currentPage == entry.key;
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        width: isSelected ? 24 : 8,
-                        height: 4,
-                        margin: const EdgeInsets.symmetric(horizontal: 3),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.white : Colors.white24,
-                          borderRadius: BorderRadius.circular(2),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                      color:
-                                          Colors.white.withValues(alpha: 0.3),
-                                      blurRadius: 4)
-                                ]
-                              : [],
-                        ),
-                      );
-                    }).toList(),
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildImageCarousel(BuildContext context) {
+  //   final workspace = widget.workspace;
+  //   return ;
+  // }
 
   Widget _buildCompactRatingBadge(double rating, {bool isSmall = false}) {
     return Container(
@@ -678,16 +500,14 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
           const SizedBox(width: 4),
           Text(
             rating.toStringAsFixed(1),
-            style: TextStyle(
-                color: AppColors.white, fontSize: isSmall ? 11 : 13, fontWeight: FontWeight.w900),
+            style: TextStyle(color: AppColors.white, fontSize: isSmall ? 11 : 13, fontWeight: FontWeight.w900),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildActionFAB(BuildContext context) {
-    final workspace = widget.workspace;
+  Widget _buildActionFAB(BuildContext context, WorkspaceEntity workspace) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
@@ -705,24 +525,17 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                 children: [
                   Text('STARTING FROM',
                       style: TextStyle(
-                          color: AppColors.white50,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.0)),
+                          color: AppColors.white50, fontSize: 12, fontWeight: FontWeight.w800, letterSpacing: 1.0)),
                   const SizedBox(height: 2),
                   RichText(
                     text: TextSpan(
                       children: [
                         TextSpan(
                             text: '£${workspace.price}',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.white)),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppColors.white)),
                         TextSpan(
                             text: ' /h',
-                            style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.white50)),
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.white50)),
                       ],
                     ),
                   ),
@@ -762,11 +575,8 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
               child: const Center(
                 child: Text(
                   'BOOK NOW',
-                  style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.2),
+                  style:
+                      TextStyle(color: AppColors.white, fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1.2),
                 ),
               ),
             ),
@@ -774,5 +584,146 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
         ],
       ),
     ).animate().fadeIn(duration: 400.ms);
+  }
+}
+
+class _FavoriteButton extends StatelessWidget {
+  final WorkspaceEntity workspace;
+  const _FavoriteButton({required this.workspace});
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
+        ),
+        child: BlocBuilder<CafeBloc, CafeState>(
+          builder: (context, cafeState) {
+            bool isLiked = workspace.isFavorite;
+            if (cafeState is CafeLoaded) {
+              final c = cafeState.cafes
+                  .firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+              if (c != null) isLiked = c.isLiked;
+            } else if (cafeState is CafeWishlistLoaded) {
+              final c = cafeState.wishlist
+                  .firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+              if (c != null) isLiked = c.isLiked;
+            }
+
+            return Icon(
+              isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              color: isLiked ? Colors.redAccent : Colors.white,
+              size: 20,
+            );
+          },
+        ),
+      ),
+      onPressed: () {
+        final userState = context.read<UserBloc>().state;
+        if (userState is UserLoaded) {
+          context.read<CafeBloc>().add(ToggleWishlistEvent(
+                cafeId: int.parse(workspace.id),
+                userCode: userState.user.userCode,
+              ));
+        }
+      },
+    );
+  }
+}
+
+class _ImageCarousel extends StatelessWidget {
+  final WorkspaceEntity workspace;
+  final String? heroTag;
+  final CarouselSliderController carouselController;
+
+  const _ImageCarousel({
+    required this.workspace,
+    this.heroTag,
+    required this.carouselController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 280,
+      child: Column(
+        children: [
+          Expanded(
+            child: CarouselSlider.builder(
+              carouselController: carouselController,
+              itemCount: workspace.images.isEmpty ? 1 : workspace.images.length,
+              itemBuilder: (context, index, realIndex) {
+                final tag = index == 0
+                    ? (heroTag ?? 'workspace_image_${workspace.id}')
+                    : '${heroTag ?? 'workspace_image_${workspace.id}'}_$index';
+                return Hero(
+                  tag: tag,
+                  child: ZinkoNetworkImage(
+                    imageUrl: workspace.images.isEmpty
+                        ? workspace.imageUrl
+                        : workspace.images[index],
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  ),
+                );
+              },
+              options: CarouselOptions(
+                height: 280,
+                viewportFraction: 1.0,
+                initialPage: 0,
+                enableInfiniteScroll: true,
+                autoPlay: true,
+                autoPlayInterval: const Duration(seconds: 3),
+                autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                autoPlayCurve: Curves.easeInOutCubic,
+                enlargeCenterPage: false,
+                scrollDirection: Axis.horizontal,
+                onPageChanged: (index, reason) {
+                  context
+                      .read<WorkspaceDetailBloc>()
+                      .add(UpdatePageIndex(index));
+                },
+              ),
+            ),
+          ),
+          if (workspace.images.length > 1)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: BlocBuilder<WorkspaceDetailBloc, WorkspaceDetailState>(
+                buildWhen: (p, c) => p.currentPage != c.currentPage,
+                builder: (context, state) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: workspace.images.asMap().entries.map((entry) {
+                      bool isSelected = state.currentPage == entry.key;
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: isSelected ? 24 : 8,
+                        height: 4,
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        decoration: BoxDecoration(
+                          color: isSelected ? Colors.white : Colors.white24,
+                          borderRadius: BorderRadius.circular(2),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                      color: Colors.white.withValues(alpha: 0.3),
+                                      blurRadius: 4)
+                                ]
+                              : [],
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

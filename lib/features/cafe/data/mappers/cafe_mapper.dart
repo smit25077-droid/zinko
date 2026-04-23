@@ -47,6 +47,7 @@ class CafeMapper {
                 weekDay: s.weekDay,
               ))
           .toList(),
+      reviews: cafe.reviews,
     );
 
   }
