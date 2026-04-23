@@ -49,3 +49,11 @@ class WorkspacesUpdated extends WorkspaceEvent {
   @override
   List<Object> get props => [workspaces];
 }
+
+class GetWorkspaceDetailEvent extends WorkspaceEvent {
+  final int id;
+  const GetWorkspaceDetailEvent(this.id);
+
+  @override
+  List<Object> get props => [id];
+}

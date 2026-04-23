@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
 import 'package:zinko_app/features/cafe/data/mappers/cafe_mapper.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
@@ -12,8 +13,10 @@ import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
 import 'package:zinko_app/features/booking/presentation/pages/cafe_detail_screen.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:auto_skeleton/auto_skeleton.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 
@@ -65,9 +68,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
           child: BlocBuilder<CafeBloc, CafeState>(
             builder: (context, state) {
               if (state is CafeLoading) {
-                return Center(
-                    child: CircularProgressIndicator(
-                        color: GlassTheme.textColor(context)));
+                return _buildLoadingState(context);
               }
               if (state is CafeWishlistLoaded) {
                 final favorites = state.wishlist;
@@ -80,9 +81,14 @@ class _WishlistScreenState extends State<WishlistScreen> {
                     final cafe = favorites[index];
                     final workspace = CafeMapper.toWorkspaceEntity(cafe);
                     return GestureDetector(
-                      onTap: () => Navigator.pushNamed(
-                          context, WorkspaceDetailScreen.routeName,
-                          arguments: workspace),
+                      onTap: () {
+                        // Proactively fetch latest details for this workspace
+                        context.read<WorkspaceBloc>().add(GetWorkspaceDetailEvent(int.parse(workspace.id)));
+                        
+                        Navigator.pushNamed(
+                            context, WorkspaceDetailScreen.routeName,
+                            arguments: workspace);
+                      },
                       child: _WishlistCard(
                         workspace: workspace,
                         onRemove: () {
@@ -107,6 +113,26 @@ class _WishlistScreenState extends State<WishlistScreen> {
               }
               return const SizedBox.shrink();
             },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      itemCount: 5,
+      itemBuilder: (context, index) => Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: AutoSkeleton(
+          enabled: true,
+          child: Container(
+            height: 120,
+            decoration: BoxDecoration(
+              color: GlassTheme.glassColor(context),
+              borderRadius: BorderRadius.circular(20),
+            ),
           ),
         ),
       ),

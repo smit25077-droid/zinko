@@ -20,36 +20,43 @@ class ZinkoBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use MediaQuery.sizeOf for better performance as it only rebuilds on size changes
     final screenSize = MediaQuery.sizeOf(context);
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Static Background Layer - uses physical screen size to ignore keyboard resizing
+        // Static Background Layer - Wrapped in RepaintBoundary to prevent 
+        // the background from repainting when the child (scrolling content) repaints.
         Positioned(
-          top: 0,
-          left: 0,
-          width: screenSize.width,
-          height: screenSize.height,
-          child: Container(
-            decoration: BoxDecoration(
-              color: backgroundColor ?? AppColors.backgroundDark,
-              image: DecorationImage(
-                image: image ??
-                    const AssetImage('assets/images/dark_theme_bg.png'),
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
-              ),
-            ),
-            child: ClipRect(
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-                child: Container(
-                  color: showOverlay
-                      ? OptimizedColors.backgroundDark70
-                      : Colors.transparent,
+          child: RepaintBoundary(
+            child: Container(
+              decoration: BoxDecoration(
+                color: backgroundColor ?? AppColors.glassBlack,
+                image: DecorationImage(
+                  image: image ?? const AssetImage('assets/images/cafe_hotel_bg.png'),
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
+                  // Using opacity here is much cheaper than BackdropFilter
+                  opacity: 0.4, 
                 ),
               ),
+              child: showOverlay
+                  ? Container(
+                      decoration: BoxDecoration(
+                        color:  Colors.black.withValues(alpha: 0.5),
+                        // gradient: LinearGradient(
+                        //   begin: Alignment.topCenter,
+                        //   end: Alignment.bottomCenter,
+                        //   colors: [
+                        //     Colors.black.withValues(alpha: 0.3),
+                        //     AppColors.backgroundDark.withValues(alpha: 0.8),
+                        //     AppColors.backgroundDark,
+                        //   ],
+                        // ),
+                      ),
+                    )
+                  : null,
             ),
           ),
         ),

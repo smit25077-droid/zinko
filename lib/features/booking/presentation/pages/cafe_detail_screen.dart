@@ -93,22 +93,16 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
       buildWhen: (prev, curr) {
         if (curr is WorkspaceLoaded) {
           // Only rebuild if the current workspace we're viewing has changed
-          final oldW = (prev is WorkspaceLoaded)
-              ? prev.workspaces
-                  .firstWhereOrNull((w) => w.id == widget.workspace.id)
-              : null;
-          final newW =
-              curr.workspaces.firstWhereOrNull((w) => w.id == widget.workspace.id);
+          final oldW =
+              (prev is WorkspaceLoaded) ? prev.workspaces.firstWhereOrNull((w) => w.id == widget.workspace.id) : null;
+          final newW = curr.workspaces.firstWhereOrNull((w) => w.id == widget.workspace.id);
           return oldW != newW;
         }
         return false;
       },
       builder: (context, state) {
         final workspace = (state is WorkspaceLoaded)
-            ? state.workspaces.firstWhere(
-                (w) => w.id == widget.workspace.id,
-                orElse: () => widget.workspace,
-              )
+            ? state.workspaces.firstWhereOrNull((w) => w.id == widget.workspace.id) ?? widget.workspace
             : widget.workspace;
 
         return Scaffold(
@@ -442,7 +436,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'SEE ALL ${workspace.reviews.length} REVIEWS',
+                        'SEE ALL REVIEWS',
                         style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: 11,
@@ -589,6 +583,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
 
 class _FavoriteButton extends StatelessWidget {
   final WorkspaceEntity workspace;
+
   const _FavoriteButton({required this.workspace});
 
   @override
@@ -605,12 +600,10 @@ class _FavoriteButton extends StatelessWidget {
           builder: (context, cafeState) {
             bool isLiked = workspace.isFavorite;
             if (cafeState is CafeLoaded) {
-              final c = cafeState.cafes
-                  .firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+              final c = cafeState.cafes.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
               if (c != null) isLiked = c.isLiked;
             } else if (cafeState is CafeWishlistLoaded) {
-              final c = cafeState.wishlist
-                  .firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+              final c = cafeState.wishlist.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
               if (c != null) isLiked = c.isLiked;
             }
 
@@ -663,9 +656,7 @@ class _ImageCarousel extends StatelessWidget {
                 return Hero(
                   tag: tag,
                   child: ZinkoNetworkImage(
-                    imageUrl: workspace.images.isEmpty
-                        ? workspace.imageUrl
-                        : workspace.images[index],
+                    imageUrl: workspace.images.isEmpty ? workspace.imageUrl : workspace.images[index],
                     fit: BoxFit.cover,
                     width: double.infinity,
                   ),
@@ -683,9 +674,7 @@ class _ImageCarousel extends StatelessWidget {
                 enlargeCenterPage: false,
                 scrollDirection: Axis.horizontal,
                 onPageChanged: (index, reason) {
-                  context
-                      .read<WorkspaceDetailBloc>()
-                      .add(UpdatePageIndex(index));
+                  context.read<WorkspaceDetailBloc>().add(UpdatePageIndex(index));
                 },
               ),
             ),
@@ -708,13 +697,8 @@ class _ImageCarousel extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isSelected ? Colors.white : Colors.white24,
                           borderRadius: BorderRadius.circular(2),
-                          boxShadow: isSelected
-                              ? [
-                                  BoxShadow(
-                                      color: Colors.white.withValues(alpha: 0.3),
-                                      blurRadius: 4)
-                                ]
-                              : [],
+                          boxShadow:
+                              isSelected ? [BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 4)] : [],
                         ),
                       );
                     }).toList(),

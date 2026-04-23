@@ -51,7 +51,7 @@ class CafeRemoteDataSourceImpl implements CafeRemoteDataSource {
     }
 
     final response = await client.post(
-      ApiEndpoints.addWishlist,
+      ApiEndpoints.editWishlist,
       data: {
         'cafe_id': cafeId,
         'user_code': userCode.toString(),

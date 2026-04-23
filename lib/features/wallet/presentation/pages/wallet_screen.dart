@@ -28,12 +28,12 @@ class WalletScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => sl<WalletBloc>(),
-      child: ZinkoBackground(
-        child: Scaffold(
-          appBar: const ZinkoAppBar(
-            title: 'My Wallet',
-          ),
-          body: BlocListener<WalletBloc, WalletState>(
+      child: Scaffold(
+        appBar: const ZinkoAppBar(
+          title: 'My Wallet',
+        ),
+        body: ZinkoBackground(
+          child: BlocListener<WalletBloc, WalletState>(
             listener: (context, state) {
               if (state is WalletLoaded) {
                 // We could check for a flag in state, but assuming a load after redeem is success

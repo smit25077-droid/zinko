@@ -28,6 +28,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     on<FilterWorkspacesByCategoryEvent>(_onFilterByCategory);
     on<SearchWorkspacesEvent>(_onSearchWorkspaces);
     on<WorkspacesUpdated>(_onWorkspacesUpdated);
+    on<GetWorkspaceDetailEvent>(_onGetWorkspaceDetail);
 
     _streamSubscription = watchWorkspaces().listen((workspaces) {
       add(WorkspacesUpdated(workspaces));
@@ -132,6 +133,35 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     result.fold(
       (failure) => debugPrint('Error toggling bookmark: ${failure.message}'),
       (_) => null,
+    );
+  }
+
+  Future<void> _onGetWorkspaceDetail(
+    GetWorkspaceDetailEvent event,
+    Emitter<WorkspaceState> emit,
+  ) async {
+    // Note: We don't emit WorkspaceLoading() here because it would clear the whole dashboard list.
+    // Instead, the detail screen handles its own loading state if needed, or uses existing data.
+    final result = await repository.getWorkspaceDetail(event.id);
+    result.fold(
+      (failure) => emit(WorkspaceError(failure.message)),
+      (workspace) {
+        if (state is WorkspaceLoaded) {
+          final currentState = state as WorkspaceLoaded;
+          final updatedWorkspaces = currentState.workspaces.map((w) {
+            return w.id == workspace.id ? workspace : w;
+          }).toList();
+          
+          // If the workspace was not in the list (e.g. from deep link or wishlist), add it
+          if (!updatedWorkspaces.any((w) => w.id == workspace.id)) {
+            updatedWorkspaces.add(workspace);
+          }
+          
+          emit(currentState.copyWith(workspaces: updatedWorkspaces));
+        } else {
+          emit(WorkspaceLoaded([workspace]));
+        }
+      },
     );
   }
 }

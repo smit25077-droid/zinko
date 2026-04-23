@@ -10,4 +10,5 @@ abstract class WorkspaceRepository {
   Future<Either<Failure, void>> toggleBookmark(String id);
   Future<Either<Failure, BookingResponseEntity>> createBooking(BookingRequestEntity request);
   Future<Either<Failure, List<WorkspaceEntity>>> searchWorkspaces(String keyword);
+  Future<Either<Failure, WorkspaceEntity>> getWorkspaceDetail(int id);
 }

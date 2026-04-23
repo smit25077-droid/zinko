@@ -17,6 +17,7 @@ abstract class BookingRemoteDataSource {
   Future<List<UserBookingModel>> getUserBookingDetails();
   Future<void> userCheckIn(String bookingCode, String otp);
   Future<List<WorkspaceModel>> searchWorkspaces(String keyword);
+  Future<WorkspaceModel> getWorkspaceDetail(int id);
 }
 
 class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
@@ -169,6 +170,29 @@ class BookingRemoteDataSourceImpl implements BookingRemoteDataSource {
     } else {
       // Return empty list for any error status (including 500) to show "No results found"
       return [];
+    }
+  }
+
+  @override
+  Future<WorkspaceModel> getWorkspaceDetail(int id) async {
+    final jsonString = sharedPreferences.getString('CACHED_USER_DATA');
+    String? token;
+    if (jsonString != null) {
+      token = Map<String, dynamic>.from(json.decode(jsonString))['token'];
+    }
+
+    final response = await client.get(
+      ApiEndpoints.getCafeDetail(id),
+      options: Options(
+        headers: token != null ? {'Authentication': token} : {},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final data = response.data['data'];
+      return WorkspaceModel.fromJson(data);
+    } else {
+      throw Exception(response.data['message'] ?? 'Failed to load cafe details');
     }
   }
 }

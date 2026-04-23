@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
 
 import 'package:zinko_app/features/event/presentation/pages/events_screen.dart';
+import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/features/user/presentation/pages/profile_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/dashboard_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/map_screen.dart';
@@ -69,7 +76,12 @@ class HomeScreen extends StatelessWidget {
                               return;
                             }
                           }
+                          
+                          // 1. Change the tab in UI
                           context.read<NavigationBloc>().add(NavigationTabChanged(index));
+                          
+                          // 2. Trigger API Refresh for the selected tab
+                          _triggerTabRefresh(context, index);
                         },
                       ),
                     ),
@@ -81,6 +93,31 @@ class HomeScreen extends StatelessWidget {
         },
       ),
     );
+  }
+
+  void _triggerTabRefresh(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        // Refresh Dashboard/Home Data
+        context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
+        context.read<CafeBloc>().add(const SearchCafesEvent());
+        break;
+      case 1:
+        // Refresh Bookings Data
+        context.read<BookingBloc>().add(GetBookingsEvent());
+        break;
+      case 2:
+        // Refresh Wishlist Data
+        final userState = context.read<UserBloc>().state;
+        if (userState is UserLoaded) {
+          context.read<CafeBloc>().add(GetWishlistEvent(userCode: userState.user.userCode));
+        }
+        break;
+      case 3:
+        // Refresh Profile Data
+        context.read<UserBloc>().add(GetUserProfileEvent());
+        break;
+    }
   }
 }
 

@@ -28,6 +28,7 @@ import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 
 class ProfileScreen extends StatefulWidget {
   static const String routeName = '/profile';
@@ -53,17 +54,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return ZinkoBackground(
       child: Scaffold(
         backgroundColor: Colors.transparent,
-        appBar: const ZinkoAppBar(
-          title: 'Profile',
-          showBackButton: false,
-          leading: SizedBox.shrink(),
-        ),
+        // appBar: const ZinkoAppBar(
+        //   title: 'Profile',
+        //   showBackButton: false,
+        //   leading: SizedBox.shrink(),
+        // ),
         body: SafeArea(
           child: BlocBuilder<UserBloc, UserState>(
-            buildWhen: (previous, current) =>
-                current is UserLoading ||
-                current is UserLoaded ||
-                current is UserError,
+            buildWhen: (previous, current) => current is UserLoading || current is UserLoaded || current is UserError,
             builder: (context, state) {
               final user = state is UserLoaded ? state.user : null;
               final isLoading = state is UserLoading;
@@ -75,10 +73,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 },
                 color: AppColors.primary,
                 backgroundColor: GlassTheme.glassColor(context),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(
-                    parent: AlwaysScrollableScrollPhysics(),
-                  ),
+                child: ZinkoScrollBody(
+                  // physics: const BouncingScrollPhysics(
+                  //   parent: AlwaysScrollableScrollPhysics(),
+                  // ),
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
                     children: [
@@ -88,10 +86,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         _buildErrorBanner(context, (state).message),
                       ],
                       const SizedBox(height: 12),
-                      if (user != null) ...[
-                        _buildCompletionCard(context, user),
-                        const SizedBox(height: 12),
-                      ],
+                      // if (user != null) ...[
+                      //   _buildCompletionCard(context, user),
+                      //   const SizedBox(height: 12),
+                      // ],
                       _buildMembershipCard(context, user),
                       const SizedBox(height: 12),
                       _buildSectionTitle(context, 'MY ACCOUNT'),
@@ -134,18 +132,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(
-                  color: AppColors.error,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600),
+              maxLines: 3,
+              style: const TextStyle(color: AppColors.error, fontSize: 13, fontWeight: FontWeight.w600),
             ),
           ),
           TextButton(
-            onPressed: () =>
-                context.read<UserBloc>().add(GetUserProfileEvent()),
-            child: const Text('RETRY',
-                style: TextStyle(
-                    color: AppColors.error, fontWeight: FontWeight.w900)),
+            onPressed: () => context.read<UserBloc>().add(GetUserProfileEvent()),
+            child: const Text('RETRY', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w900)),
           ),
         ],
       ),
@@ -153,72 +146,159 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildHeader(BuildContext context, dynamic user, bool isLoading) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const SizedBox(height: 40),
-        Hero(
-          tag: 'profile_pic',
-          child: Container(
-            width: 90,
-            height: 90,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(
-                  color: OptimizedColors.applyAlpha(AppColors.secondary, 0.5), width: 3.5),
-              boxShadow: [
-                BoxShadow(
-                    color: OptimizedColors.applyAlpha(AppColors.secondary, 0.2),
-                    blurRadius: 20,
-                    spreadRadius: 1)
+    final double percentage = user?.completionPercentage ?? 0.0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 30),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Progress Ring Background (Inactive)
+                  Container(
+                    width: 112,
+                    height: 112,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: OptimizedColors.applyAlpha(AppColors.secondary, 0.1),
+                        width: 4,
+                      ),
+                    ),
+                  ),
+                  // Animated Progress Ring
+                  TweenAnimationBuilder<double>(
+                    tween: Tween<double>(begin: 0, end: percentage),
+                    duration: const Duration(milliseconds: 1500),
+                    curve: Curves.elasticOut,
+                    builder: (context, value, child) {
+                      return SizedBox(
+                        width: 112,
+                        height: 112,
+                        child: CircularProgressIndicator(
+                          value: value,
+                          strokeWidth: 4,
+                          backgroundColor: Colors.transparent,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            value >= 1.0 ? AppColors.success : AppColors.secondary,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  // Profile Image
+                  Hero(
+                    tag: 'profile_pic',
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: OptimizedColors.applyAlpha(
+                                percentage >= 1.0 ? AppColors.success : AppColors.secondary, 0.2),
+                            blurRadius: 20,
+                            spreadRadius: 1,
+                          )
+                        ],
+                      ),
+                      child: ClipOval(
+                        child: isLoading
+                            ? Center(
+                                child: CircularProgressIndicator(color: GlassTheme.textColor(context), strokeWidth: 2))
+                            : ZinkoNetworkImage(
+                                imageUrl: user?.profileImage ?? '',
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                    ),
+                  ).animate().scale(curve: Curves.easeOutBack, duration: 300.ms).slideX(begin: -0.2, end: 0),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (user != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: OptimizedColors.applyAlpha(
+                      user.isProfileComplete ? AppColors.success : AppColors.secondary,
+                      0.5,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (user.isProfileComplete)
+                        const Padding(
+                          padding: EdgeInsets.only(right: 4.0),
+                          child: Icon(Icons.verified_rounded, size: 10, color: AppColors.success),
+                        ),
+                      Text(
+                        user.isProfileComplete ? 'VERIFIED' : '${(user.completionPercentage * 100).toInt()}% COMPLETE',
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: user.isProfileComplete ? AppColors.success : GlassTheme.secondaryTextColor(context),
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 24),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user?.name.toUpperCase() ?? (isLoading ? 'LOADING...' : 'ME'),
+                  style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: GlassTheme.textColor(context),
+                      letterSpacing: -0.5),
+                ).animate(delay: 200.ms).fadeIn().slideX(begin: 0.2, end: 0),
+                const SizedBox(height: 4),
+                Text(
+                  user?.role ?? 'Zinko Professional',
+                  style: TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600, color: GlassTheme.secondaryTextColor(context)),
+                ).animate(delay: 300.ms).fadeIn(),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: GlassTheme.glassColor(context),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: GlassTheme.glassBorder(context)),
+                      ),
+                      child: Text(
+                        'EXPERT USER',
+                        style: TextStyle(
+                            fontSize: 9,
+                            color: GlassTheme.secondaryTextColor(context),
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.5),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
-            child: ClipOval(
-              child: isLoading
-                  ? Center(
-                      child: CircularProgressIndicator(
-                          color: GlassTheme.textColor(context),
-                          strokeWidth: 2))
-                  : ZinkoNetworkImage(
-                      imageUrl: user?.profileImage ?? '',
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.cover,
-                    ),
-            ),
           ),
-        )
-            .animate()
-            .scale(curve: Curves.easeOutBack, duration: 300.ms)
-            .rotate(begin: -0.05, end: 0),
-        const SizedBox(height: 12),
-        Text(
-          user?.name.toUpperCase() ?? (isLoading ? 'LOADING...' : 'ME'),
-          style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              color: GlassTheme.textColor(context),
-              letterSpacing: -0.5),
-        ).animate(delay: 200.ms).fadeIn(),
-        const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: GlassTheme.glassBorder(context)),
-          ),
-          child: Text(
-            'EXPERT USER',
-            style: TextStyle(
-                fontSize: 9,
-                color: GlassTheme.secondaryTextColor(context),
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5),
-          ),
-        ).animate(delay: 350.ms).fadeIn(),
-      ],
+        ],
+      ),
     );
   }
 
@@ -241,32 +321,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildAccountCard(BuildContext context, dynamic user) {
-    return ZinkoCommonCard(
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          _buildAccountTile(
-              context, 'Email', user?.email ?? '--', Icons.email_outlined),
-          Divider(
-              height: 1,
-              color: OptimizedColors.white05),
-          _buildAccountTile(context, 'Phone', user?.phone ?? '--',
-              Icons.phone_android_rounded),
-          Divider(
-              height: 1,
-              color: OptimizedColors.white05),
-          _buildAccountTile(
-              context,
-              'Bio',
-              (user?.bio ?? '').isEmpty ? 'Not specified' : user!.bio,
-              Icons.info_outline_rounded),
-        ],
-      ),
-    ).animate().fadeIn(delay: 450.ms);
+    return Column(
+      children: [
+        ZinkoCommonCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              _buildAccountTile(context, 'Email', user?.email ?? '--', Icons.email_outlined),
+              Divider(height: 1, color: OptimizedColors.white05),
+              _buildAccountTile(context, 'Phone', user?.phone ?? '--', Icons.phone_android_rounded),
+              Divider(height: 1, color: OptimizedColors.white05),
+              _buildAccountTile(context, 'Job Title', user?.role ?? 'Professional', Icons.work_outline_rounded),
+              Divider(height: 1, color: OptimizedColors.white05),
+              _buildAccountTile(context, 'Company', (user?.companyName ?? '').isEmpty ? '--' : user!.companyName,
+                  Icons.business_center_outlined),
+            ],
+          ),
+        ).animate().fadeIn(delay: 450.ms),
+        const SizedBox(height: 20),
+        _buildSectionTitle(context, 'PERSONAL INFORMATION'),
+        const SizedBox(height: 10),
+        ZinkoCommonCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              _buildAccountTile(
+                  context, 'Gender', (user?.gender ?? '').isEmpty ? '--' : user!.gender, Icons.person_outline_rounded),
+              Divider(height: 1, color: OptimizedColors.white05),
+              _buildAccountTile(context, 'Birthday', (user?.birthdate ?? '').isEmpty ? '--' : user!.birthdate,
+                  Icons.calendar_today_rounded),
+              Divider(height: 1, color: OptimizedColors.white05),
+              _buildAccountTile(
+                  context,
+                  'Address',
+                  '${user?.city ?? ''} ${user?.state ?? ''}'.trim().isEmpty
+                      ? '--'
+                      : '${user?.city ?? ''}, ${user?.state ?? ''}',
+                  Icons.location_on_outlined),
+              Divider(height: 1, color: OptimizedColors.white05),
+              _buildAccountTile(
+                  context, 'Bio', (user?.bio ?? '').isEmpty ? 'Not specified' : user!.bio, Icons.info_outline_rounded),
+            ],
+          ),
+        ).animate().fadeIn(delay: 550.ms),
+      ],
+    );
   }
 
-  Widget _buildAccountTile(
-      BuildContext context, String label, String value, IconData icon) {
+  Widget _buildAccountTile(BuildContext context, String label, String value, IconData icon) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
       child: Row(
@@ -274,10 +376,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-                color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08),
-                shape: BoxShape.circle),
-            child: Icon(icon,
-                color: GlassTheme.secondaryTextColor(context), size: 18),
+                color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08), shape: BoxShape.circle),
+            child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 18),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -292,10 +392,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         letterSpacing: 0.5)),
                 const SizedBox(height: 2),
                 Text(value,
-                    style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w700,
-                        color: GlassTheme.textColor(context))),
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context))),
               ],
             ),
           ),
@@ -326,8 +423,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               shape: BoxShape.circle,
               border: Border.all(color: OptimizedColors.applyAlpha(AppColors.gold, 0.3)),
             ),
-            child: const Icon(Icons.stars_rounded,
-                color: AppColors.gold, size: 28),
+            child: const Icon(Icons.stars_rounded, color: AppColors.gold, size: 28),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -337,36 +433,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Text(
                   '${user?.membership.toUpperCase() ?? 'FREE'} MEMBER',
                   style: const TextStyle(
-                      color: AppColors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 0.5),
+                      color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5),
                 ),
                 const SizedBox(height: 2),
                 Row(
                   children: [
                     Text(
-                      user != null
-                          ? 'Premium Benefits Active'
-                          : 'Join our premium club',
+                      user != null ? 'Premium Benefits Active' : 'Join our premium club',
                       style: TextStyle(
-                          color: user != null
-                              ? AppColors.success
-                              : OptimizedColors.white70,
+                          color: user != null ? AppColors.success : OptimizedColors.white70,
                           fontSize: 12,
                           fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(width: 4),
-                    if (user != null)
-                      const Icon(Icons.check_circle,
-                          color: AppColors.success, size: 12),
+                    if (user != null) const Icon(Icons.check_circle, color: AppColors.success, size: 12),
                   ],
                 ),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios_rounded,
-              color: AppColors.white, size: 14),
+          const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.white, size: 14),
         ],
       ),
     ).animate().fadeIn(delay: 300.ms);
@@ -383,20 +469,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
       childAspectRatio: 1.8,
 
       children: [
-        _buildMenuCard(context, 'BOOKINGS', Icons.calendar_today_rounded,
-            BookingsScreen.routeName),
-        _buildMenuCard(context, 'WALLET', Icons.account_balance_wallet_rounded,
-            WalletScreen.routeName),
-        _buildMenuCard(context, 'WISHLIST', Icons.favorite_rounded,
-            WishlistScreen.routeName),
-        _buildMenuCard(context, 'COMPLETE', Icons.event_available_rounded,
-            CompleteCafeListScreen.routeName),
+        _buildMenuCard(context, 'BOOKINGS', Icons.calendar_today_rounded, BookingsScreen.routeName),
+        _buildMenuCard(context, 'WALLET', Icons.account_balance_wallet_rounded, WalletScreen.routeName),
+        _buildMenuCard(context, 'WISHLIST', Icons.favorite_rounded, WishlistScreen.routeName),
+        _buildMenuCard(context, 'COMPLETE', Icons.event_available_rounded, CompleteCafeListScreen.routeName),
       ],
     ).animate(delay: 550.ms).fadeIn();
   }
 
-  Widget _buildMenuCard(
-      BuildContext context, String title, IconData icon, String route) {
+  Widget _buildMenuCard(BuildContext context, String title, IconData icon, String route) {
     return ZinkoCommonCard(
       onTap: () => Navigator.pushNamed(context, route),
       padding: EdgeInsets.zero,
@@ -410,10 +491,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Text(
               title,
               style: const TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.white,
-                  letterSpacing: 1.0),
+                  fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: 1.0),
             ),
           ],
         ),
@@ -426,45 +504,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildToggleTile(
-              context,
-              'Public Visibility',
-              Icons.visibility_rounded,
-              user?.userVisibility ?? false, (val) {
+          _buildToggleTile(context, 'Public Visibility', Icons.visibility_rounded, user?.userVisibility ?? false,
+              (val) {
             context.read<UserBloc>().add(UpdateVisibilityEvent(val));
           }),
-          Divider(
-              height: 1,
-              color: OptimizedColors.white05),
-          _buildListTile(context, 'Edit Profile', Icons.person_rounded,
-              EditProfileScreen.routeName),
-          Divider(
-              height: 1,
-              color: OptimizedColors.white05),
-          _buildListTile(context, 'Account Settings',
-              Icons.settings_rounded, SettingsScreen.routeName),
-          Divider(
-              height: 1,
-              color: OptimizedColors.white05),
-          _buildListTile(
-              context, 'Security & Privacy', Icons.shield_rounded, ''),
-          Divider(
-              height: 1,
-              color: OptimizedColors.white05),
-          _buildListTile(
-              context, 'Help & Support', Icons.help_center_rounded, ''),
-          Divider(
-              height: 1,
-              color: AppColors.white.withValues(alpha: 0.05)),
-          _buildListTile(
-              context, 'App Feedback', Icons.feedback_rounded, ''),
+          Divider(height: 1, color: OptimizedColors.white05),
+          _buildListTile(context, 'Edit Profile', Icons.person_rounded, EditProfileScreen.routeName),
+          Divider(height: 1, color: OptimizedColors.white05),
+          _buildListTile(context, 'Account Settings', Icons.settings_rounded, SettingsScreen.routeName),
+          Divider(height: 1, color: OptimizedColors.white05),
+          _buildListTile(context, 'Security & Privacy', Icons.shield_rounded, ''),
+          Divider(height: 1, color: OptimizedColors.white05),
+          _buildListTile(context, 'Help & Support', Icons.help_center_rounded, ''),
+          Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
+          _buildListTile(context, 'App Feedback', Icons.feedback_rounded, ''),
         ],
       ),
     ).animate(delay: 600.ms).fadeIn();
   }
 
-  Widget _buildToggleTile(BuildContext context, String title, IconData icon,
-      bool value, Function(bool) onChanged) {
+  Widget _buildToggleTile(BuildContext context, String title, IconData icon, bool value, Function(bool) onChanged) {
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
@@ -477,10 +536,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ),
       title: Text(
         title,
-        style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: GlassTheme.textColor(context)),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context)),
       ),
       trailing: Switch.adaptive(
         value: value,
@@ -491,31 +547,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildListTile(
-      BuildContext context, String title, IconData icon, String route) {
+  Widget _buildListTile(BuildContext context, String title, IconData icon, String route) {
     return ListTile(
       dense: true,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      onTap:
-          route.isNotEmpty ? () => Navigator.pushNamed(context, route) : null,
+      onTap: route.isNotEmpty ? () => Navigator.pushNamed(context, route) : null,
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: GlassTheme.textColor(context).withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10)),
-        child:
-            Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 20),
+            color: GlassTheme.textColor(context).withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 20),
       ),
       title: Text(
         title,
-        style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: GlassTheme.textColor(context)),
+        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context)),
       ),
       trailing: Icon(Icons.chevron_right_rounded,
-          color: OptimizedColors.applyAlpha(GlassTheme.tertiaryTextColor(context), 0.3),
-          size: 18),
+          color: OptimizedColors.applyAlpha(GlassTheme.tertiaryTextColor(context), 0.3), size: 18),
     );
   }
 
@@ -531,12 +579,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onAction: () async {
         // 1. Clear SharedPreferences
         await sl<SharedPreferences>().clear();
-        
+
         // 2. Reset All relevant global Blocs
         if (context.mounted) {
           context.read<UserBloc>().add(ResetUserEvent());
           context.read<AuthBloc>().add(LogoutRequested());
-          
+
           // 3. Navigate to Login
           Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
         }
@@ -551,14 +599,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       decoration: BoxDecoration(
         color: OptimizedColors.error08,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-            color: OptimizedColors.error25, width: 1.5),
+        border: Border.all(color: OptimizedColors.error25, width: 1.5),
       ),
       child: TextButton(
         onPressed: () => _showLogoutConfirmation(context),
         style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           foregroundColor: AppColors.error,
         ),
         child: const Row(
@@ -568,121 +614,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             SizedBox(width: 12),
             Text(
               'LOGOUT ACCOUNT',
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.2),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1.2),
             ),
           ],
         ),
       ),
     ).animate(delay: 700.ms).fadeIn();
   }
-
-  Widget _buildCompletionCard(BuildContext context, UserEntity user) {
-    final double percentage = user.completionPercentage;
-    final bool isComplete = user.isProfileComplete;
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: GlassTheme.glassColor(context),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: GlassTheme.glassBorder(context)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isComplete ? 'PROFILE VERIFIED' : 'COMPLETE PROFILE',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      color: isComplete ? AppColors.success : theme.primaryColor,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    isComplete ? 'Your identity is fully secure' : 'Secure your account now',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.7),
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: OptimizedColors.applyAlpha(isComplete ? AppColors.success : theme.primaryColor, 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${(percentage * 100).toInt()}%',
-                  style: TextStyle(
-                    color: isComplete ? AppColors.success : theme.primaryColor,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: percentage,
-              minHeight: 8,
-              backgroundColor: OptimizedColors.white12,
-              valueColor: AlwaysStoppedAnimation<Color>(
-                isComplete ? AppColors.success : theme.primaryColor,
-              ),
-            ),
-          ),
-          if (!isComplete) ...[
-            const SizedBox(height: 16),
-            GestureDetector(
-              onTap: () => Navigator.pushNamed(context, EditProfileScreen.routeName),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: theme.primaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: OptimizedColors.applyAlpha(theme.primaryColor, 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
-                  ],
-                ),
-                alignment: Alignment.center,
-                child: const Text(
-                  'FINISH SETUP',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 12,
-                    letterSpacing: 1.0,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    ).animate().fadeIn().slideY(begin: 0.1);
-  }
 }
-

@@ -80,4 +80,14 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
+  @override
+  Future<Either<Failure, WorkspaceEntity>> getWorkspaceDetail(int id) async {
+    try {
+      final result = await remoteDataSource.getWorkspaceDetail(id);
+      return Right(result);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }
