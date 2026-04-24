@@ -93,7 +93,7 @@ class _LoginContentState extends State<_LoginContent> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: ZinkoBackground(
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.white.withValues(alpha: 0.05),
           image: AssetImage('assets/images/cafe_hotel_bg.png'),
           child: Scaffold(
             resizeToAvoidBottomInset: true,

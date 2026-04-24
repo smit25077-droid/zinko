@@ -1,4 +1,4 @@
-package com.example.zinko_app
+package com.zinko.app
 
 import io.flutter.embedding.android.FlutterActivity
 

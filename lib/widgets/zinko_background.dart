@@ -37,23 +37,13 @@ class ZinkoBackground extends StatelessWidget {
                   image: image ?? const AssetImage('assets/images/cafe_hotel_bg.png'),
                   fit: BoxFit.cover,
                   alignment: Alignment.topCenter,
-                  // Using opacity here is much cheaper than BackdropFilter
-                  opacity: 0.4, 
+                  opacity: 0.4,
                 ),
               ),
               child: showOverlay
                   ? Container(
                       decoration: BoxDecoration(
-                        color:  Colors.black.withValues(alpha: 0.5),
-                        // gradient: LinearGradient(
-                        //   begin: Alignment.topCenter,
-                        //   end: Alignment.bottomCenter,
-                        //   colors: [
-                        //     Colors.black.withValues(alpha: 0.3),
-                        //     AppColors.backgroundDark.withValues(alpha: 0.8),
-                        //     AppColors.backgroundDark,
-                        //   ],
-                        // ),
+                        color: backgroundColor ??  Colors.black.withValues(alpha: 0.5),
                       ),
                     )
                   : null,

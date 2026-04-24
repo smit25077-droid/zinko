@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
+import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
@@ -22,11 +23,9 @@ import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 
 import 'package:zinko_app/widgets/zinko_background.dart';
-import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
-import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 
@@ -145,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, dynamic user, bool isLoading) {
+  Widget _buildHeader(BuildContext context, UserEntity? user, bool isLoading) {
     final double percentage = user?.completionPercentage ?? 0.0;
 
     return Padding(
@@ -209,13 +208,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: ClipOval(
                         child: isLoading
                             ? Center(
-                                child: CircularProgressIndicator(color: GlassTheme.textColor(context), strokeWidth: 2))
-                            : ZinkoNetworkImage(
-                                imageUrl: user?.profileImage ?? '',
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                              ),
+                                child: CircularProgressIndicator(
+                                  color: GlassTheme.textColor(context),
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            // : (user?.profileImage != null && user!.profileImage.isNotEmpty)
+                            //     ? ZinkoNetworkImage(
+                            //         imageUrl: user.profileImage,
+                            //         width: 100,
+                            //         height: 100,
+                            //         fit: BoxFit.cover,
+                            //       )
+                                : Image.asset(
+                                    user?.gender.toLowerCase() == 'female'
+                                        ? 'assets/images/female_user.png'
+                                        : 'assets/images/male_user.png',
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+
+                        // ZinkoNetworkImage(
+                        //         imageUrl: user?.profileImage ?? '',
+                        //         width: 100,
+                        //         height: 100,
+                        //         fit: BoxFit.cover,
+                        //       ),
                       ),
                     ),
                   ).animate().scale(curve: Curves.easeOutBack, duration: 300.ms).slideX(begin: -0.2, end: 0),
@@ -399,9 +418,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
-  }
-
-  Widget _buildMembershipCard(BuildContext context, dynamic user) {
+  } 
+  
+   Widget _buildMembershipCard(BuildContext context, UserEntity? user) {
+    final bool isPro = user?.isPremium ?? false;
+    final themeColor = isPro ? AppColors.gold : AppColors.secondary;
+    
     return ZinkoCommonCard(
       onTap: () {
         if (user != null && !user.isProfileComplete) {
@@ -410,20 +432,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Navigator.pushNamed(context, SubscriptionPlansScreen.routeName);
         }
       },
-      backgroundColor: AppColors.primaryDark,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                OptimizedColors.applyAlpha(AppColors.gold, 0.2),
-                OptimizedColors.applyAlpha(AppColors.gold, 0.05)
-              ]),
-              shape: BoxShape.circle,
-              border: Border.all(color: OptimizedColors.applyAlpha(AppColors.gold, 0.3)),
+              color: OptimizedColors.applyAlpha(themeColor, 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: OptimizedColors.applyAlpha(themeColor, 0.2),
+                width: 1.5,
+              ),
             ),
-            child: const Icon(Icons.stars_rounded, color: AppColors.gold, size: 28),
+            child: Icon(
+              isPro ? Icons.auto_awesome_rounded : Icons.star_rounded,
+              color: themeColor,
+              size: 28,
+            ),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -432,30 +458,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Text(
                   '${user?.membership.toUpperCase() ?? 'FREE'} MEMBER',
-                  style: const TextStyle(
-                      color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: GlassTheme.textColor(context),
+                    letterSpacing: -0.5,
+                  ),
                 ),
                 const SizedBox(height: 2),
-                Row(
-                  children: [
-                    Text(
-                      user != null ? 'Premium Benefits Active' : 'Join our premium club',
-                      style: TextStyle(
-                          color: user != null ? AppColors.success : OptimizedColors.white70,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700),
-                    ),
-                    const SizedBox(width: 4),
-                    if (user != null) const Icon(Icons.check_circle, color: AppColors.success, size: 12),
-                  ],
+                Text(
+                  isPro ? 'All premium benefits active' : 'View membership plans',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: GlassTheme.secondaryTextColor(context),
+                  ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.white, size: 14),
+          Icon(
+            Icons.chevron_right_rounded,
+            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
+            size: 20,
+          ),
         ],
       ),
-    ).animate().fadeIn(delay: 300.ms);
+    );
   }
 
   Widget _buildMenuGrid(BuildContext context) {
