@@ -28,9 +28,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return Left(ServerFailure(response.message));
     } on DioException catch (e) {
-      final message =
-          e.response?.data?['message'] ?? e.message ?? 'Unknown error occurred';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -46,9 +44,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       return Left(ServerFailure(response.message));
     } on DioException catch (e) {
-      final message =
-          e.response?.data?['message'] ?? e.message ?? 'Unknown error occurred';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

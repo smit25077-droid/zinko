@@ -93,7 +93,7 @@ class DioClient {
             requestOptions: response.requestOptions,
             response: response,
             type: DioExceptionType.badResponse,
-            message: json['message'] ?? 'API error occurred ($code)',
+            message: json['message']?.toString() ?? 'API error occurred ($code)',
           );
         }
       }

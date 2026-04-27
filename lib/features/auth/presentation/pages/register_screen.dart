@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -67,9 +69,8 @@ class _RegisterContentState extends State<_RegisterContent> {
               password: _passwordController.text,
               mobileNo: _phoneController.text.trim(),
               emailId: _emailController.text.trim(),
-              referencesReferralCode: _referralController.text.trim().isNotEmpty
-                  ? _referralController.text.trim()
-                  : null,
+              referencesReferralCode:
+                  _referralController.text.trim().isNotEmpty ? _referralController.text.trim() : null,
             ),
           ),
         );
@@ -105,22 +106,20 @@ class _RegisterContentState extends State<_RegisterContent> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: ZinkoBackground(
-
-          backgroundColor: Colors.black,
-          image: AssetImage('assets/images/cafe_hotel_bg.png'),
-          child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            backgroundColor: Colors.transparent,
-            // appBar: const ZinkoAppBar(
-            //   title: 'Register',
-            //   showBackButton: true,
-            // ),
-            body: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: Colors.transparent,
+          // appBar: const ZinkoAppBar(
+          //   title: 'Register',
+          //   showBackButton: true,
+          // ),
+          body: ZinkoBackground(
+            backgroundColor: Colors.white.withValues(alpha: 0.05),
+            child: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
+                  return ZinkoScrollBody(
+                    padding: EdgeInsets.zero,
                     child: ConstrainedBox(
                       constraints: BoxConstraints(minHeight: constraints.maxHeight),
                       child: IntrinsicHeight(
@@ -130,42 +129,45 @@ class _RegisterContentState extends State<_RegisterContent> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const SizedBox(height: 50),
-                        Column(
-                          children: [
-                            const Text(
-                              'Register with Zinko',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 34,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: -0.5,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black26,
-                                    offset: Offset(0, 4),
-                                    blurRadius: 10,
-                                  ),
+                              Column(
+                                children: [
+                                  const Text(
+                                    'Register with Zinko',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 34,
+                                      fontWeight: FontWeight.w900,
+                                      letterSpacing: -0.5,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black26,
+                                          offset: Offset(0, 4),
+                                          blurRadius: 10,
+                                        ),
+                                      ],
+                                    ),
+                                  ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+                                  const SizedBox(height: 8),
+                                  const Text(
+                                    'Begin your journey with the finest experiences.',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      letterSpacing: 0.2,
+                                    ),
+                                  ).animate(delay: 200.ms).fadeIn(),
                                 ],
                               ),
-                            ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Begin your journey with the finest experiences.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 0.2,
-                              ),
-                            ).animate(delay: 200.ms).fadeIn(),
-                          ],
-                        ),
-                        const SizedBox(height: 40),
-                        _buildGlassRegisterCard(context),
-                        const SizedBox(height: 32),
-                        const _LoginFooter(),
                               const SizedBox(height: 40),
+                              _buildGlassRegisterCard(context),
+                              const SizedBox(height: 32),
+                              const _LoginFooter(),
+                              const SizedBox(height: 40),
+                              SizedBox(
+                                height: 50,
+                              )
                             ],
                           ),
                         ),
@@ -188,20 +190,24 @@ class _RegisterContentState extends State<_RegisterContent> {
           builder: (context, state) {
             return ZinkoGlassBox(
               color: Colors.white.withValues(alpha: 0.2),
-              padding: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildFieldLabel('Full Name'),
+                    _buildFieldLabel('Username'),
                     const SizedBox(height: 10),
                     _ModernTextField(
                       controller: _userNameController,
-                      hint: 'Enter your name',
+                      hint: 'Enter your username',
                       icon: Icons.person_outline_rounded,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9@#&_.]')),
+                      ],
                       validator: (value) {
-                        if (value == null || value.isEmpty) return 'Name is required';
+                        if (value == null || value.isEmpty) return 'Username is required';
+                        if (value.length < 3) return 'Username must be at least 3 characters';
                         return null;
                       },
                     ),
@@ -213,6 +219,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                       hint: 'Enter your email',
                       icon: Icons.alternate_email_rounded,
                       keyboardType: TextInputType.emailAddress,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Email is required';
                         if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value)) return 'Enter valid email';
@@ -227,8 +236,13 @@ class _RegisterContentState extends State<_RegisterContent> {
                       hint: 'Enter mobile number',
                       icon: Icons.phone_android_rounded,
                       keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10),
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Phone number is required';
+                        if (value.length < 10) return 'Enter valid 10-digit number';
                         return null;
                       },
                     ),
@@ -248,6 +262,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         ),
                         onPressed: () => context.read<RegisterFormBloc>().add(TogglePasswordVisibility()),
                       ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Password is required';
                         if (value.length < 6) return 'Mini 6 characters';
@@ -270,6 +287,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         ),
                         onPressed: () => context.read<RegisterFormBloc>().add(ToggleConfirmPasswordVisibility()),
                       ),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                      ],
                       validator: (value) {
                         if (value == null || value.isEmpty) return 'Confirm your password';
                         if (value != _passwordController.text) return 'Passwords do not match';
@@ -284,7 +304,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                       hint: 'Enter referral code',
                       icon: Icons.card_giftcard_rounded,
                       keyboardType: TextInputType.text,
-                      textCapitalization: TextCapitalization.characters,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                      ],
                     ),
                     const SizedBox(height: 28),
                     _PremiumButton(
@@ -323,6 +345,7 @@ class _ModernTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
   final Widget? suffixIcon;
+  final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
 
   const _ModernTextField({
@@ -333,6 +356,7 @@ class _ModernTextField extends StatelessWidget {
     this.keyboardType,
     this.textCapitalization = TextCapitalization.none,
     this.suffixIcon,
+    this.inputFormatters,
     this.validator,
   });
 
@@ -344,6 +368,7 @@ class _ModernTextField extends StatelessWidget {
       validator: validator,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
+      inputFormatters: inputFormatters,
       scrollPadding: const EdgeInsets.only(bottom: 120),
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(

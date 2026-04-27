@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
@@ -6,6 +7,9 @@ import 'package:zinko_app/utils/zinko_flushbar.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/features/password_change/presentation/bloc/password_change_bloc.dart';
 import 'package:zinko_app/injection_container.dart';
+import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
 import 'package:zinko_app/widgets/zinko_app_bar.dart';
@@ -63,33 +67,21 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 title: 'Forgot Password',
                 onBackTap: () => AppRouter.safetyPop(context),
               ),
-              body: Stack(
-                children: [
-                   Positioned(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
-                        image: DecorationImage(
-                          image: AssetImage('assets/images/cafe_hotel_bg.png'),
-                          fit: BoxFit.cover,
-                          opacity: 0.3,
-                        ),
-                      ),
+              body: ZinkoBackground(
+                backgroundColor: Colors.white.withValues(alpha: 0.05),
+                image: AssetImage('assets/images/cafe_hotel_bg.png'),
+                child: SafeArea(
+                  child: ZinkoScrollBody(
+                    // padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        _buildStepIndicator(state.currentStep),
+                        const SizedBox(height: 40),
+                        _buildCurrentStepUI(context, state),
+                      ],
                     ),
                   ),
-                  SafeArea(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(24),
-                      child: Column(
-                        children: [
-                          _buildStepIndicator(state.currentStep),
-                          const SizedBox(height: 40),
-                          _buildCurrentStepUI(context, state),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             );
           },
@@ -173,7 +165,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
   }
 
   Widget _buildEmailStep(BuildContext context, PasswordChangeState state) {
-    return _buildGlassContainer(
+    return ZinkoCommonCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -184,6 +176,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
             hint: 'Enter your registered email',
             icon: Icons.email_outlined,
             keyboardType: TextInputType.emailAddress,
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+            ],
           ),
           const SizedBox(height: 32),
           _PremiumButton(
@@ -300,6 +295,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               icon: Icon(state.obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.white38, size: 20),
               onPressed: () => context.read<PasswordChangeBloc>().add(TogglePasswordVisibilityEvent()),
             ),
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+            ],
           ),
           const SizedBox(height: 20),
           _buildFieldLabel('Confirm Password'),
@@ -313,6 +311,9 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
               icon: Icon(state.obscureConfirmPassword ? Icons.visibility_off : Icons.visibility, color: Colors.white38, size: 20),
               onPressed: () => context.read<PasswordChangeBloc>().add(ToggleConfirmPasswordVisibilityEvent()),
             ),
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+            ],
           ),
           const SizedBox(height: 32),
           _PremiumButton(
@@ -378,11 +379,18 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
     bool obscureText = false,
     Widget? suffixIcon,
     TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,  
   }) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      inputFormatters: 
+      inputFormatters != null
+      ? [...inputFormatters, FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])'))]
+      :[
+        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+      ],
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,

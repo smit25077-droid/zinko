@@ -16,13 +16,7 @@ class UserRepositoryImpl implements UserRepository {
       final remoteUser = await remoteDataSource.getUserProfile();
       return Right(remoteUser);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -66,13 +60,7 @@ class UserRepositoryImpl implements UserRepository {
       );
       return Right(remoteUser);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -84,13 +72,7 @@ class UserRepositoryImpl implements UserRepository {
       final remoteUser = await remoteDataSource.addMoney(amount);
       return Right(remoteUser);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -102,13 +84,7 @@ class UserRepositoryImpl implements UserRepository {
       final remoteUser = await remoteDataSource.redeemReferral(code);
       return Right(remoteUser);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -120,13 +96,7 @@ class UserRepositoryImpl implements UserRepository {
       final result = await remoteDataSource.updateVisibility(visibility);
       return Right(result);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -138,13 +108,7 @@ class UserRepositoryImpl implements UserRepository {
       final result = await remoteDataSource.sendEmailOtp(email);
       return Right(result);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -162,13 +126,7 @@ class UserRepositoryImpl implements UserRepository {
       );
       return Right(result);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -180,13 +138,7 @@ class UserRepositoryImpl implements UserRepository {
       final result = await remoteDataSource.deleteUser(userCode);
       return Right(result);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -202,13 +154,7 @@ class UserRepositoryImpl implements UserRepository {
       );
       return Right(result);
     } on DioException catch (e) {
-      String message = 'Server error';
-      if (e.response?.data is Map) {
-        message = e.response?.data['message'] ?? e.message ?? message;
-      } else {
-        message = e.message ?? message;
-      }
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

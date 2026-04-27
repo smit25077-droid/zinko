@@ -18,10 +18,7 @@ class BookingRepositoryImpl implements BookingRepository {
       final remoteBookings = await remoteDataSource.getBookings();
       return Right(remoteBookings);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ??
-          e.message ??
-          'Failed to load bookings';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e, stackTrace) {
       print('BookingRepository: Error in getBookings: $e');
       print('Stack trace: $stackTrace');
@@ -51,9 +48,7 @@ class BookingRepositoryImpl implements BookingRepository {
       final remoteBooking = await remoteDataSource.addBooking(model);
       return Right(remoteBooking);
     } on DioException catch (e) {
-      final message =
-          e.response?.data?['message'] ?? e.message ?? 'Failed to add booking';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e, stackTrace) {
       print('BookingRepository: Error in getBookings: $e');
       print('Stack trace: $stackTrace');
@@ -67,9 +62,7 @@ class BookingRepositoryImpl implements BookingRepository {
       await remoteDataSource.cancelBooking(bookingCode);
       return const Right(null);
     } on DioException catch (e) {
-      final message =
-          e.response?.data?['message'] ?? e.message ?? 'Cancellation failed';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e, stackTrace) {
       print('BookingRepository: Error in getBookings: $e');
       print('Stack trace: $stackTrace');
@@ -83,10 +76,7 @@ class BookingRepositoryImpl implements BookingRepository {
       final remoteBooking = await remoteDataSource.completeBooking(id);
       return Right(remoteBooking);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ??
-          e.message ??
-          'Failed to complete booking';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e, stackTrace) {
       print('BookingRepository: Error in getBookings: $e');
       print('Stack trace: $stackTrace');
@@ -101,10 +91,7 @@ class BookingRepositoryImpl implements BookingRepository {
       final remoteBookings = await remoteDataSource.getUserBookingDetails();
       return Right(remoteBookings);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ??
-          e.message ??
-          'Failed to load booking details';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e, stackTrace) {
       print('BookingRepository: Error in getBookings: $e');
       print('Stack trace: $stackTrace');
@@ -119,9 +106,7 @@ class BookingRepositoryImpl implements BookingRepository {
       await remoteDataSource.userCheckIn(bookingCode, otp);
       return const Right(null);
     } on DioException catch (e) {
-      final message =
-          e.response?.data?['message'] ?? e.message ?? 'Check-in failed';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e, stackTrace) {
       print('BookingRepository: Error in getBookings: $e');
       print('Stack trace: $stackTrace');

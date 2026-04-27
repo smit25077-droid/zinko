@@ -15,6 +15,7 @@ import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
@@ -106,8 +107,9 @@ class _LoginContentState extends State<_LoginContent> {
             body: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
-                  return SingleChildScrollView(
-                    physics: const ClampingScrollPhysics(),
+                  return ZinkoScrollBody(
+                    padding: EdgeInsets.zero,
+                    // physics: const ClampingScrollPhysics(),
                     child: ConstrainedBox(
                       constraints: BoxConstraints(minHeight: constraints.maxHeight),
                       child: IntrinsicHeight(
@@ -185,6 +187,9 @@ class _LoginContentState extends State<_LoginContent> {
                         if (value == null || value.isEmpty) return 'User Name Or Email is required';
                         return null;
                       },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                      ],
                     ),
                     const SizedBox(height: 20),
                     _buildFieldLabel('Password'),
@@ -206,6 +211,9 @@ class _LoginContentState extends State<_LoginContent> {
                         if (value == null || value.isEmpty) return 'Password is required';
                         return null;
                       },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                      ],
                     ),
                     const SizedBox(height: 12),
                     Row(
@@ -271,6 +279,7 @@ class _ModernTextField extends StatelessWidget {
   final IconData icon;
   final bool obscureText;
   final Widget? suffixIcon;
+  final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
 
   const _ModernTextField({
@@ -279,6 +288,7 @@ class _ModernTextField extends StatelessWidget {
     required this.icon,
     this.obscureText = false,
     this.suffixIcon,
+    this.inputFormatters,
     this.validator,
   });
 
@@ -288,6 +298,7 @@ class _ModernTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       validator: validator,
+      inputFormatters: inputFormatters,
       scrollPadding: const EdgeInsets.only(bottom: 120),
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
@@ -367,7 +378,11 @@ class _SignupFooter extends StatelessWidget {
           style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
         ),
         GestureDetector(
-          onTap: () => Navigator.pushNamed(context, RegisterScreen.routeName),
+          onTap: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            RegisterScreen.routeName,
+            (route) => false,
+          ),
           child: const Text(
             'Join Zinko',
             style: TextStyle(

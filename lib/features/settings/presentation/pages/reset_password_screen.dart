@@ -1,5 +1,6 @@
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
@@ -125,16 +126,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               onPressed: () => setState(
                                   () => _obscurePassword = !_obscurePassword),
                             ),
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'Password is required';
-                              }
-                              if (v.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
-                          ),
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'Password is required';
+                                }
+                                if (v.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                              ],
+                            ),
                           const SizedBox(height: 24),
                           _buildFieldLabel(context, 'Confirm Password'),
                           const SizedBox(height: 8),
@@ -156,16 +160,19 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                   _obscureConfirmPassword =
                                       !_obscureConfirmPassword),
                             ),
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'Please confirm your password';
-                              }
-                              if (v != _passwordController.text) {
-                                return 'Passwords do not match';
-                              }
-                              return null;
-                            },
-                          ),
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'Please confirm your password';
+                                }
+                                if (v != _passwordController.text) {
+                                  return 'Passwords do not match';
+                                }
+                                return null;
+                              },
+                              inputFormatters: [
+                                FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                              ],
+                            ),
                         ],
                       ),
                     ),
@@ -239,12 +246,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     required IconData icon,
     bool obscureText = false,
     Widget? suffixIcon,
+    List<TextInputFormatter>? inputFormatters,
     String? Function(String?)? validator,
   }) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
       validator: validator,
+      inputFormatters: inputFormatters,
       style: TextStyle(
           color: GlassTheme.textColor(context),
           fontSize: 15,

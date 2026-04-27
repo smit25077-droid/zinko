@@ -15,7 +15,7 @@ class PasswordChangeRepositoryImpl implements PasswordChangeRepository {
       final result = await remoteDataSource.sendOtp(email);
       return Right(result);
     } on DioException catch (e) {
-      return Left(ServerFailure(e.response?.data['message'] ?? e.message ?? 'Server error'));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -27,7 +27,7 @@ class PasswordChangeRepositoryImpl implements PasswordChangeRepository {
       final result = await remoteDataSource.verifyOtp(email: email, otp: otp);
       return Right(result);
     } on DioException catch (e) {
-      return Left(ServerFailure(e.response?.data['message'] ?? e.message ?? 'Server error'));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -39,7 +39,7 @@ class PasswordChangeRepositoryImpl implements PasswordChangeRepository {
       final result = await remoteDataSource.changePassword(userCode: userCode, password: password);
       return Right(result);
     } on DioException catch (e) {
-      return Left(ServerFailure(e.response?.data['message'] ?? e.message ?? 'Server error'));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

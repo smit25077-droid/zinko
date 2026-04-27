@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 
@@ -14,6 +15,7 @@ class ZinkoTextField extends StatelessWidget {
   final VoidCallback? onTap;
   final String? Function(String?)? validator;
   final bool isPascalCase;
+  final List<TextInputFormatter>? inputFormatters;
 
   const ZinkoTextField({
     super.key,
@@ -28,6 +30,7 @@ class ZinkoTextField extends StatelessWidget {
     this.onTap,
     this.validator,
     this.isPascalCase = false,
+    this.inputFormatters,
   });
 
   String _toPascalCase(String text) {
@@ -61,6 +64,9 @@ class ZinkoTextField extends StatelessWidget {
           readOnly: readOnly || onTap != null,
           onTap: onTap,
           keyboardType: keyboardType,
+          inputFormatters: inputFormatters ?? [
+            FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+          ],
           onChanged: isPascalCase ? (value) {
             final pascal = _toPascalCase(value);
             if (pascal != value) {

@@ -29,8 +29,7 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
       ));
       return const Right(null);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? e.message ?? 'Failed to submit review';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -51,8 +50,7 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
       ));
       return const Right(null);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? e.message ?? 'Failed to submit suggestion';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -64,8 +62,7 @@ class FeedbackRepositoryImpl implements FeedbackRepository {
       final remoteReviews = await remoteDataSource.getCafeReviews(cafeId);
       return Right(remoteReviews);
     } on DioException catch (e) {
-      final message = e.response?.data?['message'] ?? e.message ?? 'Failed to fetch reviews';
-      return Left(ServerFailure(message));
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
