@@ -107,12 +107,12 @@ class _RegisterContentState extends State<_RegisterContent> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.transparent,
-          body: ZinkoBackground(
-            backgroundColor: OptimizedColors.white05,
-            child: SafeArea(
+        child: ZinkoBackground(
+          backgroundColor: Colors.white.withValues(alpha: 0.05),
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return ZinkoScrollBody(

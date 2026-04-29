@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/core/bloc/navigation/navigation_bloc.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 
 // Core
@@ -52,6 +53,7 @@ void main() async {
           BlocProvider(create: (_) => sl<BookingBloc>()),
           BlocProvider(create: (_) => sl<WalletBloc>()),
           BlocProvider(create: (_) => sl<PasswordChangeBloc>()),
+          BlocProvider(create: (_) => sl<NavigationBloc>()),
         ],
         child: const MyApp(),
       ),

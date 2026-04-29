@@ -96,7 +96,7 @@ class _LoginContentState extends State<_LoginContent> {
         value: SystemUiOverlayStyle.light,
         child: ZinkoBackground(
           backgroundColor: Colors.white.withValues(alpha: 0.05),
-          image: AssetImage('assets/images/cafe_hotel_bg.png'),
+          // image: AssetImage('assets/images/cafe_hotel_bg.png'),
           child: Scaffold(
             resizeToAvoidBottomInset: true,
             backgroundColor: Colors.transparent,

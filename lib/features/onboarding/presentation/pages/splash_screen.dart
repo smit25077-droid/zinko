@@ -44,6 +44,19 @@ class _SplashContentState extends State<_SplashContent> {
   }
 
   Future<void> _initializeVideo() async {
+    final prefs = sl<SharedPreferences>();
+    final showStartupVideo = prefs.getBool('show_startup_video') ?? true;
+
+    if (!showStartupVideo) {
+      // Show logo for 3 seconds
+      await Future.delayed(const Duration(seconds: 3));
+      if (mounted) {
+        context.read<SplashBloc>().add(SetSplashVideoFinished(true));
+        _navigateToNext();
+      }
+      return;
+    }
+
     // Check if the controller was pre-initialized in ServiceLocator
     if (sl.isRegistered<VideoPlayerController>()) {
       _controller = sl<VideoPlayerController>();
@@ -56,16 +69,8 @@ class _SplashContentState extends State<_SplashContent> {
       return;
     }
 
-    final prefs = sl<SharedPreferences>();
-    final showStartupVideo = prefs.getBool('show_startup_video') ?? true;
-
-    if (!showStartupVideo) {
-      context.read<SplashBloc>().add(SetSplashVideoFinished(true));
-      _navigateToNext();
-      return;
-    }
-
     _controller = VideoPlayerController.asset('assets/images/zinko_video.mp4');
+
     final splashBloc = context.read<SplashBloc>();
     try {
       _controller!.setVolume(0.0);

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/widgets/zinko_webview_screen.dart';
+
 import 'package:zinko_app/utils/common_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
-import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
 import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
@@ -12,8 +12,6 @@ import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/wishlist_screen.dart';
 import 'package:zinko_app/features/settings/presentation/pages/settings_screen.dart';
-import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
@@ -24,9 +22,7 @@ import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 
 import 'package:zinko_app/widgets/zinko_background.dart';
-import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
-import 'package:zinko_app/core/di/service_locator.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -103,7 +99,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       CommonUtil.vGap10,
                       _buildGeneralList(context, user),
                       CommonUtil.vGap24,
-                      _buildLogoutBtn(context),
                       CommonUtil.vGap100,
                     ],
                   ),
@@ -533,54 +528,43 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildToggleTile(context, 'Public Visibility', Icons.visibility_rounded, user?.userVisibility ?? false,
-              (val) {
-            context.read<UserBloc>().add(UpdateVisibilityEvent(val));
-          }),
-          Divider(height: 1, color: OptimizedColors.white05),
           _buildListTile(context, 'Edit Profile', Icons.person_rounded, EditProfileScreen.routeName),
           Divider(height: 1, color: OptimizedColors.white05),
           _buildListTile(context, 'Account Settings', Icons.settings_rounded, SettingsScreen.routeName),
           Divider(height: 1, color: OptimizedColors.white05),
-          _buildListTile(context, 'Security & Privacy', Icons.shield_rounded, ''),
+          _buildListTile(context, 'Security & Privacy', Icons.shield_rounded, 'http://www.zinko.io/site/privacy-policy'),
           Divider(height: 1, color: OptimizedColors.white05),
-          _buildListTile(context, 'Help & Support', Icons.help_center_rounded, ''),
-          Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
-          _buildListTile(context, 'App Feedback', Icons.feedback_rounded, ''),
+
+          // _buildListTile(context, 'Help & Support', Icons.help_center_rounded, ''),
+          // Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
+          // _buildListTile(context, 'App Feedback', Icons.feedback_rounded, ''),
         ],
       ),
     ).animate(delay: 450.ms).fadeIn(duration: 250.ms);
-  }
-
-  Widget _buildToggleTile(BuildContext context, String title, IconData icon, bool value, Function(bool) onChanged) {
-    return ListTile(
-      dense: true,
-      contentPadding: CommonUtil.pH20V4,
-      leading: Container(
-        padding: CommonUtil.pAll8,
-        decoration: BoxDecoration(
-            color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08),
-            borderRadius: CommonUtil.bRadius10),
-        child: Icon(icon, color: GlassTheme.textColor(context), size: 18),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context)),
-      ),
-      trailing: Switch.adaptive(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: GlassTheme.textColor(context),
-        activeTrackColor: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.3),
-      ),
-    );
   }
 
   Widget _buildListTile(BuildContext context, String title, IconData icon, String route) {
     return ListTile(
       dense: true,
       contentPadding: CommonUtil.pH20V4,
-      onTap: route.isNotEmpty ? () => Navigator.pushNamed(context, route) : null,
+      onTap: route.isNotEmpty
+          ? () async {
+              if (route.startsWith('http')) {
+                Navigator.pushNamed(
+                  context,
+                  ZinkoWebViewScreen.routeName,
+                  arguments: {
+                    'title': title,
+                    'url': route,
+                  },
+                );
+              } else {
+                Navigator.pushNamed(context, route);
+              }
+            }
+          : null,
+
+
       leading: Container(
         padding: CommonUtil.pAll8,
         decoration: BoxDecoration(
@@ -594,60 +578,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: Icon(Icons.chevron_right_rounded,
           color: OptimizedColors.applyAlpha(GlassTheme.tertiaryTextColor(context), 0.3), size: 18),
     );
-  }
-
-  void _showLogoutConfirmation(BuildContext context) {
-    ZinkoCommonDialog.show(
-      context: context,
-      title: 'CONFIRM LOGOUT',
-      message: 'Are you sure you want to sign out from Zinko? All session data will be cleared.',
-      icon: Icons.logout_rounded,
-      iconColor: AppColors.error,
-      actionLabel: 'LOGOUT',
-      actionColor: AppColors.error,
-      onAction: () async {
-        // 1. Clear SharedPreferences
-        await sl<SharedPreferences>().clear();
-
-        // 2. Reset All relevant global Blocs
-        if (context.mounted) {
-          context.read<UserBloc>().add(ResetUserEvent());
-          context.read<AuthBloc>().add(LogoutRequested());
-
-          // 3. Navigate to Login
-          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
-        }
-      },
-    );
-  }
-
-  Widget _buildLogoutBtn(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 54,
-      decoration: BoxDecoration(
-        color: OptimizedColors.red90,
-        borderRadius: CommonUtil.bRadius18,
-        border: Border.all(color: OptimizedColors.error25, width: 1.5),
-      ),
-      child: TextButton(
-        onPressed: () => _showLogoutConfirmation(context),
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: CommonUtil.bRadius18),
-          foregroundColor: AppColors.white,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.logout_rounded, size: 20),
-            CommonUtil.hGap12,
-            const Text(
-              'LOGOUT ACCOUNT',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1.2),
-            ),
-          ],
-        ),
-      ),
-    ).animate(delay: 500.ms).fadeIn(duration: 250.ms);
   }
 }

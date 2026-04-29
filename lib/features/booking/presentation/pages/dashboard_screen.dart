@@ -40,12 +40,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
+    // Only fetch user profile if it's not already loaded or in progress
     final userState = context.read<UserBloc>().state;
     if (userState is UserInitial || userState is UserError) {
       context.read<UserBloc>().add(GetUserProfileEvent());
     }
-    context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
-    context.read<CafeBloc>().add(const SearchCafesEvent(keyword: ''));
+
+    // Only fetch workspaces if it's the first time
+    if (context.read<WorkspaceBloc>().state is WorkspaceInitial) {
+      context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
+    }
+
+    // Only fetch cafes if it's the first time
+    if (context.read<CafeBloc>().state is CafeInitial) {
+      context.read<CafeBloc>().add(const SearchCafesEvent(keyword: ''));
+    }
   }
 
   @override

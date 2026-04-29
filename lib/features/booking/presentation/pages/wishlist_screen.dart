@@ -20,6 +20,7 @@ import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:auto_skeleton/auto_skeleton.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_empty_state.dart';
 
 class WishlistScreen extends StatefulWidget {
   static const String routeName = '/wishlist';
@@ -34,9 +35,15 @@ class _WishlistScreenState extends State<WishlistScreen> {
   @override
   void initState() {
     super.initState();
+    _refreshWishlist(context);
+  }
+
+  void _refreshWishlist(BuildContext context) {
     final userState = context.read<UserBloc>().state;
     if (userState is UserLoaded) {
-      context.read<CafeBloc>().add(GetWishlistEvent(userCode: userState.user.userCode));
+      context
+          .read<CafeBloc>()
+          .add(GetWishlistEvent(userCode: userState.user.userCode));
     }
   }
 
@@ -88,7 +95,12 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 );
               }
               if (state is CafeError) {
-                return Center(child: Text(state.message, style: TextStyle(color: GlassTheme.textColor(context))));
+                return ZinkoEmptyState(
+                  title: 'OOPS!',
+                  message: state.message,
+                  icon: Icons.error_outline_rounded,
+                  onRetry: () => _refreshWishlist(context),
+                );
               }
               return const SizedBox.shrink();
             },

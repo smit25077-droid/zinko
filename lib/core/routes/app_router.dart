@@ -44,6 +44,8 @@ import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
 import 'package:zinko_app/features/booking/domain/entities/booking_details_entity.dart';
 import 'package:zinko_app/models/app_models.dart';
+import 'package:zinko_app/widgets/zinko_webview_screen.dart';
+
 
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
@@ -175,7 +177,16 @@ class AppRouter {
             child: const CompleteCafeListScreen(),
           ),
         );
+      case ZinkoWebViewScreen.routeName:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ZinkoWebViewScreen(
+            title: args['title'] as String,
+            url: args['url'] as String,
+          ),
+        );
       case CafeReviewsScreen.routeName:
+
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(

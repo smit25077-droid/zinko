@@ -12,7 +12,6 @@ import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_success_overlay.dart';
-import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
 
 class SubscriptionPlansScreen extends StatelessWidget {

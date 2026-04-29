@@ -30,74 +30,77 @@ class WalletScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<WalletBloc>(),
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: const ZinkoAppBar(
           title: 'My Wallet',
         ),
         body: ZinkoBackground(
-          child: BlocListener<WalletBloc, WalletState>(
-            listener: (context, state) {
-              if (state is WalletLoaded) {
-                // We could check for a flag in state, but assuming a load after redeem is success
-                // _showStatusPopup(context, 'Success!', isSuccess: true);
-              }
-              if (state is WalletError) {
-                _showStatusPopup(context, state.message, isSuccess: false);
-              }
-            },
-            child: BlocBuilder<WalletBloc, WalletState>(
-              buildWhen: (p, c) => c is WalletLoading || c is WalletLoaded || c is WalletError,
-              builder: (context, state) {
-                if (state is WalletInitial) {
-                  context.read<WalletBloc>().add(FetchWalletDataEvent());
-                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
-                }
-                if (state is WalletLoading) {
-                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+          child: SafeArea(
+            child: BlocListener<WalletBloc, WalletState>(
+              listener: (context, state) {
+                if (state is WalletLoaded) {
+                  // We could check for a flag in state, but assuming a load after redeem is success
+                  // _showStatusPopup(context, 'Success!', isSuccess: true);
                 }
                 if (state is WalletError) {
-                  // Return an empty state or show standard error UI snippet. Usually we'd show a retry button.
+                  _showStatusPopup(context, state.message, isSuccess: false);
                 }
-                if (state is WalletLoaded) {
-                  final balance = state.balance;
-                  final transactions = state.transactions;
-                  return ZinkoScrollBody(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CommonUtil.vGap20,
-                        _buildWalletCard(context, balance.balance),
-                        CommonUtil.vGap24,
-                        _buildActionButton(
-                          context,
-                          Icons.add_circle_outline_rounded,
-                          'ADD MONEY',
-                          () => _showAddMoneyDialog(context),
-                          highlight: true,
-                        ).animate(delay: 200.ms).fadeIn(duration: 250.ms).slideX(begin: 0.05, end: 0),
-                        CommonUtil.vGap32,
-                        Text(
-                          'RECENT TRANSACTIONS',
-                          style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                               color: OptimizedColors.white50,
-                              letterSpacing: 1.5),
-                        ).animate(delay: 250.ms).fadeIn(duration: 250.ms),
-                        CommonUtil.vGap16,
-                        ...transactions.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final tx = entry.value;
-                          return _buildTransactionItem(context, tx)
-                              .animate()
-                              .fadeIn(delay: (index * 30 + 150).ms, duration: 250.ms);
-                        }),
-                        CommonUtil.vGap120,
-                      ],
-                    ),
-                  );
-                }
-                return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
               },
+              child: BlocBuilder<WalletBloc, WalletState>(
+                buildWhen: (p, c) => c is WalletLoading || c is WalletLoaded || c is WalletError,
+                builder: (context, state) {
+                  if (state is WalletInitial) {
+                    context.read<WalletBloc>().add(FetchWalletDataEvent());
+                    return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+                  }
+                  if (state is WalletLoading) {
+                    return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+                  }
+                  if (state is WalletError) {
+                    // Return an empty state or show standard error UI snippet. Usually we'd show a retry button.
+                  }
+                  if (state is WalletLoaded) {
+                    final balance = state.balance;
+                    final transactions = state.transactions;
+                    return ZinkoScrollBody(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CommonUtil.vGap20,
+                          _buildWalletCard(context, balance.balance),
+                          CommonUtil.vGap24,
+                          // _buildActionButton(
+                          //   context,
+                          //   Icons.add_circle_outline_rounded,
+                          //   'ADD MONEY',
+                          //   () => _showAddMoneyDialog(context),
+                          //   highlight: true,
+                          // ).animate(delay: 200.ms).fadeIn(duration: 250.ms).slideX(begin: 0.05, end: 0),
+                          // CommonUtil.vGap32,
+                          Text(
+                            'RECENT TRANSACTIONS',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                 color: AppColors.white,
+                                letterSpacing: 1.5),
+                          ).animate(delay: 250.ms).fadeIn(duration: 250.ms),
+                          CommonUtil.vGap16,
+                          ...transactions.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final tx = entry.value;
+                            return _buildTransactionItem(context, tx)
+                                .animate()
+                                .fadeIn(delay: (index * 30 + 150).ms, duration: 250.ms);
+                          }),
+                          CommonUtil.vGap120,
+                        ],
+                      ),
+                    );
+                  }
+                  return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
+                },
+              ),
             ),
           ),
         ),

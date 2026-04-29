@@ -50,21 +50,48 @@ class CafeRemoteDataSourceImpl implements CafeRemoteDataSource {
       token = Map<String, dynamic>.from(json.decode(jsonString))['token'];
     }
 
-    final response = await client.post(
-      ApiEndpoints.editWishlist,
-      data: {
-        'cafe_id': cafeId,
-        'user_code': userCode.toString(),
-      },
-      options: Options(
-        headers: token != null ? {'Authentication': token} : {},
-      ),
+    final data = {
+      'cafe_id': cafeId,
+      'user_code': userCode.toString(),
+    };
+    final options = Options(
+      headers: token != null ? {'Authentication': token} : {},
     );
 
-    return ApiResponse<dynamic>.fromJson(
-      response.data,
-      (data) => data,
-    );
+    try {
+      final response = await client.post(
+        ApiEndpoints.editWishlist,
+        data: data,
+        options: options,
+      );
+
+      return ApiResponse<dynamic>.fromJson(
+        response.data,
+        (data) => data,
+      );
+    } catch (e) {
+      // If editWishlist fails with 500, attempt to use addWishlist as fallback
+      bool is500 = false;
+      if (e is DioException) {
+        if (e.response?.statusCode == 500) is500 = true;
+        if (e.response?.data is Map && e.response?.data['statusCode'] == 500) {
+          is500 = true;
+        }
+      }
+
+      if (is500) {
+        final fallbackResponse = await client.post(
+          ApiEndpoints.addWishlist,
+          data: data,
+          options: options,
+        );
+        return ApiResponse<dynamic>.fromJson(
+          fallbackResponse.data,
+          (data) => data,
+        );
+      }
+      rethrow;
+    }
   }
 
   @override

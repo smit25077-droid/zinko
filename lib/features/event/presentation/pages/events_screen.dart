@@ -12,6 +12,7 @@ import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
 import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/features/event/presentation/pages/event_detail_screen.dart';
+import 'package:auto_skeleton/auto_skeleton.dart';
 
 class EventsScreen extends StatefulWidget {
   static const String routeName = '/events';
@@ -41,12 +42,13 @@ class _EventsScreenState extends State<EventsScreen> {
         body: BlocBuilder<EventBloc, EventState>(
           builder: (context, state) {
             if (state is EventLoading) {
-              return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+              return _buildLoadingState(context);
             }
+
             if (state is EventLoaded) {
               final events = state.events;
               return ListView.builder(
-                padding: const EdgeInsets.only(bottom: 100,left: 16,right: 16),
+                padding: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
                 itemCount: events.length,
                 itemBuilder: (context, index) {
                   final event = events[index];
@@ -61,6 +63,60 @@ class _EventsScreenState extends State<EventsScreen> {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Container(
+            height: 190,
+            decoration: BoxDecoration(
+              color: GlassTheme.glassColor(context),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: GlassTheme.glassBorder(context)),
+            ),
+            child: AutoSkeleton(
+              enabled: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Skeleton Image Area
+                  Container(
+                    height: 110,
+                    decoration: const BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                    ),
+                  ),
+                  // Skeleton Text Area
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(width: 60, height: 8, color: Colors.white10),
+                            const Spacer(),
+                            Container(width: 40, height: 8, color: Colors.white10),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(width: 200, height: 16, color: Colors.white10),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

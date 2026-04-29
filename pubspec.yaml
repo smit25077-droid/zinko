@@ -63,6 +63,7 @@ dependencies:
   collection: any
   carousel_slider: ^5.1.2
   auto_skeleton: ^0.4.1
+  webview_flutter: ^4.13.1
 dev_dependencies:
 
   flutter_test:

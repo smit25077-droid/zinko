@@ -94,6 +94,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     GetWorkspacesEvent event,
     Emitter<WorkspaceState> emit,
   ) async {
+    if (state is WorkspaceLoading) return;
     emit(WorkspaceLoading());
     final result = await getWorkspaces();
     result.fold(

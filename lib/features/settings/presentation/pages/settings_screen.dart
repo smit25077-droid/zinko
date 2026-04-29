@@ -20,6 +20,11 @@ import 'package:zinko_app/utils/zinko_flushbar.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zinko_app/core/di/service_locator.dart';
+import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
+
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = '/settings';
@@ -81,6 +86,19 @@ class _SettingsContent extends StatelessWidget {
                             (v) => context.read<SettingsBloc>().add(TogglePushNotifications(v)),
                           ),
                           _buildDivider(context),
+                          BlocBuilder<UserBloc, UserState>(
+                            builder: (context, userState) {
+                              final userVisibility = userState is UserLoaded ? userState.user.userVisibility : false;
+                              return _buildSwitchTile(
+                                context,
+                                'Public Visibility',
+                                'Make your profile visible to others',
+                                userVisibility,
+                                (v) => context.read<UserBloc>().add(UpdateVisibilityEvent(v)),
+                              );
+                            },
+                          ),
+                          _buildDivider(context),
                           _buildSwitchTile(
                             context,
                             'Startup Video',
@@ -88,6 +106,7 @@ class _SettingsContent extends StatelessWidget {
                             settingsState.showStartupVideo,
                             (v) => context.read<SettingsBloc>().add(ToggleStartupVideo(v)),
                           ),
+
                         ],
                       ),
                       CommonUtil.vGap24,
@@ -176,6 +195,8 @@ class _SettingsContent extends StatelessWidget {
                       ),
                       CommonUtil.vGap32,
                       _buildDangerousSection(context),
+                      CommonUtil.vGap24,
+                      _buildLogoutBtn(context),
                       CommonUtil.vGap40,
                     ],
                   ),
@@ -341,5 +362,60 @@ class _SettingsContent extends StatelessWidget {
         Navigator.pop(context);
       },
     );
+  }
+
+  void _showLogoutConfirmation(BuildContext context) {
+    ZinkoCommonDialog.show(
+      context: context,
+      title: 'CONFIRM LOGOUT',
+      message: 'Are you sure you want to sign out from Zinko? All session data will be cleared.',
+      icon: Icons.logout_rounded,
+      iconColor: AppColors.error,
+      actionLabel: 'LOGOUT',
+      actionColor: AppColors.error,
+      onAction: () async {
+        // 1. Clear SharedPreferences
+        await sl<SharedPreferences>().clear();
+
+        // 2. Reset All relevant global Blocs
+        if (context.mounted) {
+          context.read<UserBloc>().add(ResetUserEvent());
+          context.read<AuthBloc>().add(LogoutRequested());
+
+          // 3. Navigate to Login
+          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
+        }
+      },
+    );
+  }
+
+  Widget _buildLogoutBtn(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 54,
+      decoration: BoxDecoration(
+        color: OptimizedColors.red90,
+        borderRadius: CommonUtil.bRadius18,
+        border: Border.all(color: OptimizedColors.error25, width: 1.5),
+      ),
+      child: TextButton(
+        onPressed: () => _showLogoutConfirmation(context),
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(borderRadius: CommonUtil.bRadius18),
+          foregroundColor: AppColors.white,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.logout_rounded, size: 20),
+            CommonUtil.hGap12,
+            const Text(
+              'LOGOUT ACCOUNT',
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1.2),
+            ),
+          ],
+        ),
+      ),
+    ).animate(delay: 500.ms).fadeIn(duration: 250.ms);
   }
 }

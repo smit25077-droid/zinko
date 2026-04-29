@@ -34,7 +34,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
       final wishlist = await getWishlist(event.userCode);
       emit(CafeWishlistLoaded(wishlist: wishlist));
     } catch (e) {
-      emit(CafeError(message: e.toString()));
+      emit(CafeError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -43,39 +43,29 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
     Emitter<CafeState> emit,
   ) async {
     final currentState = state;
-    if (currentState is CafeLoaded) {
-      // Optimistic UI update
-      final updatedCafes = currentState.cafes.map((cafe) {
-        if (cafe.cafeId == event.cafeId) {
-          return cafe.copyWith(isLiked: !cafe.isLiked);
-        }
-        return cafe;
-      }).toList();
+    try {
+      await toggleWishlist(event.cafeId, event.userCode);
 
-      emit(CafeLoaded(cafes: updatedCafes,categories: currentState.categories));
+      // Effect UI only after successful status code 200
+      if (currentState is CafeLoaded) {
+        final updatedCafes = currentState.cafes.map((cafe) {
+          if (cafe.cafeId == event.cafeId) {
+            return cafe.copyWith(isLiked: !cafe.isLiked);
+          }
+          return cafe;
+        }).toList();
 
-      try {
-        await toggleWishlist(event.cafeId, event.userCode);
-      } catch (e) {
-        // Revert on error
-        emit(CafeLoaded(cafes: currentState.cafes, categories: currentState.categories));
-        emit(CafeError(message: e.toString()));
+        emit(CafeLoaded(
+            cafes: updatedCafes, categories: currentState.categories));
+      } else if (currentState is CafeWishlistLoaded) {
+        final updatedWishlist = currentState.wishlist
+            .where((cafe) => cafe.cafeId != event.cafeId)
+            .toList();
+
+        emit(CafeWishlistLoaded(wishlist: updatedWishlist));
       }
-    } else if (currentState is CafeWishlistLoaded) {
-      // Optimistic UI update for wishlist (remove item)
-      final updatedWishlist = currentState.wishlist
-          .where((cafe) => cafe.cafeId != event.cafeId)
-          .toList();
-
-      emit(CafeWishlistLoaded(wishlist: updatedWishlist));
-
-      try {
-        await toggleWishlist(event.cafeId, event.userCode);
-      } catch (e) {
-        // Revert on error
-        emit(CafeWishlistLoaded(wishlist: currentState.wishlist));
-        emit(CafeError(message: e.toString()));
-      }
+    } catch (e) {
+      emit(CafeError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 
@@ -83,6 +73,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
     SearchCafesEvent event,
     Emitter<CafeState> emit,
   ) async {
+    if (state is CafeLoading) return;
     emit(CafeLoading());
     try {
       final cafes = await searchCafes(event.keyword);
@@ -101,7 +92,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
       
       emit(CafeLoaded(cafes: cafes, categories: finalCategories));
     } catch (e) {
-      emit(CafeError(message: e.toString()));
+      emit(CafeError(message: e.toString().replaceAll('Exception: ', '')));
     }
   }
 }
