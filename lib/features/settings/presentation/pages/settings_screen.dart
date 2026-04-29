@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
@@ -17,10 +18,12 @@ import 'package:zinko_app/features/settings/presentation/pages/reset_password_sc
 import 'package:zinko_app/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
-
+import 'package:zinko_app/utils/common_util.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = '/settings';
+
   const SettingsScreen({super.key});
 
   @override
@@ -55,124 +58,85 @@ class _SettingsContent extends StatelessWidget {
       child: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, settingsState) {
           return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new,
-                  color: GlassTheme.textColor(context), size: 20),
-              onPressed: () => AppRouter.safetyPop(context),
-            ),
-          ),
-          title: Text(
-            'SETTINGS',
-            style: TextStyle(
-              color: GlassTheme.textColor(context),
-              fontWeight: FontWeight.w900,
-              fontSize: 18,
-              letterSpacing: 2.0,
-            ),
-          ),
-          centerTitle: true,
-        ),
-        body: ZinkoBackground(
-          child: SafeArea(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionTitle(context, 'PREFERENCES'),
-                  const SizedBox(height: 12),
-                  _buildGlassGroup(
-                    context,
-                    [
-                      _buildSwitchTile(
-                        context,
-                        'Push Notifications',
-                        'Updates on bookings & events',
-                        settingsState.pushNotifications,
-                        (v) => context
-                            .read<SettingsBloc>()
-                            .add(TogglePushNotifications(v)),
-                      ),
-                      _buildDivider(context),
-                      _buildSwitchTile(
-                        context,
-                        'Startup Video',
-                        'Intro animation on application launch',
-                        settingsState.showStartupVideo,
-                        (v) => context
-                            .read<SettingsBloc>()
-                            .add(ToggleStartupVideo(v)),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle(context, 'ACCOUNT SECURITY'),
-                  const SizedBox(height: 12),
-                  BlocBuilder<UserBloc, UserState>(
-                    builder: (context, state) {
-                      final email = state is UserLoaded
-                          ? state.user.email
-                          : 'Email not linked';
-                      final isEmailVerified = state is UserLoaded
-                          ? state.user.isEmailVerified
-                          : false;
-                      final phone = state is UserLoaded
-                          ? state.user.phone
-                          : 'Phone not linked';
-                      final isPhoneVerified = state is UserLoaded
-                          ? state.user.isPhoneVerified
-                          : false;
-
-                      return _buildGlassGroup(
+              extendBodyBehindAppBar: true,
+              appBar: ZinkoAppBar(title: 'SETTINGS'),
+              body: ZinkoBackground(
+                  child: SafeArea(
+                child: ZinkoScrollBody(
+                  // physics: const BouncingScrollPhysics(),
+                  // padding: CommonUtil.pAll24,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionTitle(context, 'PREFERENCES'),
+                      CommonUtil.vGap12,
+                      _buildGlassGroup(
                         context,
                         [
-                          _buildActionTile(
+                          _buildSwitchTile(
                             context,
-                            Icons.verified_user_rounded,
-                            'Email Verification',
-                            isEmailVerified ? 'Secure and verified' : email,
-                            onTap: () {
-                              if (!isEmailVerified && state is UserLoaded) {
-                                final user = state.user;
-                                context
-                                    .read<UserBloc>()
-                                    .add(SendEmailOtpEvent(email));
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => OtpScreen(
-                                      type: 'Email',
-                                      target: email,
-                                      userCode: user.userCode.toString(),
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            trailing: isEmailVerified
-                                ? const Icon(Icons.check_circle_rounded,
-                                    color: Colors.greenAccent, size: 20)
-                                : null,
+                            'Push Notifications',
+                            'Updates on bookings & events',
+                            settingsState.pushNotifications,
+                            (v) => context.read<SettingsBloc>().add(TogglePushNotifications(v)),
                           ),
                           _buildDivider(context),
-                          _buildActionTile(
+                          _buildSwitchTile(
                             context,
-                            Icons.phone_iphone_rounded,
-                            'Mobile Verification',
-                            isPhoneVerified
-                                    ? 'Securely linked: $phone'
-                                    : 'Verification coming soon ($phone)',
+                            'Startup Video',
+                            'Intro animation on application launch',
+                            settingsState.showStartupVideo,
+                            (v) => context.read<SettingsBloc>().add(ToggleStartupVideo(v)),
+                          ),
+                        ],
+                      ),
+                      CommonUtil.vGap24,
+                      _buildSectionTitle(context, 'ACCOUNT SECURITY'),
+                      CommonUtil.vGap12,
+                      BlocBuilder<UserBloc, UserState>(
+                        builder: (context, state) {
+                          final email = state is UserLoaded ? state.user.email : 'Email not linked';
+                          final isEmailVerified = state is UserLoaded ? state.user.isEmailVerified : false;
+                          final phone = state is UserLoaded ? state.user.phone : 'Phone not linked';
+                          final isPhoneVerified = state is UserLoaded ? state.user.isPhoneVerified : false;
+
+                          return _buildGlassGroup(
+                            context,
+                            [
+                              _buildActionTile(
+                                context,
+                                Icons.verified_user_rounded,
+                                'Email Verification',
+                                isEmailVerified ? 'Secure and verified' : email,
+                                onTap: () {
+                                  if (!isEmailVerified && state is UserLoaded) {
+                                    final user = state.user;
+                                    context.read<UserBloc>().add(SendEmailOtpEvent(email));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => OtpScreen(
+                                          type: 'Email',
+                                          target: email,
+                                          userCode: user.userCode.toString(),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                trailing: isEmailVerified
+                                    ? const Icon(Icons.check_circle_rounded, color: Colors.greenAccent, size: 20)
+                                    : null,
+                              ),
+                              _buildDivider(context),
+                              _buildActionTile(
+                                context,
+                                Icons.phone_iphone_rounded,
+                                'Mobile Verification',
+                                isPhoneVerified ? 'Securely linked: $phone' : 'Verification coming soon ($phone)',
                                 onTap: () {},
                                 trailing: isPhoneVerified
-                                    ? const Icon(Icons.check_circle_rounded,
-                                        color: Colors.greenAccent, size: 20)
+                                    ? const Icon(Icons.check_circle_rounded, color: Colors.greenAccent, size: 20)
                                     : null,
                               ),
                               _buildDivider(context),
@@ -181,43 +145,42 @@ class _SettingsContent extends StatelessWidget {
                                 Icons.lock_reset_rounded,
                                 'Reset Password',
                                 'Change your account password',
-                                onTap: () => Navigator.pushNamed(
-                                    context, ResetPasswordScreen.routeName),
+                                onTap: () => Navigator.pushNamed(context, ResetPasswordScreen.routeName),
                               ),
                             ],
                           );
                         },
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSectionTitle(context, 'GENERAL'),
-                  const SizedBox(height: 12),
-                  _buildGlassGroup(
-                    context,
-                    [
-                      _buildActionTile(
-                        context,
-                        Icons.language_rounded,
-                        'App Language',
-                        'English (UK)',
-                        onTap: () {},
                       ),
-                      _buildDivider(context),
-                      _buildActionTile(
+                      CommonUtil.vGap24,
+                      _buildSectionTitle(context, 'GENERAL'),
+                      CommonUtil.vGap12,
+                      _buildGlassGroup(
                         context,
-                        Icons.info_outline_rounded,
-                        'About Zinko',
-                        'Version 2.4.0 (Build 558)',
-                        onTap: () {},
+                        [
+                          _buildActionTile(
+                            context,
+                            Icons.language_rounded,
+                            'App Language',
+                            'English (UK)',
+                            onTap: () {},
+                          ),
+                          _buildDivider(context),
+                          _buildActionTile(
+                            context,
+                            Icons.info_outline_rounded,
+                            'About Zinko',
+                            'Version 2.4.0 (Build 558)',
+                            onTap: () {},
+                          ),
+                        ],
                       ),
+                      CommonUtil.vGap32,
+                      _buildDangerousSection(context),
+                      CommonUtil.vGap40,
                     ],
                   ),
-                  const SizedBox(height: 32),
-                  _buildDangerousSection(context),
-                  const SizedBox(height: 40),
-                ],
-              ),
-            ),
-        )));
+                ),
+              )));
         },
       ),
     );
@@ -227,9 +190,9 @@ class _SettingsContent extends StatelessWidget {
     return Text(
       title,
       style: TextStyle(
-        fontSize: 11,
+        fontSize: 14,
         fontWeight: FontWeight.w900,
-        color: GlassTheme.tertiaryTextColor(context),
+        color: AppColors.white,
         letterSpacing: 1.5,
       ),
     ).animate().fadeIn();
@@ -237,15 +200,14 @@ class _SettingsContent extends StatelessWidget {
 
   Widget _buildGlassGroup(BuildContext context, List<Widget> children) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: CommonUtil.bRadius24,
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           decoration: BoxDecoration(
             color: GlassTheme.glassColor(context),
-            borderRadius: BorderRadius.circular(24),
-            border:
-                Border.all(color: GlassTheme.glassBorder(context), width: 1.2),
+            borderRadius: CommonUtil.bRadius24,
+            border: Border.all(color: GlassTheme.glassBorder(context), width: 1.2),
           ),
           child: Column(children: children),
         ),
@@ -253,10 +215,9 @@ class _SettingsContent extends StatelessWidget {
     ).animate(delay: 200.ms).fadeIn();
   }
 
-  Widget _buildSwitchTile(BuildContext context, String title, String subtitle,
-      bool value, Function(bool) onChanged) {
+  Widget _buildSwitchTile(BuildContext context, String title, String subtitle, bool value, Function(bool) onChanged) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: CommonUtil.pH16V12,
       child: Row(
         children: [
           Expanded(
@@ -265,18 +226,13 @@ class _SettingsContent extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
-                      color: GlassTheme.textColor(context),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700),
+                  style: TextStyle(color: GlassTheme.textColor(context), fontSize: 15, fontWeight: FontWeight.w700),
                 ),
-                const SizedBox(height: 2),
+                CommonUtil.vGap2,
                 Text(
                   subtitle,
                   style: TextStyle(
-                      color: GlassTheme.secondaryTextColor(context),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500),
+                      color: GlassTheme.secondaryTextColor(context), fontSize: 11, fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -295,51 +251,43 @@ class _SettingsContent extends StatelessWidget {
     );
   }
 
-  Widget _buildActionTile(
-      BuildContext context, IconData icon, String title, String subtitle,
+  Widget _buildActionTile(BuildContext context, IconData icon, String title, String subtitle,
       {required VoidCallback onTap, Widget? trailing}) {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: CommonUtil.pHor16V12,
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: CommonUtil.pAll8,
               decoration: BoxDecoration(
                 color: GlassTheme.textColor(context).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: CommonUtil.bRadius10,
               ),
               child: Icon(icon, color: GlassTheme.textColor(context), size: 18),
             ),
-            const SizedBox(width: 14),
+            CommonUtil.hGap14,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
-                        color: GlassTheme.textColor(context),
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700),
+                    style: TextStyle(color: GlassTheme.textColor(context), fontSize: 15, fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(height: 1),
+                  CommonUtil.vGap1,
                   Text(
                     subtitle,
                     style: TextStyle(
-                        color: GlassTheme.secondaryTextColor(context),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500),
+                        color: GlassTheme.secondaryTextColor(context), fontSize: 11, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
             ),
             trailing ??
                 Icon(Icons.arrow_forward_ios_rounded,
-                    color:
-                        GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
-                    size: 12),
+                    color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3), size: 12),
           ],
         ),
       ),
@@ -347,11 +295,7 @@ class _SettingsContent extends StatelessWidget {
   }
 
   Widget _buildDivider(BuildContext context) {
-    return Divider(
-        height: 1,
-        color: GlassTheme.glassBorder(context),
-        indent: 16,
-        endIndent: 16);
+    return Divider(height: 1, color: GlassTheme.glassBorder(context), indent: 16, endIndent: 16);
   }
 
   Widget _buildDangerousSection(BuildContext context) {
@@ -369,14 +313,11 @@ class _SettingsContent extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        CommonUtil.vGap16,
         Text(
           'Please note that account deletion is irreversible. You will lose all your booking history and wallet balance.',
           textAlign: TextAlign.center,
-          style: TextStyle(
-              color: GlassTheme.tertiaryTextColor(context),
-              fontSize: 11,
-              fontWeight: FontWeight.w500),
+          style: TextStyle(color: GlassTheme.tertiaryTextColor(context), fontSize: 11, fontWeight: FontWeight.w500),
         ).animate(delay: 500.ms).fadeIn(),
       ],
     );
@@ -386,7 +327,8 @@ class _SettingsContent extends StatelessWidget {
     ZinkoCommonDialog.show(
       context: context,
       title: 'DELETE ACCOUNT?',
-      message: 'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
+      message:
+          'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently removed.',
       icon: Icons.delete_forever_rounded,
       iconColor: AppColors.error,
       actionLabel: 'DELETE',
@@ -401,4 +343,3 @@ class _SettingsContent extends StatelessWidget {
     );
   }
 }
-

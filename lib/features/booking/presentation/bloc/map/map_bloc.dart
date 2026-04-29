@@ -40,6 +40,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   void _onDataUpdated(MapDataUpdated event, Emitter<MapState> emit) {
     _workspaces = event.workspaces;
     _people = event.people;
+    emit(state.copyWith(isLoading: true));
     add(GenerateMarkersEvent(state.selectedFilter));
   }
 

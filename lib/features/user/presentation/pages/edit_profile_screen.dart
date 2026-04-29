@@ -9,12 +9,14 @@ import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 import 'package:intl/intl.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_text_field.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/features/user/presentation/bloc/edit_profile_form_bloc.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/utils/common_util.dart';
 
 class EditProfileScreen extends StatelessWidget {
   static const String routeName = '/edit-profile';
@@ -207,7 +209,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            CommonUtil.hGap8,
           ],
         ),
         body: SafeArea(
@@ -245,14 +247,14 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                 // final user = (state is UserLoaded) ? state.user : null;
                 return BlocBuilder<EditProfileFormBloc, EditProfileFormState>(
                   builder: (context, formState) {
-                    return SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                    return ZinkoScrollBody(
+                  // physics: const BouncingScrollPhysics(),
+                  // padding: CommonUtil.pH24,
                   child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
-                        const SizedBox(height: 12),
+                        CommonUtil.vGap12,
                         // Center(
                         //   child: (user != null
                         //       ? Container(
@@ -281,7 +283,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                         // ),
                         // const SizedBox(height: 24),
                         ZinkoCommonCard(
-                          padding: const EdgeInsets.all(24),
+                          padding: CommonUtil.pAll24,
                           child: Column(
                             children: [
                               ZinkoTextField(
@@ -290,13 +292,13 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                 icon: Icons.person_outline_rounded,
                                 isPascalCase: true,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'JOB TITLE',
                                 controller: _roleController,
                                 icon: Icons.badge_outlined,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'EMAIL ADDRESS',
                                 controller: _emailController,
@@ -304,7 +306,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                 keyboardType: TextInputType.emailAddress,
                                 readOnly: true,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'PHONE NUMBER',
                                 controller: _phoneController,
@@ -312,23 +314,23 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                 keyboardType: TextInputType.phone,
                                 readOnly: true,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'CITY',
                                 controller: _cityController,
                                 icon: Icons.location_city_rounded,
                                 isPascalCase: true,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'STATE',
                                 controller: _stateController,
                                 icon: Icons.map_rounded,
                                 isPascalCase: true,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               _buildGenderRadio(context, formState),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'BIRTHDATE',
                                 controller: TextEditingController(
@@ -337,14 +339,14 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                 hintText: 'Select Birthday',
                                 onTap: () => _selectDate(context),
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'COMPANY NAME',
                                 controller: _companyNameController,
                                 icon: Icons.business_rounded,
                                 isRequired: false,
                               ),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               ZinkoTextField(
                                 label: 'BIO',
                                 controller: _bioController,
@@ -353,9 +355,9 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                 isRequired: false,
                               ),
                             ],
-                          ),
+                           ),
                         ).animate(delay: 200.ms).fadeIn(),
-                        const SizedBox(height: 40),
+                        CommonUtil.vGap40,
                       ],
                     ),
                      ) );
@@ -383,7 +385,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
             letterSpacing: 1.5,
           ),
         ),
-        const SizedBox(height: 12),
+        CommonUtil.vGap12,
         Row(
           children: [
             _genderOption(context, 'Male', formState),
@@ -403,13 +405,13 @@ class _EditProfileContentState extends State<_EditProfileContent> {
         onTap: () =>
             context.read<EditProfileFormBloc>().add(SetGender(value)),
         child: Container(
-          margin: const EdgeInsets.only(right: 8),
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          margin: CommonUtil.pRight8,
+          padding: CommonUtil.pV12,
           decoration: BoxDecoration(
             color: isSelected
                 ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
                 : OptimizedColors.white12,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: CommonUtil.bRadius12,
             border: Border.all(
               color: isSelected
                   ? Theme.of(context).primaryColor

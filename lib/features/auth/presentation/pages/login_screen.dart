@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/features/password_change/presentation/pages/password_change_screen.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -114,11 +115,11 @@ class _LoginContentState extends State<_LoginContent> {
                       constraints: BoxConstraints(minHeight: constraints.maxHeight),
                       child: IntrinsicHeight(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          padding: CommonUtil.pH24,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                               Column(
                                 children: [
                                   const Text(
@@ -133,7 +134,7 @@ class _LoginContentState extends State<_LoginContent> {
                                       ],
                                     ),
                                   ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                                  const SizedBox(height: 8),
+                                  CommonUtil.vGap8,
                                   const Text(
                                     'Login to continue your journey',
                                     style: TextStyle(
@@ -144,11 +145,11 @@ class _LoginContentState extends State<_LoginContent> {
                                   ).animate(delay: 200.ms).fadeIn(),
                                 ],
                               ),
-                              const SizedBox(height: 48),
+                              CommonUtil.vGap48,
                               _buildGlassContainer(context),
-                              const SizedBox(height: 32),
+                              CommonUtil.vGap32,
                               const _SignupFooter(),
-                              const SizedBox(height: 20),
+                              CommonUtil.vGap20,
                             ],
                           ),
                         ),
@@ -171,14 +172,14 @@ class _LoginContentState extends State<_LoginContent> {
           builder: (context, state) {
             return ZinkoGlassBox(
               color: Colors.white.withValues(alpha: 0.2),
-              padding: const EdgeInsets.all(32),
+              padding: CommonUtil.pAll32,
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldLabel('UserName Or Email'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _userNameController,
                       hint: 'Enter your user name Or Email',
@@ -191,9 +192,9 @@ class _LoginContentState extends State<_LoginContent> {
                         FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    CommonUtil.vGap20,
                     _buildFieldLabel('Password'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _passwordController,
                       hint: 'Enter your password',
@@ -215,7 +216,7 @@ class _LoginContentState extends State<_LoginContent> {
                         FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    CommonUtil.vGap12,
                     Row(
                       children: [
                         // SizedBox(
@@ -244,7 +245,7 @@ class _LoginContentState extends State<_LoginContent> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 28),
+                    CommonUtil.vGap28,
                     _PremiumButton(
                       text: 'Sign In',
                       onPressed: () => _handleLogin(context),
@@ -309,18 +310,18 @@ class _ModernTextField extends StatelessWidget {
         prefixIcon: Icon(icon, color: Colors.white60, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: const BorderSide(color: Colors.white, width: 1),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: CommonUtil.pH16V18,
       ),
     );
   }
@@ -347,7 +348,7 @@ class _PremiumButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: CommonUtil.bRadius18),
           elevation: 0,
         ),
         child: isLoading

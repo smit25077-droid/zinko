@@ -63,6 +63,11 @@ class Cafe extends Equatable {
     String? ownerPhoneNo,
     String? ownerEmail,
     String? venueType,
+    double? hourRate,
+    List<CafeAmenity>? amenities,
+    List<CafeImage>? images,
+    List<CafeTimeSlot>? timeSlots,
+    List<CafeWorkspace>? workspace,
     List<booking.WorkspaceReviewEntity>? reviews,
     bool? isLiked,
   }) {

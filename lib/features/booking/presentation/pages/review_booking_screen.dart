@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/utils/common_util.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
 
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_details_entity.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
@@ -13,6 +16,7 @@ import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 
 import 'package:zinko_app/features/booking/presentation/bloc/create_booking/create_booking_bloc.dart';
 import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
+import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
@@ -28,7 +32,7 @@ import 'package:zinko_app/features/wallet/presentation/pages/wallet_screen.dart'
 
 class ReviewBookingScreen extends StatelessWidget {
   static const String routeName = '/review-booking';
-  final Map<String, dynamic> bookingData;
+  final BookingDetailsEntity bookingData;
 
   const ReviewBookingScreen({super.key, required this.bookingData});
 
@@ -45,27 +49,16 @@ class ReviewBookingScreen extends StatelessWidget {
 }
 
 class _ReviewBookingScreenContent extends StatelessWidget {
-  final Map<String, dynamic> bookingData;
+  final BookingDetailsEntity bookingData;
 
   const _ReviewBookingScreenContent({required this.bookingData});
 
-  void _handleConfirm(
-      BuildContext context,
-      WorkspaceEntity workspace,
-      DateTime date,
-      String checkIn,
-      String checkOut,
-      double duration,
-      int slotId,
-      int? tableId,
-      double subtotal,
-      double tax,
-      double total) {
-    
+  void _handleConfirm(BuildContext context, WorkspaceEntity workspace, DateTime date, String checkIn, String checkOut,
+      double duration, int slotId, int? tableId, double subtotal, double tax, double total) {
     // 1. Check Wallet Balance first
     final walletState = context.read<WalletBloc>().state;
     double currentBalance = 0;
-    
+
     if (walletState is WalletLoaded) {
       currentBalance = walletState.balance.balance;
     } else if (context.read<UserBloc>().state is UserLoaded) {
@@ -76,7 +69,8 @@ class _ReviewBookingScreenContent extends StatelessWidget {
       ZinkoCommonDialog.show(
         context: context,
         title: 'INSUFFICIENT BALANCE',
-        message: 'Your current balance (£${currentBalance.toStringAsFixed(2)}) is lower than the booking total (£${total.toStringAsFixed(0)}). Please add funds to continue.',
+        message:
+            'Your current balance (£${currentBalance.toStringAsFixed(2)}) is lower than the booking total (£${total.toStringAsFixed(0)}). Please add funds to continue.',
         icon: Icons.account_balance_wallet_rounded,
         iconColor: AppColors.error,
         actionLabel: 'ADD BALANCE',
@@ -115,9 +109,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
         tentativeCheckInDatetime: checkInDateTime,
       );
 
-      context
-          .read<CreateBookingBloc>()
-          .add(CreateBookingSubmittedEvent(request));
+      context.read<CreateBookingBloc>().add(CreateBookingSubmittedEvent(request));
     } else {
       ZinkoFlushbar.showError(context: context, message: 'Please login to continue');
     }
@@ -125,18 +117,18 @@ class _ReviewBookingScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final WorkspaceEntity workspace = bookingData['workspace'];
-    final DateTime date = bookingData['date'];
-    final String checkInTime = bookingData['checkInTime'];
-    final String checkOutTime = bookingData['checkOutTime'];
-    final double duration = bookingData['duration'];
-    final int slotId = bookingData['timeSlotId'];
-    final String table = bookingData['table'];
-    final int? tableId = bookingData['tableId'];
-    final double subtotal = bookingData['subtotal'];
-    final double tax = bookingData['tax'];
-    final double total = bookingData['total'];
-    final int peopleCount = bookingData['peopleCount'] ?? 1;
+    final workspace = bookingData.workspace;
+    final date = bookingData.date;
+    final checkInTime = bookingData.checkInTime;
+    final checkOutTime = bookingData.checkOutTime;
+    final duration = bookingData.duration;
+    final slotId = bookingData.timeSlotId;
+    final table = bookingData.table;
+    final tableId = bookingData.tableId;
+    final subtotal = bookingData.subtotal;
+    final tax = bookingData.tax;
+    final total = bookingData.total;
+    final peopleCount = bookingData.peopleCount;
 
     return MultiBlocListener(
       listeners: [
@@ -146,11 +138,9 @@ class _ReviewBookingScreenContent extends StatelessWidget {
               ZinkoSuccessOverlay.show(
                 context,
                 title: 'BOOKED SUCCESSFULLY!',
-                subtitle:
-                    'Your seat at ${workspace.name} is reserved.\nBooking Code: ${state.response.bookingCode}',
+                subtitle: 'Your seat at ${workspace.name} is reserved.\nBooking Code: ${state.response.bookingCode}',
                 onFinish: () {
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, HomeScreen.routeName, (route) => false);
+                  Navigator.pushNamedAndRemoveUntil(context, HomeScreen.routeName, (route) => false);
                 },
               );
             } else if (state is CreateBookingError) {
@@ -168,72 +158,35 @@ class _ReviewBookingScreenContent extends StatelessWidget {
         builder: (context, state) {
           return Scaffold(
             extendBodyBehindAppBar: true,
-            appBar: AppBar(
-              title: const Text('REVIEW BOOKING',
-                  style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5)),
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded,
-                    color: AppColors.white, size: 20),
-                onPressed: () => Navigator.pop(context),
-              ),
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              centerTitle: true,
-            ),
+            appBar: ZinkoAppBar(title: 'REVIEW BOOKING'),
             body: ZinkoBackground(
               child: SafeArea(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _buildGlassWorkspaceCard(context, workspace),
-                            const SizedBox(height: 12),
-                            _buildGlassDetailCard(context, date, checkInTime,
-                                checkOutTime, table, peopleCount),
-                            const SizedBox(height: 12),
-                            _buildGlassPaymentCard(
-                                context, subtotal, tax, total, duration),
-                            const SizedBox(height: 12),
-                            _buildGlassWalletInfo(context),
-                          ],
-                        ),
-                      ),
-                    ),
-                    _buildConfirmAction(
-                        context,
-                        workspace,
-                        date,
-                        checkInTime,
-                        checkOutTime,
-                        duration,
-                        slotId,
-                        tableId,
-                        subtotal,
-                        tax,
-                        total,
-                        state is CreateBookingLoading),
-                  ],
+                child: ZinkoScrollBody(
+                  padding: CommonUtil.pAll16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildGlassWorkspaceCard(context, workspace),
+                      const SizedBox(height: 12),
+                      _buildGlassDetailCard(context, date, checkInTime, checkOutTime, table, peopleCount),
+                      const SizedBox(height: 12),
+                      _buildGlassPaymentCard(context, subtotal, tax, total, duration),
+                      const SizedBox(height: 12),
+                      _buildGlassWalletInfo(context),
+                    ],
+                  ),
                 ),
               ),
             ),
+            bottomNavigationBar: _buildConfirmAction(context, workspace, date, checkInTime, checkOutTime, duration,
+                slotId, tableId, subtotal, tax, total, state is CreateBookingLoading),
           );
         },
       ),
     );
   }
 
-  Widget _buildGlassWorkspaceCard(
-      BuildContext context, WorkspaceEntity workspace) {
+  Widget _buildGlassWorkspaceCard(BuildContext context, WorkspaceEntity workspace) {
     return ZinkoCommonCard(
       padding: const EdgeInsets.all(16),
       child: Row(
@@ -252,23 +205,16 @@ class _ReviewBookingScreenContent extends StatelessWidget {
               children: [
                 Text(workspace.name,
                     style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: AppColors.white,
-                        letterSpacing: -0.8)),
+                        fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.8)),
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_rounded,
-                        size: 11,
-                        color: OptimizedColors.white50),
+                    const Icon(Icons.location_on_rounded, size: 11, color: OptimizedColors.white50),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(workspace.location,
                           style: const TextStyle(
-                              fontSize: 12,
-                              color: OptimizedColors.white50,
-                              fontWeight: FontWeight.w600)),
+                              fontSize: 12, color: OptimizedColors.white50, fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -280,17 +226,15 @@ class _ReviewBookingScreenContent extends StatelessWidget {
     ).animate().fadeIn();
   }
 
-  Widget _buildGlassDetailCard(BuildContext context, DateTime date,
-      String checkIn, String checkOut, String table, int peopleCount) {
+  Widget _buildGlassDetailCard(
+      BuildContext context, DateTime date, String checkIn, String checkOut, String table, int peopleCount) {
     return _buildGlassContainer(
       context: context,
       title: 'TIMING & LOCATION',
       child: Column(
         children: [
-          _buildRow(context, 'Reservation Date',
-              DateFormat('EEEE, MMM d, yyyy').format(date)),
-          _buildRow(context, 'Number of People',
-              '$peopleCount ${peopleCount == 1 ? 'Person' : 'People'}'),
+          _buildRow(context, 'Reservation Date', DateFormat('EEEE, MMM d, yyyy').format(date)),
+          _buildRow(context, 'Number of People', '$peopleCount ${peopleCount == 1 ? 'Person' : 'People'}'),
           _buildRow(context, 'Check In', checkIn),
           _buildRow(context, 'Check Out', checkOut),
           _buildRow(context, 'Assigned Table', table),
@@ -299,17 +243,14 @@ class _ReviewBookingScreenContent extends StatelessWidget {
     ).animate().fadeIn(delay: 100.ms);
   }
 
-  Widget _buildGlassPaymentCard(
-      BuildContext context, double sub, double tax, double total, double dur) {
+  Widget _buildGlassPaymentCard(BuildContext context, double sub, double tax, double total, double dur) {
     return _buildGlassContainer(
       context: context,
       title: 'SUMMARY OF CHARGES',
       child: Column(
         children: [
-          _buildRow(context, 'Booking Subtotal (${dur.toStringAsFixed(1)} hrs)',
-              '£${sub.toStringAsFixed(0)}'),
-          _buildRow(
-              context, 'Service Fees & VAT', '£${tax.toStringAsFixed(0)}'),
+          _buildRow(context, 'Booking Subtotal (${dur.toStringAsFixed(1)} hrs)', '£${sub.toStringAsFixed(0)}'),
+          _buildRow(context, 'Service Fees & VAT', '£${tax.toStringAsFixed(0)}'),
           Padding(
               padding: const EdgeInsets.symmetric(vertical: 12),
               child: Divider(color: OptimizedColors.white12, height: 1)),
@@ -318,16 +259,10 @@ class _ReviewBookingScreenContent extends StatelessWidget {
             children: [
               Text('TOTAL PAYABLE',
                   style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.white,
-                      letterSpacing: 1.2)),
+                      fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: 1.2)),
               Text('£${total.toStringAsFixed(0)}',
                   style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.white,
-                      letterSpacing: -1.0)),
+                      fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -1.0)),
             ],
           ),
         ],
@@ -337,22 +272,19 @@ class _ReviewBookingScreenContent extends StatelessWidget {
 
   Widget _buildGlassWalletInfo(BuildContext context) {
     return BlocBuilder<WalletBloc, WalletState>(
-      buildWhen: (previous, current) =>
-          current is WalletLoading ||
-          current is WalletLoaded ||
-          current is WalletError,
+      buildWhen: (previous, current) => current is WalletLoading || current is WalletLoaded || current is WalletError,
       builder: (context, walletState) {
         return BlocBuilder<UserBloc, UserState>(
           builder: (context, userState) {
             double balance = 0;
             bool isLoading = walletState is WalletLoading;
-            
+
             if (walletState is WalletLoaded) {
               balance = walletState.balance.balance;
             } else if (userState is UserLoaded) {
               balance = userState.user.balance;
             }
-            
+
             return _buildGlassContainer(
               context: context,
               child: Row(
@@ -362,13 +294,14 @@ class _ReviewBookingScreenContent extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: OptimizedColors.white10,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                          color: OptimizedColors.white10),
+                      border: Border.all(color: OptimizedColors.white10),
                     ),
-                    child: isLoading 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
-                      : const Icon(Icons.account_balance_wallet_rounded,
-                        color: AppColors.white, size: 20),
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
+                        : const Icon(Icons.account_balance_wallet_rounded, color: AppColors.white, size: 20),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -391,11 +324,8 @@ class _ReviewBookingScreenContent extends StatelessWidget {
                     ),
                   ),
                   if (!isLoading)
-                    Icon(
-                      balance >= 0 ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
-                      color: balance >= 0 ? AppColors.success : AppColors.error, 
-                      size: 22
-                    ),
+                    Icon(balance >= 0 ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
+                        color: balance >= 0 ? AppColors.success : AppColors.error, size: 22),
                 ],
               ),
             );
@@ -412,22 +342,14 @@ class _ReviewBookingScreenContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(
-                  color: OptimizedColors.white50,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700)),
-          Text(value,
-              style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800)),
+              style: const TextStyle(color: OptimizedColors.white50, fontSize: 12, fontWeight: FontWeight.w700)),
+          Text(value, style: const TextStyle(color: AppColors.white, fontSize: 14, fontWeight: FontWeight.w800)),
         ],
       ),
     );
   }
 
-  Widget _buildGlassContainer(
-      {required BuildContext context, String? title, required Widget child}) {
+  Widget _buildGlassContainer({required BuildContext context, String? title, required Widget child}) {
     return ZinkoCommonCard(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -438,10 +360,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
           if (title != null) ...[
             Text(title,
                 style: const TextStyle(
-                    color: OptimizedColors.white50,
-                    fontSize: 8,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.5)),
+                    color: OptimizedColors.white50, fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
             const SizedBox(height: 16),
           ],
           child,
@@ -450,22 +369,10 @@ class _ReviewBookingScreenContent extends StatelessWidget {
     );
   }
 
-  Widget _buildConfirmAction(
-      BuildContext context,
-      WorkspaceEntity ws,
-      DateTime date,
-      String checkIn,
-      String checkOut,
-      double duration,
-      int slotId,
-      int? tableId,
-      double subtotal,
-      double tax,
-      double total,
-      bool loading) {
+  Widget _buildConfirmAction(BuildContext context, WorkspaceEntity ws, DateTime date, String checkIn, String checkOut,
+      double duration, int slotId, int? tableId, double subtotal, double tax, double total, bool loading) {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-          28, 20, 28, 28 + MediaQuery.of(context).padding.bottom),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
         color: OptimizedColors.applyAlpha(AppColors.backgroundDark, 0.95),
         border: Border(top: BorderSide(color: OptimizedColors.white10)),
@@ -473,36 +380,23 @@ class _ReviewBookingScreenContent extends StatelessWidget {
       child: GestureDetector(
         onTap: loading
             ? null
-            : () => _handleConfirm(context, ws, date, checkIn, checkOut,
-                duration, slotId, tableId, subtotal, tax, total),
+            : () =>
+                _handleConfirm(context, ws, date, checkIn, checkOut, duration, slotId, tableId, subtotal, tax, total),
         child: AnimatedContainer(
           duration: 300.ms,
-          height: 64,
+          height: 52,
           decoration: BoxDecoration(
-              color: loading ? OptimizedColors.white20 : AppColors.primary,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: loading ? null : [
-                BoxShadow(
-                    color: OptimizedColors.applyAlpha(AppColors.primary, 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10))
-              ]),
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(16),),
           alignment: Alignment.center,
           child: loading
               ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                      color: AppColors.white, strokeWidth: 2.5))
+                  width: 24, height: 24, child: CircularProgressIndicator(color: AppColors.white, strokeWidth: 2.5))
               : const Text('CONFIRM',
-                  style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0)),
+                  style:
+                      TextStyle(color: AppColors.white, fontSize: 15, fontWeight: FontWeight.w900, letterSpacing: 2.0)),
         ).animate().scale(duration: 400.ms, curve: Curves.easeOutBack),
       ),
     );
   }
 }
-

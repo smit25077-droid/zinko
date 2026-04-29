@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
 import 'package:zinko_app/features/community/domain/entities/community_entities.dart';
@@ -15,6 +16,8 @@ class CommunityRepositoryImpl implements CommunityRepository {
     try {
       final remotePosts = await remoteDataSource.getPosts();
       return Right(remotePosts);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -25,6 +28,8 @@ class CommunityRepositoryImpl implements CommunityRepository {
     try {
       final updatedPost = await remoteDataSource.toggleLikePost(id);
       return Right(updatedPost);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -35,6 +40,8 @@ class CommunityRepositoryImpl implements CommunityRepository {
     try {
       final remoteGroups = await remoteDataSource.getGroups();
       return Right(remoteGroups);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -45,6 +52,8 @@ class CommunityRepositoryImpl implements CommunityRepository {
     try {
       final updatedGroup = await remoteDataSource.toggleJoinGroup(id);
       return Right(updatedGroup);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -55,6 +64,8 @@ class CommunityRepositoryImpl implements CommunityRepository {
     try {
       final people = await remoteDataSource.getPeople();
       return Right(people);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -65,6 +76,8 @@ class CommunityRepositoryImpl implements CommunityRepository {
     try {
       final updatedPerson = await remoteDataSource.toggleConnection(id);
       return Right(updatedPerson);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

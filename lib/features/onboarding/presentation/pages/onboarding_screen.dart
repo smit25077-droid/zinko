@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
+import 'package:zinko_app/utils/common_util.dart';
 
 class OnboardingScreen extends StatelessWidget {
   static const String routeName = '/onboarding';
@@ -56,7 +57,7 @@ class OnboardingScreen extends StatelessWidget {
                   Align(
                     alignment: Alignment.topRight,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                      padding: CommonUtil.pHor24Ver16,
                       child: GestureDetector(
                         onTap: goToLogin,
                         child: const Text('SKIP',
@@ -67,7 +68,7 @@ class OnboardingScreen extends StatelessWidget {
                   ).animate().fadeIn(duration: 400.ms),
                   const Spacer(),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: CommonUtil.pHor32,
                     child: ValueListenableBuilder<int>(
                       valueListenable: currentPage,
                       builder: (context, index, _) {
@@ -76,10 +77,10 @@ class OnboardingScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: CommonUtil.pHor16Ver8,
                               decoration: BoxDecoration(
                                 color: Colors.white.withValues(alpha: 0.15),
-                                borderRadius: BorderRadius.circular(30),
+                                borderRadius: CommonUtil.bRadius30,
                                 border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 1),
                               ),
                               child: const Text('ZINKO PREMIUM',
@@ -89,7 +90,7 @@ class OnboardingScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w900,
                                       letterSpacing: 1.5)),
                             ).animate().fadeIn(duration: 600.ms),
-                            const SizedBox(height: 20),
+                            CommonUtil.vGap20,
                             Text(pages[index].title,
                                     style: const TextStyle(
                                         color: Colors.white,
@@ -99,7 +100,7 @@ class OnboardingScreen extends StatelessWidget {
                                         letterSpacing: -1.5))
                                 .animate(delay: 200.ms)
                                 .fadeIn(duration: 600.ms),
-                            const SizedBox(height: 16),
+                            CommonUtil.vGap16,
                             Text(pages[index].subtitle,
                                     style: TextStyle(
                                         color: Colors.white.withValues(alpha: 0.7),
@@ -114,9 +115,9 @@ class OnboardingScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(height: 48),
+                  CommonUtil.vGap48,
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 40),
+                    padding: CommonUtil.pHor32Ver40Bottom,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -249,10 +250,10 @@ class _GetStartedButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
+        padding: CommonUtil.pHor32Ver20,
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: CommonUtil.bRadius20,
           boxShadow: [
             BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 20, offset: const Offset(0, 10)),
           ],

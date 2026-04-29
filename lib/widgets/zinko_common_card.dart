@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/utils/common_util.dart';
 
 /// A performance-optimized glass card that feels premium without heavy device load.
 /// Uses gradients and highlights instead of BackdropFilter to ensure smooth performance.
@@ -22,8 +23,8 @@ class ZinkoCommonCard extends StatelessWidget {
     required this.child,
     this.width,
     this.height,
-    this.borderRadius = 24.0,
-    this.padding = const EdgeInsets.all(16.0),
+    this.borderRadius = CommonUtil.r24,
+    this.padding = CommonUtil.pAll16,
     this.margin,
     this.onTap,
     this.isSelected = false,

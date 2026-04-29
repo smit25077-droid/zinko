@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_empty_state.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
@@ -15,6 +16,7 @@ import 'package:zinko_app/widgets/zinko_network_image.dart';
 
 class AllWorkspacesScreen extends StatefulWidget {
   static const String routeName = '/all-workspaces';
+
   const AllWorkspacesScreen({super.key});
 
   @override
@@ -41,6 +43,7 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: ZinkoAppBar(title: 'Search Cafe'),
       body: ZinkoBackground(
@@ -62,25 +65,20 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                           controller: _searchController,
                           onChanged: (val) => context.read<WorkspaceBloc>().add(SearchWorkspacesEvent(val)),
                           style: TextStyle(
-                              color: GlassTheme.textColor(context),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600),
+                              color: GlassTheme.textColor(context), fontSize: 14, fontWeight: FontWeight.w600),
                           decoration: InputDecoration(
                             hintText: 'Search office, cafe, location...',
                             hintStyle: TextStyle(
-                                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
-                                fontSize: 13),
+                                color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3), fontSize: 13),
                             prefixIcon: Icon(Icons.search_rounded,
-                                color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
-                                size: 20),
+                                color: GlassTheme.iconColor(context).withValues(alpha: 0.4), size: 20),
                             suffixIcon: ValueListenableBuilder(
                               valueListenable: _searchController,
                               builder: (context, value, _) {
                                 return value.text.isNotEmpty
                                     ? IconButton(
                                         icon: Icon(Icons.clear_rounded,
-                                            color: GlassTheme.iconColor(context).withValues(alpha: 0.4),
-                                            size: 18),
+                                            color: GlassTheme.iconColor(context).withValues(alpha: 0.4), size: 18),
                                         onPressed: () {
                                           _searchController.clear();
                                           context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
@@ -104,38 +102,28 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                     if (state is WorkspaceLoading) {
                       return const _WorkspaceShimmer();
                     } else if (state is WorkspaceLoaded) {
-                      final query = state.searchQuery.toLowerCase();
-                      final bool useLocalFiltering = query.isNotEmpty && query.length < 3;
-
-                      final filtered = useLocalFiltering
-                          ? state.workspaces
-                              .where((p) =>
-                                  p.name.toLowerCase().contains(query) ||
-                                  p.location.toLowerCase().contains(query))
-                              .toList()
-                          : state.workspaces;
+                      final filtered = state.workspaces;
 
                       if (filtered.isEmpty) {
                         return ZinkoEmptyState(
                           title: 'NO MATCHES FOUND',
                           message: 'We couldn\'t find anything matching "${state.searchQuery}".',
                           onRetry: () {
-                             _searchController.clear();
-                             context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
+                            _searchController.clear();
+                            context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
                           },
                         );
                       }
 
                       return ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                        padding: CommonUtil.pH16,
                         itemCount: filtered.length,
                         itemBuilder: (ctx, i) {
                           final workspace = filtered[i];
                           return _WorkspaceCard(
                             workspace: workspace,
-                            onFavTap: () => context
-                                .read<WorkspaceBloc>()
-                                .add(ToggleFavoriteWorkspaceEvent(workspace.id)),
+                            onFavTap: () =>
+                                context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(workspace.id)),
                           );
                         },
                       );
@@ -144,9 +132,10 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                         title: 'OOPS!',
                         message: state.message,
                         icon: Icons.error_outline_rounded,
-                        onRetry: () => context
-                                  .read<WorkspaceBloc>()
-                                  .add(const SearchWorkspacesEvent('')),
+                        onRetry: () {
+                          _searchController.clear();
+                          context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));
+                        },
                       );
                     }
                     return const SizedBox();
@@ -195,8 +184,9 @@ class _ShimmerCard extends StatelessWidget {
                   color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                 ),
-              ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                  duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+              )
+                  .animate(onPlay: (controller) => controller.repeat())
+                  .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -209,8 +199,9 @@ class _ShimmerCard extends StatelessWidget {
                         color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                    ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                        duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                    )
+                        .animate(onPlay: (controller) => controller.repeat())
+                        .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
                     const SizedBox(height: 10),
                     Container(
                       height: 14,
@@ -219,8 +210,9 @@ class _ShimmerCard extends StatelessWidget {
                         color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
-                    ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                        duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                    )
+                        .animate(onPlay: (controller) => controller.repeat())
+                        .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
                     const SizedBox(height: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,9 +228,9 @@ class _ShimmerCard extends StatelessWidget {
                                       color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                  ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                                      duration: 1200.ms,
-                                      color: Colors.white.withValues(alpha: 0.3))),
+                                  )
+                                      .animate(onPlay: (controller) => controller.repeat())
+                                      .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3))),
                         ),
                         Container(
                           height: 20,
@@ -247,8 +239,9 @@ class _ShimmerCard extends StatelessWidget {
                             color: GlassTheme.textColor(context).withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                        ).animate(onPlay: (controller) => controller.repeat()).shimmer(
-                            duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
+                        )
+                            .animate(onPlay: (controller) => controller.repeat())
+                            .shimmer(duration: 1200.ms, color: Colors.white.withValues(alpha: 0.3)),
                       ],
                     ),
                   ],
@@ -337,8 +330,7 @@ class _WorkspaceCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.location_on_outlined,
-                            size: 14,
-                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4)),
+                            size: 14, color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.4)),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(workspace.location,
@@ -372,9 +364,7 @@ class _WorkspaceCard extends StatelessWidget {
                         Text(
                           '£${workspace.price}',
                           style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: GlassTheme.textColor(context)),
+                              fontSize: 16, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context)),
                         ),
                       ],
                     ),
@@ -392,6 +382,7 @@ class _WorkspaceCard extends StatelessWidget {
 class _GlassFavButton extends StatelessWidget {
   final bool isFavorite;
   final VoidCallback onTap;
+
   const _GlassFavButton({required this.isFavorite, required this.onTap});
 
   @override
@@ -410,30 +401,6 @@ class _GlassFavButton extends StatelessWidget {
           isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
           color: isFavorite ? Colors.redAccent : Colors.white,
           size: 18,
-        ),
-      ),
-    );
-  }
-}
-
-
-
-class _GlassHeaderButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _GlassHeaderButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: ZinkoGlassBox.light(
-        borderRadius: 12,
-        padding: EdgeInsets.zero,
-        child: SizedBox(
-          width: 40,
-          height: 40,
-          child: Icon(icon, color: GlassTheme.iconColor(context), size: 18),
         ),
       ),
     );

@@ -6,6 +6,7 @@ import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/utils/common_util.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
@@ -200,7 +201,7 @@ class _SplashContentState extends State<_SplashContent> {
                         )
                             .animate(onPlay: (c) => c.repeat())
                             .shimmer(duration: 1500.ms, color: Colors.white24),
-                        const SizedBox(height: 24),
+                        CommonUtil.vGap24,
                         const Text(
                           'ZINKO',
                           style: TextStyle(

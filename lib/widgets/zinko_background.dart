@@ -1,8 +1,5 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
-import 'package:zinko_app/core/theme/optimized_colors.dart';
 
 class ZinkoBackground extends StatelessWidget {
   final Widget? child;
@@ -20,9 +17,6 @@ class ZinkoBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use MediaQuery.sizeOf for better performance as it only rebuilds on size changes
-    final screenSize = MediaQuery.sizeOf(context);
-
     return Stack(
       clipBehavior: Clip.none,
       children: [

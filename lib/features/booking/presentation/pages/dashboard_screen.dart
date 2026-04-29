@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
@@ -96,7 +97,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           }
 
                           return Padding(
-                            padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                            padding: CommonUtil.pHor24Ver8,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -120,7 +121,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               imageUrl: profileImage,
                                               width: 44,
                                               height: 44,
-                                              borderRadius: 22,
+                                              borderRadius: CommonUtil.r22,
                                               fit: BoxFit.cover,
                                             )
                                           : Container(
@@ -130,7 +131,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               ),
                                               child: const Icon(Icons.person, color: AppColors.white)),
                                     ),
-                                    const SizedBox(width: 12),
+                                    CommonUtil.hGap12,
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -160,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 24),
+                        padding: CommonUtil.pH24,
                         child: Text(
                           'DISCOVER YOUR\nCREATIVE HAVEN',
                           style: TextStyle(
@@ -172,9 +173,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      CommonUtil.vGap16,
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        padding: CommonUtil.pH16,
                         child: Hero(
                           tag: 'search_bar',
                           child: Material(
@@ -183,15 +184,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               onTap: _goSeeAll,
                               child: ZinkoGlassBox(
                                 blur: 15,
-                                borderRadius: 18,
+                                borderRadius: CommonUtil.r18,
                                 child: Container(
                                   height: 52,
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: CommonUtil.pH16,
                                   child: Row(
                                     children: [
                                       Icon(Icons.search_rounded,
                                           color: OptimizedColors.white40, size: 20),
-                                      const SizedBox(width: 12),
+                                      CommonUtil.hGap12,
                                       Text(
                                         'Search office, cafe, location...',
                                         style: TextStyle(
@@ -206,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      CommonUtil.vGap8,
                       _SectionHeader(
                         title: 'RECOMMENDED',
                       ),
@@ -217,7 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           if (cafeState is CafeLoaded) {
                             if (cafeState.cafes.isEmpty) {
                               return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 40),
+                                padding: CommonUtil.pV40,
                                 child: ZinkoEmptyState(
                                   title: 'No Recommendations',
                                   message: 'Check back later for curated spaces.',
@@ -241,11 +242,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           return const _HorizontalShimmer();
                         },
                       ),
-                      const SizedBox(height: 12),
+                      CommonUtil.vGap12,
                       _SectionHeader(
                         title: 'NEARBY PLACES',
                       ),
-                      const SizedBox(height: 4),
+                      CommonUtil.vGap4,
                       BlocBuilder<CafeBloc, CafeState>(
                         buildWhen: (p, c) => c is CafeLoading || c is CafeLoaded || c is CafeError,
                         builder: (context, cafeState) {
@@ -253,7 +254,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           if (cafeState is CafeLoaded) {
                             if (cafeState.cafes.isEmpty) {
                               return const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 40),
+                                padding: CommonUtil.pV40,
                                 child: ZinkoEmptyState(
                                   title: 'No Spaces Found',
                                   message: 'Check back later for newly added spots.',
@@ -291,10 +292,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                       if (_isLoadingMore)
                         const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 24),
+                          padding: CommonUtil.pV24,
                           child: Center(child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white)),
                         ),
-                      const SizedBox(height: 120),
+                      CommonUtil.vGap100,
                     ],
                   ),
                 ),
@@ -316,7 +317,7 @@ class _NearbyList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: CommonUtil.pH16,
       child: Column(
         children: List.generate(
           nearby.length > 8 ? 8 : nearby.length,
@@ -346,7 +347,7 @@ class _GlassIconButton extends StatelessWidget {
     return ZinkoCommonCard(
       width: 44,
       height: 44,
-      borderRadius: 14,
+      borderRadius: CommonUtil.r14,
       padding: EdgeInsets.zero,
       onTap: onTap,
       child: Center(
@@ -365,13 +366,13 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 16, 4),
+      padding: CommonUtil.pLTRB24_8_16_4,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title,
               style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 16,
                   fontWeight: FontWeight.w900,
                   color: GlassTheme.textColor(context),
                   letterSpacing: 1.5)),
@@ -393,7 +394,7 @@ class _RecommendedList extends StatelessWidget {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: CommonUtil.pH16,
         itemCount: workspaces.length,
         itemExtent: 300,
         addAutomaticKeepAlives: false,
@@ -401,7 +402,7 @@ class _RecommendedList extends StatelessWidget {
           final w = workspaces[i];
           return ZinkoCommonCard(
             width: 280,
-            margin: const EdgeInsets.only(right: 20),
+            margin: CommonUtil.pRight20,
             padding: EdgeInsets.zero,
             onTap: () {
               final tag = 'hero_rec_${w.id}';
@@ -418,7 +419,7 @@ class _RecommendedList extends StatelessWidget {
               children: [
                 Hero(
                   tag: 'hero_rec_${w.id}',
-                  child: ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: 24),
+                  child: ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: CommonUtil.r24),
                 ),
                 Positioned.fill(
                   child: Container(
@@ -434,9 +435,9 @@ class _RecommendedList extends StatelessWidget {
                 ),
                 const SizedBox(),
                 Positioned(
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+                  bottom: CommonUtil.s20,
+                  left: CommonUtil.s20,
+                  right: CommonUtil.s20,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -449,17 +450,17 @@ class _RecommendedList extends StatelessWidget {
                                   const TextStyle(color: AppColors.white, fontSize: 18, fontWeight: FontWeight.w900)),
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      CommonUtil.vGap4,
                       Row(
                         children: [
                           const Icon(Icons.location_on_rounded, color: AppColors.white, size: 12),
-                          const SizedBox(width: 4),
+                          CommonUtil.hGap4,
                           Expanded(
                               child: Text(w.location,
                                   style: const TextStyle(
                                       color: AppColors.white, fontSize: 12, fontWeight: FontWeight.w600),
                                   overflow: TextOverflow.ellipsis)),
-                          const SizedBox(width: 8),
+                          CommonUtil.hGap8,
                           Text('£${w.price}',
                               style:
                                   const TextStyle(color: AppColors.white, fontSize: 14, fontWeight: FontWeight.w900)),
@@ -486,7 +487,7 @@ class _NearbyCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ZinkoCommonCard(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: CommonUtil.pBottom16,
       padding: EdgeInsets.zero,
       onTap: () {
         final tag = 'hero_nearby_${workspace.id}';
@@ -515,15 +516,15 @@ class _NearbyCard extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  top: 12,
-                  right: 12,
+                  top: CommonUtil.s12,
+                  right: CommonUtil.s12,
                   child: _GlassFavButton(isFavorite: workspace.isFavorite, onTap: onFavTap),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: CommonUtil.pAll16,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -565,11 +566,11 @@ class _NearbyCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis),
                     ),
                   ),
-                const SizedBox(height: 6),
+                CommonUtil.vGap6,
                 Row(
                   children: [
                     const Icon(Icons.location_on_rounded, size: 12, color: OptimizedColors.white70),
-                    const SizedBox(width: 4),
+                    CommonUtil.hGap4,
                     Expanded(
                       child: Text(workspace.location,
                           style: const TextStyle(
@@ -579,7 +580,7 @@ class _NearbyCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                CommonUtil.vGap12,
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -587,7 +588,7 @@ class _NearbyCard extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                          color: OptimizedColors.primary08, borderRadius: BorderRadius.circular(8)),
+                          color: OptimizedColors.primary08, borderRadius: CommonUtil.bRadius8),
                       child:  Icon(icon, size: 14, color: AppColors.secondary),
                     );
                   }).toList(),
@@ -643,34 +644,34 @@ class _DashboardShimmer extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 20),
+          CommonUtil.vGap20,
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: CommonUtil.pH16V12,
             child: Row(
               children: [
                 _shimmerBox(44, 44, 22),
-                const SizedBox(width: 12),
+                CommonUtil.hGap12,
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _shimmerBox(60, 10, 4),
-                    const SizedBox(height: 4),
+                    CommonUtil.vGap4,
                     _shimmerBox(120, 16, 4),
                   ],
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          CommonUtil.vGap32,
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: CommonUtil.pH24,
             child: _shimmerBox(220, 60, 4),
           ),
-          const SizedBox(height: 40),
+          CommonUtil.vGap40,
           _shimmerHorizontalList(),
-          const SizedBox(height: 40),
+          CommonUtil.vGap40,
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: CommonUtil.pH24,
             child: _shimmerBox(double.infinity, 120, 24),
           ),
         ],
@@ -694,12 +695,12 @@ class _DashboardShimmer extends StatelessWidget {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: CommonUtil.pH24,
         itemCount: 3,
         itemExtent: 300,
         addAutomaticKeepAlives: false,
         itemBuilder: (_, __) => Padding(
-          padding: const EdgeInsets.only(right: 20),
+          padding: CommonUtil.pRight20,
           child: _shimmerBox(280, 200, 24),
         ),
       ),
@@ -716,16 +717,16 @@ class _HorizontalShimmer extends StatelessWidget {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: CommonUtil.pH24,
         itemCount: 3,
         itemExtent: 300,
         addAutomaticKeepAlives: false,
         itemBuilder: (_, __) => Container(
           width: 280,
-          margin: const EdgeInsets.only(right: 20),
+          margin: CommonUtil.pRight20,
           decoration: BoxDecoration(
             color: OptimizedColors.white04,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: CommonUtil.bRadius24,
           ),
         ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms),
       ),
@@ -739,16 +740,16 @@ class _VerticalShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: CommonUtil.pH24,
       child: Column(
         children: List.generate(
             3,
             (index) => Container(
                   height: 180,
-                  margin: const EdgeInsets.only(bottom: 16),
+                  margin: CommonUtil.pBottom16,
                   decoration: BoxDecoration(
                     color: OptimizedColors.white05,
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: CommonUtil.bRadius24,
                   ),
                 ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms)),
       ),
@@ -756,23 +757,4 @@ class _VerticalShimmer extends StatelessWidget {
   }
 }
 
-class _FilterAction extends StatelessWidget {
-  final VoidCallback onTap;
 
-  const _FilterAction({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: OptimizedColors.primary08,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: const Icon(Icons.tune_rounded, size: 14, color: AppColors.secondary),
-      ),
-    );
-  }
-}

@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/booking/domain/entities/booking_request_entity.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
@@ -21,6 +22,8 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
     try {
       final result = await localDataSource.getWorkspaces();
       return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -36,6 +39,8 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
     try {
       await localDataSource.toggleFavorite(id);
       return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -46,6 +51,8 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
     try {
       await localDataSource.toggleBookmark(id);
       return const Right(null);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -66,6 +73,8 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
       );
       final result = await remoteDataSource.createBooking(model);
       return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -76,6 +85,8 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
     try {
       final result = await remoteDataSource.searchWorkspaces(keyword);
       return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -86,6 +97,8 @@ class WorkspaceRepositoryImpl implements WorkspaceRepository {
     try {
       final result = await remoteDataSource.getWorkspaceDetail(id);
       return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

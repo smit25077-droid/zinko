@@ -122,6 +122,40 @@ class MapScreen extends StatelessWidget {
                     bottom: 110,
                     child: _MyLocationButton(mapController: mapController),
                   ),
+                  if (mapState.isLoading)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: GlassTheme.glassColor(context),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: GlassTheme.glassBorder(context)),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: GlassTheme.textColor(context),
+                                  strokeWidth: 3,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Loading Map...',
+                                  style: TextStyle(
+                                    color: GlassTheme.textColor(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ).animate().fadeIn(duration: 200.ms),
+                    ),
                 ],
               ),
             );

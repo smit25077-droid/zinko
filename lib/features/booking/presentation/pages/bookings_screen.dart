@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:another_flushbar/flushbar.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
@@ -45,27 +46,29 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          'BOOKINGS',
-          style: TextStyle(
-            color: GlassTheme.textColor(context),
-            fontWeight: FontWeight.w900,
-            fontSize: 15,
-            letterSpacing: 1.5,
-          ),
-        ),
-        centerTitle: true,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _GlassHeaderButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => Navigator.pop(context),
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
+      appBar:
+      ZinkoAppBar(title: 'BOOKINGS'),
+      // AppBar(
+      //   title: Text(
+      //     'BOOKINGS',
+      //     style: TextStyle(
+      //       color: GlassTheme.textColor(context),
+      //       fontWeight: FontWeight.w900,
+      //       fontSize: 15,
+      //       letterSpacing: 1.5,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      //   leading: Padding(
+      //     padding: const EdgeInsets.all(8.0),
+      //     child: _GlassHeaderButton(
+      //       icon: Icons.arrow_back_ios_new_rounded,
+      //       onTap: () => Navigator.pop(context),
+      //     ),
+      //   ),
+      //   elevation: 0,
+      //   backgroundColor: Colors.transparent,
+      // ),
       body: ZinkoBackground(
         child: BlocListener<BookingBloc, BookingState>(
           listener: (context, state) {
@@ -124,8 +127,8 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                           child: filteredBookings.isEmpty
                               ? _buildEmptyState(context)
                               : ListView.builder(
-                                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                                  physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                                  // physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                                   itemCount: filteredBookings.length,
                                   itemExtent: 180, // Fixed height for booking cards
                                   addAutomaticKeepAlives: false,
@@ -151,9 +154,9 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
 
   Widget _buildTabs(BuildContext context, int selectedTab) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ZinkoCommonCard(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(0),
         child: Row(
           children: [
             _TabItem(
@@ -241,10 +244,10 @@ class _TabItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          padding: const EdgeInsets.symmetric(vertical: 16,),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(50),
           ),
           child: Text(
             title,
@@ -252,7 +255,7 @@ class _TabItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: isSelected ? Colors.black : OptimizedColors.white40,
+              color: isSelected ? Colors.black : Colors.white,
               letterSpacing: 1.0,
             ),
           ),

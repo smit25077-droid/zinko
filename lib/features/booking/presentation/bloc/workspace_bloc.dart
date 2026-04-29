@@ -63,9 +63,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
       emit((state as WorkspaceLoaded).copyWith(searchQuery: query));
     }
 
-    if (query.isNotEmpty && query.length < 3) {
-      return;
-    }
+
 
     _debounce?.cancel();
     

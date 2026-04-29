@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
@@ -150,10 +151,10 @@ class _FloatingGlassDock extends StatelessWidget {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 10),
+      padding: EdgeInsets.fromLTRB(CommonUtil.s20, 0, CommonUtil.s20, bottomPadding + CommonUtil.s10),
       child: ZinkoGlassBox.thick(
         blur: 25,
-        borderRadius: 30,
+        borderRadius: CommonUtil.r24,
         color: OptimizedColors.backgroundDark70,
         border: Border.all(color: OptimizedColors.glassBorderDark, width: 1.5),
         boxShadow: const [
@@ -166,7 +167,7 @@ class _FloatingGlassDock extends StatelessWidget {
         child: SizedBox(
           height: 60,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: CommonUtil.pH8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -214,10 +215,10 @@ class _ExpandingNavItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: CommonUtil.pHor12Ver10,
         decoration: BoxDecoration(
           color: isSelected ? OptimizedColors.white12 : Colors.transparent,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: CommonUtil.bRadius50,
           border: Border.all(
             color: isSelected ? OptimizedColors.white10 : Colors.transparent,
             width: 1,

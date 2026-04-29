@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +8,7 @@ import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 import 'dart:io' show Platform;
@@ -122,7 +122,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                     carouselController: _carouselController,
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                    padding: CommonUtil.pAll16,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

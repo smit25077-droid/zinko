@@ -42,6 +42,7 @@ import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_details_entity.dart';
 import 'package:zinko_app/models/app_models.dart';
 
 class AppRouter {
@@ -70,7 +71,7 @@ class AppRouter {
       case BookingsScreen.routeName:
         return MaterialPageRoute(builder: (_) => const BookingsScreen());
       case ReviewBookingScreen.routeName:
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments as BookingDetailsEntity;
         return MaterialPageRoute(
           builder: (_) => ReviewBookingScreen(bookingData: args),
         );
