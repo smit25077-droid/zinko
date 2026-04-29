@@ -77,6 +77,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                   physics: const BouncingScrollPhysics(),
                   itemCount: favorites.length,
+                  addAutomaticKeepAlives: false,
+                  itemExtent: 112,
                   itemBuilder: (context, index) {
                     final cafe = favorites[index];
                     final workspace = CafeMapper.toWorkspaceEntity(cafe);
@@ -123,6 +125,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: 5,
+      addAutomaticKeepAlives: false,
+      itemExtent: 136, // 120 height + 16 padding
       itemBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: AutoSkeleton(
@@ -174,7 +178,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
+                    color: OptimizedColors.primary15,
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   )
@@ -303,9 +307,9 @@ class _GlassHeaderButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.05),
+          color: OptimizedColors.white05,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: OptimizedColors.white10),
         ),
         child: Icon(icon, color: AppColors.white, size: 18),
       ),

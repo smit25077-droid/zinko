@@ -130,9 +130,9 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                                   itemExtent: 180, // Fixed height for booking cards
                                   addAutomaticKeepAlives: false,
                                   itemBuilder: (context, index) {
-                                    return _BookingCard(
-                                      booking: filteredBookings[index],
-                                    ).animate().fadeIn(delay: (index * 80).ms);
+                                      return _BookingCard(
+                                        booking: filteredBookings[index],
+                                      ).animate().fadeIn(delay: (index * 30).ms, duration: 250.ms);
                                   },
                                 ),
                         ),
@@ -208,7 +208,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
               color: GlassTheme.textColor(context),
               letterSpacing: -0.5,
             ),
-          ).animate().fadeIn(delay: 200.ms),
+          ).animate().fadeIn(delay: 150.ms, duration: 250.ms),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
@@ -221,7 +221,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                 height: 1.5,
               ),
             ),
-          ).animate().fadeIn(delay: 400.ms),
+          ).animate().fadeIn(delay: 250.ms, duration: 250.ms),
         ],
       ),
     );

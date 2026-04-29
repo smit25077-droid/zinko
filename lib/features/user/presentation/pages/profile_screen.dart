@@ -285,13 +285,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       fontWeight: FontWeight.w900,
                       color: GlassTheme.textColor(context),
                       letterSpacing: -0.5),
-                ).animate(delay: 200.ms).fadeIn().slideX(begin: 0.2, end: 0),
+                ).animate(delay: 150.ms).fadeIn(duration: 250.ms).slideX(begin: 0.1, end: 0),
                 const SizedBox(height: 4),
                 Text(
                   user?.role ?? 'Zinko Professional',
                   style: TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w600, color: GlassTheme.secondaryTextColor(context)),
-                ).animate(delay: 300.ms).fadeIn(),
+                ).animate(delay: 200.ms).fadeIn(duration: 250.ms),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -356,7 +356,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Icons.business_center_outlined),
             ],
           ),
-        ).animate().fadeIn(delay: 450.ms),
+        ).animate().fadeIn(delay: 300.ms, duration: 250.ms),
         const SizedBox(height: 20),
         _buildSectionTitle(context, 'PERSONAL INFORMATION'),
         const SizedBox(height: 10),
@@ -382,7 +382,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   context, 'Bio', (user?.bio ?? '').isEmpty ? 'Not specified' : user!.bio, Icons.info_outline_rounded),
             ],
           ),
-        ).animate().fadeIn(delay: 550.ms),
+        ).animate().fadeIn(delay: 350.ms, duration: 250.ms),
       ],
     );
   }
@@ -479,7 +479,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Icon(
             Icons.chevron_right_rounded,
-            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
+            color: OptimizedColors.white30,
             size: 20,
           ),
         ],
@@ -503,7 +503,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _buildMenuCard(context, 'WISHLIST', Icons.favorite_rounded, WishlistScreen.routeName),
         _buildMenuCard(context, 'COMPLETE', Icons.event_available_rounded, CompleteCafeListScreen.routeName),
       ],
-    ).animate(delay: 550.ms).fadeIn();
+    ).animate(delay: 400.ms).fadeIn(duration: 250.ms);
   }
 
   Widget _buildMenuCard(BuildContext context, String title, IconData icon, String route) {
@@ -549,7 +549,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _buildListTile(context, 'App Feedback', Icons.feedback_rounded, ''),
         ],
       ),
-    ).animate(delay: 600.ms).fadeIn();
+    ).animate(delay: 450.ms).fadeIn(duration: 250.ms);
   }
 
   Widget _buildToggleTile(BuildContext context, String title, IconData icon, bool value, Function(bool) onChanged) {
@@ -584,8 +584,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       leading: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-            color: GlassTheme.textColor(context).withValues(alpha: 0.08), borderRadius: BorderRadius.circular(10)),
-        child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 20),
+            color: OptimizedColors.white08, borderRadius: BorderRadius.circular(10)),
+        child: Icon(icon, color: OptimizedColors.white70, size: 20),
       ),
       title: Text(
         title,
@@ -648,6 +648,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ],
         ),
       ),
-    ).animate(delay: 700.ms).fadeIn();
+    ).animate(delay: 500.ms).fadeIn(duration: 250.ms);
   }
 }

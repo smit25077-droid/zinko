@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
@@ -81,12 +82,14 @@ class _CompleteCafeListScreenState extends State<CompleteCafeListScreen> {
                         },
                         color: GlassTheme.textColor(context),
                         child: filteredBookings.isEmpty
-                            ? _buildEmptyState(context)
-                            : ListView.builder(
-                                padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-                                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-                                itemCount: filteredBookings.length,
-                                itemBuilder: (context, index) {
+                                    ? _buildEmptyState(context)
+                                    : ListView.builder(
+                                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                                        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                                        itemCount: filteredBookings.length,
+                                        addAutomaticKeepAlives: false,
+                                        itemExtent: 163, // Calculated height of _BookingCard
+                                        itemBuilder: (context, index) {
                                   return _BookingCard(
                                     booking: filteredBookings[index],
                                   ).animate().fadeIn(delay: (index * 80).ms);
@@ -118,7 +121,7 @@ class _CompleteCafeListScreenState extends State<CompleteCafeListScreen> {
               border: Border.all(color: GlassTheme.glassBorder(context)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: OptimizedColors.black20,
                   blurRadius: 30,
                   offset: const Offset(0, 10),
                 )
@@ -127,7 +130,7 @@ class _CompleteCafeListScreenState extends State<CompleteCafeListScreen> {
             child: Icon(
               Icons.event_busy_rounded,
               size: 40,
-              color: GlassTheme.textColor(context).withValues(alpha: 0.4),
+              color: OptimizedColors.white40,
             ),
           ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
           const SizedBox(height: 24),
@@ -205,7 +208,7 @@ class _TabItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w900,
-              color: isSelected ? Colors.black : AppColors.white.withValues(alpha: 0.4),
+              color: isSelected ? Colors.black : OptimizedColors.white40,
               letterSpacing: 1.0,
             ),
           ),
@@ -239,7 +242,7 @@ class _BookingCard extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+                      border: Border.all(color: OptimizedColors.white10),
                     ),
                     child: ZinkoNetworkImage(
                       imageUrl: booking.venueImage,
@@ -282,7 +285,7 @@ class _BookingCard extends StatelessWidget {
                 ],
               ),
             ),
-            Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
+            Divider(height: 1, color: OptimizedColors.white05),
             Padding(
               padding: const EdgeInsets.all(14.0),
               child: Row(
@@ -317,7 +320,7 @@ class _BookingCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: AppColors.white.withValues(alpha: 0.3)),
+                  Icon(Icons.arrow_forward_ios_rounded, size: 12, color: OptimizedColors.white30),
                 ],
               ),
             ),
@@ -342,9 +345,9 @@ class _GlassHeaderButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: AppColors.white.withValues(alpha: 0.05),
+          color: OptimizedColors.white05,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.1)),
+          border: Border.all(color: OptimizedColors.white10),
         ),
         child: Icon(icon, color: AppColors.white, size: 18),
       ),

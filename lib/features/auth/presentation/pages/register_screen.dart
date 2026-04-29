@@ -15,6 +15,7 @@ import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:zinko_app/features/auth/data/models/auth_requests.dart';
 import 'package:zinko_app/features/auth/presentation/pages/register_form_bloc.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 
 class RegisterScreen extends StatelessWidget {
   static const String routeName = '/register';
@@ -114,7 +115,7 @@ class _RegisterContentState extends State<_RegisterContent> {
           //   showBackButton: true,
           // ),
           body: ZinkoBackground(
-            backgroundColor: Colors.white.withValues(alpha: 0.05),
+            backgroundColor: OptimizedColors.white05,
             child: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -146,20 +147,19 @@ class _RegisterContentState extends State<_RegisterContent> {
                                         ),
                                       ],
                                     ),
-                                  ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+                                  ).animate().fadeIn(duration: 250.ms).slideY(begin: 0.1, end: 0),
                                   const SizedBox(height: 8),
                                   const Text(
                                     'Begin your journey with the finest experiences.',
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: Colors.white70,
+                                      color: OptimizedColors.white70,
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
                                       letterSpacing: 0.2,
                                     ),
-                                  ).animate(delay: 200.ms).fadeIn(),
-                                ],
-                              ),
+                                  ).animate(delay: 150.ms).fadeIn(duration: 250.ms),
+                    
                               const SizedBox(height: 40),
                               _buildGlassRegisterCard(context),
                               const SizedBox(height: 32),
@@ -170,7 +170,7 @@ class _RegisterContentState extends State<_RegisterContent> {
                               )
                             ],
                           ),
-                        ),
+                        ])),
                       ),
                     ),
                   );
@@ -189,7 +189,7 @@ class _RegisterContentState extends State<_RegisterContent> {
         return BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
             return ZinkoGlassBox(
-              color: Colors.white.withValues(alpha: 0.2),
+              color: OptimizedColors.white20,
               padding: const EdgeInsets.all(24),
               child: Form(
                 key: _formKey,
@@ -321,7 +321,7 @@ class _RegisterContentState extends State<_RegisterContent> {
           },
         );
       },
-    ).animate(delay: 400.ms).fadeIn();
+    ).animate(delay: 250.ms).fadeIn(duration: 250.ms);
   }
 
   Widget _buildFieldLabel(String label) {
@@ -373,18 +373,18 @@ class _ModernTextField extends StatelessWidget {
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         filled: true,
-        fillColor: Colors.white.withValues(alpha: 0.08),
+        fillColor: OptimizedColors.white08,
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white38, fontSize: 14),
-        prefixIcon: Icon(icon, color: Colors.white60, size: 20),
+        hintStyle: const TextStyle(color: OptimizedColors.white30, fontSize: 14),
+        prefixIcon:  Icon(icon, color: OptimizedColors.white60, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          borderSide: const BorderSide(color: OptimizedColors.white10),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
+          borderSide: const BorderSide(color: OptimizedColors.white10),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -445,7 +445,7 @@ class _LoginFooter extends StatelessWidget {
       children: [
         const Text(
           "Already have an account? ",
-          style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
+          style: TextStyle(color: OptimizedColors.white70, fontSize: 14, fontWeight: FontWeight.w500),
         ),
         GestureDetector(
           onTap: () => Navigator.pushNamed(context, LoginScreen.routeName),

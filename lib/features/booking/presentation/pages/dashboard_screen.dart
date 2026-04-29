@@ -190,12 +190,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   child: Row(
                                     children: [
                                       Icon(Icons.search_rounded,
-                                          color: GlassTheme.iconColor(context).withValues(alpha: 0.4), size: 20),
+                                          color: OptimizedColors.white40, size: 20),
                                       const SizedBox(width: 12),
                                       Text(
                                         'Search office, cafe, location...',
                                         style: TextStyle(
-                                            color: GlassTheme.secondaryTextColor(context).withValues(alpha: 0.3),
+                                            color: OptimizedColors.white30,
                                             fontSize: 13),
                                       ),
                                     ],
@@ -427,7 +427,7 @@ class _RecommendedList extends StatelessWidget {
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         stops: const [0.4, 1.0],
-                        colors: [AppColors.transparent, AppColors.backgroundDark.withValues(alpha: 0.9)],
+                        colors: [AppColors.transparent, OptimizedColors.backgroundDark70],
                       ),
                     ),
                   ),
@@ -587,8 +587,8 @@ class _NearbyCard extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                          color: AppColors.secondary.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                      child: Icon(icon, size: 14, color: AppColors.secondary),
+                          color: OptimizedColors.primary08, borderRadius: BorderRadius.circular(8)),
+                      child:  Icon(icon, size: 14, color: AppColors.secondary),
                     );
                   }).toList(),
                 ),
@@ -683,7 +683,7 @@ class _DashboardShimmer extends StatelessWidget {
       width: w,
       height: h,
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.05),
+        color: OptimizedColors.white05,
         borderRadius: BorderRadius.circular(r),
       ),
     ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms);
@@ -747,7 +747,7 @@ class _VerticalShimmer extends StatelessWidget {
                   height: 180,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: OptimizedColors.white05,
                     borderRadius: BorderRadius.circular(24),
                   ),
                 ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1200.ms)),
@@ -768,7 +768,7 @@ class _FilterAction extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: AppColors.secondary.withValues(alpha: 0.1),
+          color: OptimizedColors.primary08,
           borderRadius: BorderRadius.circular(8),
         ),
         child: const Icon(Icons.tune_rounded, size: 14, color: AppColors.secondary),

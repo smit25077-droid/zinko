@@ -72,23 +72,23 @@ class WalletScreen extends StatelessWidget {
                           'ADD MONEY',
                           () => _showAddMoneyDialog(context),
                           highlight: true,
-                        ).animate(delay: 400.ms).fadeIn().slideX(begin: 0.1, end: 0),
+                        ).animate(delay: 200.ms).fadeIn(duration: 250.ms).slideX(begin: 0.05, end: 0),
                         const SizedBox(height: 32),
                         Text(
                           'RECENT TRANSACTIONS',
                           style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w900,
-                              color: OptimizedColors.white50,
+                               color: OptimizedColors.white50,
                               letterSpacing: 1.5),
-                        ).animate(delay: 500.ms).fadeIn(),
+                        ).animate(delay: 250.ms).fadeIn(duration: 250.ms),
                         const SizedBox(height: 16),
                         ...transactions.asMap().entries.map((entry) {
                           final index = entry.key;
                           final tx = entry.value;
                           return _buildTransactionItem(context, tx)
                               .animate()
-                              .fadeIn(delay: (index * 50 + 300).ms);
+                              .fadeIn(delay: (index * 30 + 150).ms, duration: 250.ms);
                         }),
                         const SizedBox(height: 120),
                       ],
@@ -156,7 +156,7 @@ class WalletScreen extends StatelessWidget {
                                 letterSpacing: 1.2)),
                       ],
                     ),
-                    Icon(Icons.nfc_rounded, color: Colors.white.withValues(alpha: 0.3), size: 28),
+                    Icon(Icons.nfc_rounded, color: OptimizedColors.white30, size: 28),
                   ],
                 ),
                 const SizedBox(height: 25),
@@ -179,7 +179,7 @@ class WalletScreen extends StatelessWidget {
                   children: [
                     Text('****  ****  ****  8888',
                         style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
+                            color: OptimizedColors.white70,
                             fontSize: 14,
                             letterSpacing: 2.0,
                             fontFamily: 'monospace',
@@ -189,7 +189,7 @@ class WalletScreen extends StatelessWidget {
                       children: [
                         Text('VALID THRU',
                             style: TextStyle(
-                                color: Colors.white.withValues(alpha: 0.3), fontSize: 8, fontWeight: FontWeight.w800)),
+                                color: OptimizedColors.white30, fontSize: 8, fontWeight: FontWeight.w800)),
                         Text('12/28',
                             style: TextStyle(
                                 color: OptimizedColors.white80, fontSize: 12, fontWeight: FontWeight.w900)),
@@ -214,13 +214,13 @@ class WalletScreen extends StatelessWidget {
           width: double.infinity,
           height: 56,
           decoration: BoxDecoration(
-            color: highlight ? Colors.white : Colors.white.withValues(alpha: 0.05),
+            color: highlight ? Colors.white : OptimizedColors.white05,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: highlight ? Colors.white : Colors.white.withValues(alpha: 0.15), width: 1.5),
+            border: Border.all(color: highlight ? Colors.white : OptimizedColors.white16, width: 1.5),
             boxShadow: highlight
                 ? [
                     BoxShadow(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: OptimizedColors.white20,
                       blurRadius: 15,
                       offset: const Offset(0, 8),
                     )
@@ -258,10 +258,10 @@ class WalletScreen extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: isCredit ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
+                color: isCredit ? OptimizedColors.success20 : OptimizedColors.error08,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                    color: isCredit ? Colors.green.withValues(alpha: 0.2) : Colors.red.withValues(alpha: 0.2)),
+                    color: isCredit ? OptimizedColors.success20 : OptimizedColors.error20),
               ),
               child: Icon(
                 isCredit ? Icons.add_rounded : Icons.remove_rounded,
@@ -280,17 +280,17 @@ class WalletScreen extends StatelessWidget {
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white)),
                   const SizedBox(height: 4),
                   Text(tx.eventMode,
-                      style: TextStyle(
+                      style: const TextStyle(
                           fontSize: 10,
-                          color: Colors.white.withValues(alpha: 0.4),
+                          color: OptimizedColors.white40,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5)),
                   if (tx.remark != null && tx.remark!.isNotEmpty) ...{
                     const SizedBox(height: 4),
                     Text(tx.remark ?? 'NA',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 10,
-                            color: Colors.white.withValues(alpha: 0.4),
+                            color: OptimizedColors.white40,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5)),
                   }
@@ -310,7 +310,7 @@ class WalletScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 8,
                     fontWeight: FontWeight.w900,
-                    color: Colors.white.withValues(alpha: 0.2),
+                    color: OptimizedColors.white20,
                     letterSpacing: 1.0,
                   ),
                 ),

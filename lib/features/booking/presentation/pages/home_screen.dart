@@ -12,8 +12,8 @@ import 'package:zinko_app/features/user/presentation/pages/profile_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/dashboard_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/map_screen.dart';
 import 'package:zinko_app/features/community/presentation/pages/community_screen.dart';
-import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 
@@ -26,11 +26,16 @@ import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
 
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _screens = const [
     DashboardScreen(),
     MapScreen(),
@@ -39,12 +44,17 @@ class HomeScreen extends StatelessWidget {
     ProfileScreen(),
   ];
 
+  // Track visited tabs for lazy loading
+  final Set<int> _visitedTabs = {0};
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => di.sl<NavigationBloc>(),
       child: BlocBuilder<NavigationBloc, NavigationState>(
+        buildWhen: (previous, current) => previous.index != current.index,
         builder: (context, state) {
+          _visitedTabs.add(state.index);
           return ZinkoBackground(
             child: PopScope(
               canPop: state.index == 0,
@@ -58,9 +68,17 @@ class HomeScreen extends StatelessWidget {
                 backgroundColor: AppColors.transparent,
                 body: Stack(
                   children: [
-                    IndexedStack(
-                      index: state.index,
-                      children: _screens,
+                    Stack(
+                      children: List.generate(_screens.length, (index) {
+                        final bool isSelected = state.index == index;
+                        if (isSelected || _visitedTabs.contains(index)) {
+                          return Offstage(
+                            offstage: !isSelected,
+                            child: _screens[index],
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      }),
                     ),
                     Positioned(
                       bottom: 0,
@@ -130,20 +148,19 @@ class _FloatingGlassDock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
       padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 10),
       child: ZinkoGlassBox.thick(
         blur: 25,
         borderRadius: 30,
-        color: GlassTheme.glassColor(context).withValues(alpha: isDark ? 0.2 : 0.4),
-        border: Border.all(color: GlassTheme.glassBorder(context), width: 1.5),
-        boxShadow: [
+        color: OptimizedColors.backgroundDark70,
+        border: Border.all(color: OptimizedColors.glassBorderDark, width: 1.5),
+        boxShadow: const [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: OptimizedColors.black20,
             blurRadius: 30,
-            offset: const Offset(0, 10),
+            offset: Offset(0, 10),
           )
         ],
         child: SizedBox(
@@ -189,21 +206,20 @@ class _ExpandingNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSelected = index == current;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? Colors.white : Colors.black;
+    const activeColor = Colors.white;
 
     return GestureDetector(
       onTap: () => onTap(index),
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOutCubic,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? activeColor.withValues(alpha: 0.12) : Colors.transparent,
+          color: isSelected ? OptimizedColors.white12 : Colors.transparent,
           borderRadius: BorderRadius.circular(50),
           border: Border.all(
-            color: isSelected ? activeColor.withValues(alpha: 0.08) : Colors.transparent,
+            color: isSelected ? OptimizedColors.white10 : Colors.transparent,
             width: 1,
           ),
         ),
@@ -212,12 +228,12 @@ class _ExpandingNavItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected ? activeColor : GlassTheme.iconColor(context, isSelected: false),
+              color: isSelected ? activeColor : OptimizedColors.white50,
               size: 22,
             ),
             AnimatedSize(
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeInOut,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutCubic,
               child: isSelected
                   ? Padding(
                       padding: const EdgeInsets.only(left: 8),

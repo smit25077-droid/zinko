@@ -19,9 +19,7 @@ import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dar
 import 'package:zinko_app/features/booking/presentation/pages/booking_screen.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
-import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
-import 'package:zinko_app/widgets/zinko_common_bottom_sheet.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_detail_bloc.dart';
@@ -182,7 +180,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                       ),
                     ),
                   ),
-                ).animate().fadeIn(),
+                ).animate().fadeIn(duration: 250.ms),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -241,9 +239,9 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             decoration: BoxDecoration(
-              color: AppColors.white.withValues(alpha: 0.04),
+              color: OptimizedColors.white04,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.white.withValues(alpha: 0.05)),
+              border: Border.all(color: OptimizedColors.white05),
             ),
             child: Row(
               children: [
@@ -366,9 +364,9 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                   margin: const EdgeInsets.only(bottom: 12),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.03),
+                    color: OptimizedColors.white05,
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AppColors.white.withValues(alpha: 0.08)),
+                    border: Border.all(color: OptimizedColors.white08),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -389,8 +387,8 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                                     style: const TextStyle(
                                         color: AppColors.white, fontSize: 13, fontWeight: FontWeight.w800)),
                                 Text(r.date,
-                                    style: TextStyle(
-                                        color: AppColors.white.withValues(alpha: 0.5),
+                                    style: const TextStyle(
+                                        color: OptimizedColors.white50,
                                         fontSize: 10,
                                         fontWeight: FontWeight.w600)),
                               ],
@@ -401,8 +399,8 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                       ),
                       const SizedBox(height: 12),
                       Text(r.comment,
-                          style: TextStyle(
-                              color: AppColors.white.withValues(alpha: 0.8),
+                          style: const TextStyle(
+                              color: OptimizedColors.white80,
                               fontSize: 12,
                               height: 1.5,
                               fontWeight: FontWeight.w500)),
@@ -427,9 +425,9 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.1),
+                  color: OptimizedColors.primary08,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                  border: Border.all(color: OptimizedColors.primary25),
                 ),
                 child: Center(
                   child: Row(
@@ -450,7 +448,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                   ),
                 ),
               ),
-            ).animate().fadeIn(),
+            ).animate().fadeIn(duration: 250.ms),
           ],
         ],
       ),
@@ -483,9 +481,9 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
     return Container(
       padding: EdgeInsets.symmetric(horizontal: isSmall ? 6 : 8, vertical: isSmall ? 3 : 5),
       decoration: BoxDecoration(
-        color: AppColors.secondary.withValues(alpha: 0.1),
+        color: OptimizedColors.primary08,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.secondary.withValues(alpha: 0.3)),
+        border: Border.all(color: OptimizedColors.primary25),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -506,8 +504,8 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark.withValues(alpha: 0.95),
-        border: Border(top: BorderSide(color: AppColors.white.withValues(alpha: 0.1))),
+        color: OptimizedColors.backgroundDark70,
+        border: const Border(top: BorderSide(color: OptimizedColors.white10)),
       ),
       child: Row(
         children: [
@@ -558,13 +556,13 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
               decoration: BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  )
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: OptimizedColors.primary25,
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    )
+                  ],
               ),
               child: const Center(
                 child: Text(
@@ -574,10 +572,10 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                 ),
               ),
             ),
-          ).animate().scale(),
+          ).animate().scale(duration: 250.ms),
         ],
       ),
-    ).animate().fadeIn(duration: 400.ms);
+    ).animate().fadeIn(duration: 250.ms);
   }
 }
 
@@ -592,9 +590,9 @@ class _FavoriteButton extends StatelessWidget {
       icon: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.black.withValues(alpha: 0.4),
+          color: OptimizedColors.black40,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.white.withValues(alpha: 0.2)),
+          border: Border.all(color: OptimizedColors.white20),
         ),
         child: BlocBuilder<CafeBloc, CafeState>(
           builder: (context, cafeState) {
@@ -698,7 +696,7 @@ class _ImageCarousel extends StatelessWidget {
                           color: isSelected ? Colors.white : Colors.white24,
                           borderRadius: BorderRadius.circular(2),
                           boxShadow:
-                              isSelected ? [BoxShadow(color: Colors.white.withValues(alpha: 0.3), blurRadius: 4)] : [],
+                              isSelected ? [const BoxShadow(color: OptimizedColors.white30, blurRadius: 4)] : [],
                         ),
                       );
                     }).toList(),
