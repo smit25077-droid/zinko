@@ -1,5 +1,12 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/services.dart';
 import 'package:zinko_app/utils/common_util.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
@@ -14,7 +21,8 @@ import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/features/user/presentation/pages/profile_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/dashboard_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/map_screen.dart';
-import 'package:zinko_app/features/community/presentation/pages/community_screen.dart';
+
+// import 'package:zinko_app/features/community/presentation/pages/community_screen.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
@@ -27,8 +35,9 @@ import 'package:zinko_app/core/bloc/navigation/navigation_state.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
-import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
-import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
+
+// import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
+// import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -40,6 +49,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  DateTime? _lastBackPressTime;
   final List<Widget> _screens = const [
     DashboardScreen(),
     MapScreen(),
@@ -66,6 +76,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Timer? _backPressTimer;
+
+  Future<bool> handleDoubleBackPress(BuildContext context) async {
+    final now = DateTime.now();
+    _backPressTimer?.cancel();
+
+    if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      _backPressTimer = Timer(Duration(seconds: 2), () {
+        _lastBackPressTime = null;
+      });
+      ZinkoFlushbar.showToast(
+        message: 'Press back again to exit app',
+      );
+      return false; // Don't exit
+    }
+    return true; // Exit app
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<NavigationBloc, NavigationState>(
@@ -74,11 +103,16 @@ class _HomeScreenState extends State<HomeScreen> {
         _visitedTabs.add(state.index);
         return ZinkoBackground(
           child: PopScope(
-            canPop: state.index == 0,
-            onPopInvokedWithResult: (didPop, result) {
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) async {
               if (didPop) return;
-              if (state.index != 0) {
-                context.read<NavigationBloc>().add(const NavigationTabChanged(0));
+              final shouldPop = await handleDoubleBackPress(context);
+              if (shouldPop) {
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
+                } else {
+                  exit(0);
+                }
               }
             },
             child: Scaffold(
@@ -114,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             return;
                           }
                         }
-                        
+
                         context.read<NavigationBloc>().add(NavigationTabChanged(index));
                         _triggerTabRefresh(context, index);
                       },
@@ -133,10 +167,10 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (index) {
       case 0:
         if (context.read<WorkspaceBloc>().state is! WorkspaceLoading) {
-           context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
+          context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
         }
         if (context.read<CafeBloc>().state is! CafeLoading) {
-           context.read<CafeBloc>().add(const SearchCafesEvent());
+          context.read<CafeBloc>().add(const SearchCafesEvent());
         }
         break;
       case 1:

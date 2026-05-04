@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/bloc/navigation/navigation_bloc.dart';
@@ -32,6 +33,7 @@ import 'package:zinko_app/features/password_change/presentation/bloc/password_ch
 // 1999Moksh@
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await ServiceLocator.init();
   Bloc.observer = AppBlocObserver();
   runApp(

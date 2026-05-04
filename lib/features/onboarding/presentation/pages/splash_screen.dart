@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:zinko_app/features/booking/presentation/pages/home_screen.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_state.dart';
@@ -15,6 +16,7 @@ import 'package:zinko_app/features/onboarding/presentation/pages/onboarding_scre
 
 class SplashScreen extends StatelessWidget {
   static const String routeName = '/splash';
+
   const SplashScreen({super.key});
 
   @override
@@ -40,7 +42,12 @@ class _SplashContentState extends State<_SplashContent> {
   @override
   void initState() {
     super.initState();
+    _requestPermissions();
     _initializeVideo();
+  }
+
+  Future<void> _requestPermissions() async {
+    await Permission.location.request();
   }
 
   Future<void> _initializeVideo() async {
@@ -77,8 +84,7 @@ class _SplashContentState extends State<_SplashContent> {
       await _controller!.initialize().timeout(const Duration(seconds: 7));
 
       if (mounted) {
-        if (_controller!.value.size.width > 0 &&
-            _controller!.value.size.height > 0) {
+        if (_controller!.value.size.width > 0 && _controller!.value.size.height > 0) {
           splashBloc.add(SetSplashInitialized(true));
           _controller!.play();
           _controller!.setLooping(false);
@@ -101,10 +107,9 @@ class _SplashContentState extends State<_SplashContent> {
 
   void _videoListener() {
     if (_controller == null || !mounted) return;
-    
-    final bool isEnd = _controller!.value.position.inMilliseconds >= 
-                      (_controller!.value.duration.inMilliseconds - 100);
-                      
+
+    final bool isEnd = _controller!.value.position.inMilliseconds >= (_controller!.value.duration.inMilliseconds - 100);
+
     if (isEnd && !context.read<SplashBloc>().state.videoFinished) {
       context.read<SplashBloc>().add(SetSplashVideoFinished(true));
       // Navigation is now handled by the MultiBlocListener
@@ -113,7 +118,7 @@ class _SplashContentState extends State<_SplashContent> {
 
   void _navigateToNext() {
     if (!mounted) return;
-    
+
     final splashState = context.read<SplashBloc>().state;
     if (_navigationHasStarted || !splashState.videoFinished) return;
 
@@ -144,9 +149,7 @@ class _SplashContentState extends State<_SplashContent> {
       listeners: [
         BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            if (state is AuthAuthenticated ||
-                state is AuthUnauthenticated ||
-                state is AuthFailure) {
+            if (state is AuthAuthenticated || state is AuthUnauthenticated || state is AuthFailure) {
               _navigateToNext();
             }
           },
@@ -166,9 +169,7 @@ class _SplashContentState extends State<_SplashContent> {
             body: Stack(
               alignment: Alignment.center,
               children: [
-                if (splashState.isInitialized &&
-                    _controller != null &&
-                    _controller!.value.isInitialized)
+                if (splashState.isInitialized && _controller != null && _controller!.value.isInitialized)
                   Positioned.fill(
                     child: FittedBox(
                       fit: BoxFit.cover,
@@ -193,27 +194,18 @@ class _SplashContentState extends State<_SplashContent> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.3),
-                                  blurRadius: 40,
-                                  spreadRadius: 10),
+                                  color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 40, spreadRadius: 10),
                             ],
                           ),
                           child: Image.asset('assets/images/zinkoLogo.png',
-                              errorBuilder: (_, __, ___) => const Icon(
-                                  Icons.flash_on_rounded,
-                                  color: Colors.white,
-                                  size: 60)),
-                        )
-                            .animate(onPlay: (c) => c.repeat())
-                            .shimmer(duration: 1500.ms, color: Colors.white24),
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.flash_on_rounded, color: Colors.white, size: 60)),
+                        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1500.ms, color: Colors.white24),
                         CommonUtil.vGap24,
                         const Text(
                           'ZINKO',
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 8),
+                              color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 8),
                         ).animate().fadeIn(delay: 300.ms),
                       ],
                     ),
