@@ -4,6 +4,7 @@ import 'package:zinko_app/features/cafe/domain/usecases/toggle_wishlist.dart';
 import 'package:zinko_app/features/cafe/domain/usecases/get_wishlist.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
+import 'package:zinko_app/utils/network_error_handler.dart';
 
 class CafeBloc extends Bloc<CafeEvent, CafeState> {
   final SearchCafes searchCafes;
@@ -34,7 +35,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
       final wishlist = await getWishlist(event.userCode);
       emit(CafeWishlistLoaded(wishlist: wishlist));
     } catch (e) {
-      emit(CafeError(message: e.toString().replaceAll('Exception: ', '')));
+      emit(CafeError(message: NetworkErrorHandler.getErrorMessage(e)));
     }
   }
 
@@ -65,7 +66,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
         emit(CafeWishlistLoaded(wishlist: updatedWishlist));
       }
     } catch (e) {
-      emit(CafeError(message: e.toString().replaceAll('Exception: ', '')));
+      emit(CafeError(message: NetworkErrorHandler.getErrorMessage(e)));
     }
   }
 
@@ -92,7 +93,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
       
       emit(CafeLoaded(cafes: cafes, categories: finalCategories));
     } catch (e) {
-      emit(CafeError(message: e.toString().replaceAll('Exception: ', '')));
+      emit(CafeError(message: NetworkErrorHandler.getErrorMessage(e)));
     }
   }
 }

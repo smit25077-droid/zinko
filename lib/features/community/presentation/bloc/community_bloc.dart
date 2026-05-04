@@ -8,6 +8,8 @@ import 'package:zinko_app/features/community/domain/usecases/person_usecases.dar
 import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
 import 'package:zinko_app/features/community/presentation/bloc/community_state.dart';
 
+import 'package:zinko_app/utils/network_error_handler.dart';
+
 class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
   final GetPosts getPosts;
   final ToggleLikePost toggleLikePost;
@@ -71,7 +73,7 @@ class CommunityBloc extends Bloc<CommunityEvent, CommunityState> {
 
       emit(CommunityDataLoaded(posts: posts, groups: groups, people: people));
     } catch (e) {
-      emit(CommunityError('Failed to load community data: $e'));
+      emit(CommunityError(NetworkErrorHandler.getErrorMessage(e)));
     }
   }
 

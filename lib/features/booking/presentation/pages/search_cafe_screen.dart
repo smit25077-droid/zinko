@@ -131,7 +131,6 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                       return ZinkoEmptyState(
                         title: 'OOPS!',
                         message: state.message,
-                        icon: Icons.error_outline_rounded,
                         onRetry: () {
                           _searchController.clear();
                           context.read<WorkspaceBloc>().add(const SearchWorkspacesEvent(''));

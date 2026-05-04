@@ -96,10 +96,9 @@ class _WishlistScreenState extends State<WishlistScreen> {
               }
               if (state is CafeError) {
                 return ZinkoEmptyState(
-                  title: 'OOPS!',
-                  message: state.message,
-                  icon: Icons.error_outline_rounded,
-                  onRetry: () => _refreshWishlist(context),
+                  title: state.message,
+                  // message: state.message,
+                  // onRetry: () => _refreshWishlist(context),
                 );
               }
               return const SizedBox.shrink();
