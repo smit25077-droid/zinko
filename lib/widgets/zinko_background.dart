@@ -20,28 +20,25 @@ class ZinkoBackground extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Static Background Layer - Wrapped in RepaintBoundary to prevent 
-        // the background from repainting when the child (scrolling content) repaints.
+        // Static Background Layer
         Positioned(
-          child: RepaintBoundary(
-            child: Container(
-              decoration: BoxDecoration(
-                color: backgroundColor ?? AppColors.glassBlack,
-                image: DecorationImage(
-                  image: image ?? const AssetImage('assets/images/cafe_hotel_bg.png'),
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
-                  opacity: 0.4,
-                ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: backgroundColor ?? AppColors.glassBlack,
+              image: DecorationImage(
+                image: image ?? const AssetImage('assets/images/cafe_hotel_bg.png'),
+                fit: BoxFit.cover,
+                alignment: Alignment.topCenter,
+                // opacity: 0.4,
               ),
-              child: showOverlay
-                  ? Container(
-                      decoration: BoxDecoration(
-                        color: backgroundColor ??  Colors.black.withValues(alpha: 0.5),
-                      ),
-                    )
-                  : null,
             ),
+            child: showOverlay
+                ? Container(
+                    decoration: BoxDecoration(
+                      color: backgroundColor ??  Colors.black.withValues(alpha: 0.5),
+                    ),
+                  )
+                : null,
           ),
         ),
         // Content Layer

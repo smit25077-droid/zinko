@@ -130,6 +130,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
 
                               // _buildEmptyState(context)
                               : ListView.builder(
+                                  clipBehavior: Clip.none,
                                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                                   // physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                                   itemCount: filteredBookings.length,
@@ -326,13 +327,13 @@ class _BookingCard extends StatelessWidget {
                         const SizedBox(height: 2),
                         Row(
                           children: [
-                            Icon(Icons.location_on_rounded, size: 10, color: OptimizedColors.white40),
+                            Icon(Icons.location_on_rounded, size: 10, color: OptimizedColors.white60),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
                                 location,
                                 style: TextStyle(
-                                    fontSize: 11, color: OptimizedColors.white50, fontWeight: FontWeight.w600),
+                                    fontSize: 11, color: OptimizedColors.white70, fontWeight: FontWeight.w600),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),

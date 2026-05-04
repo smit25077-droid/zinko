@@ -21,9 +21,10 @@ class ZinkoScrollBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      clipBehavior: Clip.none,
       scrollDirection: scrollDirection,
       controller: controller,
-      physics: physics,
+      physics: BouncingScrollPhysics() ?? physics,
       padding: padding ?? const EdgeInsets.symmetric(horizontal: 20),
       child: child,
     );

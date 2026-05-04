@@ -214,7 +214,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
                     Expanded(
                       child: Text(workspace.location,
                           style: const TextStyle(
-                              fontSize: 12, color: OptimizedColors.white50, fontWeight: FontWeight.w600)),
+                              fontSize: 12, color: OptimizedColors.white70, fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -312,7 +312,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
                             style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w900,
-                                color: OptimizedColors.white50,
+                                color: OptimizedColors.white70,
                                 letterSpacing: 1.2)),
                         Text('£${balance.toStringAsFixed(2)}',
                             style: const TextStyle(
@@ -342,7 +342,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label,
-              style: const TextStyle(color: OptimizedColors.white50, fontSize: 12, fontWeight: FontWeight.w700)),
+              style: const TextStyle(color: OptimizedColors.white70, fontSize: 13, fontWeight: FontWeight.w700)),
           Text(value, style: const TextStyle(color: AppColors.white, fontSize: 14, fontWeight: FontWeight.w800)),
         ],
       ),
@@ -360,7 +360,7 @@ class _ReviewBookingScreenContent extends StatelessWidget {
           if (title != null) ...[
             Text(title,
                 style: const TextStyle(
-                    color: OptimizedColors.white50, fontSize: 8, fontWeight: FontWeight.w800, letterSpacing: 0.5)),
+                    color: OptimizedColors.white60, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
             const SizedBox(height: 16),
           ],
           child,

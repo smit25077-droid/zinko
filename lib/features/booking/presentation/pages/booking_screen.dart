@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
+import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
@@ -300,8 +301,8 @@ class _BookingScreenContent extends StatelessWidget {
                 style: TextStyle(
                   color: selected
                       ? AppColors.white
-                      : (selectable ? AppColors.white : AppColors.white.withValues(alpha: 0.2)),
-                  fontSize: 12,
+                      : (selectable ? AppColors.white : AppColors.white.withValues(alpha: 0.35)),
+                  fontSize: 13,
                   fontWeight: selected ? FontWeight.w900 : FontWeight.w600,
                 ),
               ),
@@ -342,10 +343,7 @@ class _BookingScreenContent extends StatelessWidget {
       children: [
         Text('HOW MANY HOURS?',
             style: TextStyle(
-                color: GlassTheme.secondaryTextColor(context),
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5)),
+                color: OptimizedColors.white70, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
         const SizedBox(height: 8),
         SizedBox(
           height: 38,
@@ -395,10 +393,7 @@ class _BookingScreenContent extends StatelessWidget {
         children: [
           Text('AUTOMATIC CHECK-OUT AT',
               style: TextStyle(
-                  color: GlassTheme.secondaryTextColor(context),
-                  fontSize: 9,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5)),
+                  color: OptimizedColors.white70, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
           Text(checkout,
               style: TextStyle(color: GlassTheme.textColor(context), fontSize: 12, fontWeight: FontWeight.w900)),
         ],
@@ -412,10 +407,7 @@ class _BookingScreenContent extends StatelessWidget {
       children: [
         Text(label,
             style: TextStyle(
-                color: GlassTheme.secondaryTextColor(context),
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 0.5)),
+                color: OptimizedColors.white70, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
         const SizedBox(height: 8),
         SizedBox(
           height: 38,
@@ -463,8 +455,7 @@ class _BookingScreenContent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('How many people are joining?',
-                  style: TextStyle(
-                      color: GlassTheme.secondaryTextColor(context), fontSize: 10, fontWeight: FontWeight.w600)),
+                  style: TextStyle(color: OptimizedColors.white70, fontSize: 11, fontWeight: FontWeight.w600)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
@@ -523,7 +514,7 @@ class _BookingScreenContent extends StatelessWidget {
       child: areas.isEmpty
           ? Center(
               child: Text('No tables available',
-                  style: TextStyle(color: GlassTheme.secondaryTextColor(context), fontSize: 11)))
+                  style: TextStyle(color: GlassTheme.textColor(context).withValues(alpha: 0.6), fontSize: 11)))
           : GridView.builder(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
@@ -560,8 +551,8 @@ class _BookingScreenContent extends StatelessWidget {
                                 fontWeight: FontWeight.w900)),
                         Text('${ws.totalSeats} seats',
                             style: TextStyle(
-                                color: AppColors.white.withValues(alpha: selected ? 0.7 : 0.4),
-                                fontSize: 8,
+                                color: AppColors.white.withValues(alpha: selected ? 0.8 : 0.5),
+                                fontSize: 9,
                                 fontWeight: FontWeight.w600)),
                       ],
                     ),
@@ -600,7 +591,7 @@ class _BookingScreenContent extends StatelessWidget {
         children: [
           Text(label,
               style: TextStyle(
-                  color: isBold ? GlassTheme.textColor(context) : GlassTheme.secondaryTextColor(context),
+                  color: isBold ? GlassTheme.textColor(context) : OptimizedColors.white70,
                   fontSize: isBold ? 14 : 12,
                   fontWeight: isBold ? FontWeight.w900 : FontWeight.w600)),
           Text(value,
@@ -621,7 +612,8 @@ class _BookingScreenContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title,
-              style: TextStyle(color: AppColors.white50, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
+              style: TextStyle(
+                  color: OptimizedColors.white60, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1.5)),
           const SizedBox(height: 12),
           child,
         ],
@@ -634,7 +626,7 @@ class _BookingScreenContent extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
       decoration: BoxDecoration(
-        color: AppColors.backgroundDark.withValues(alpha: 0.95),
+        color: AppColors.black,
         border: Border(top: BorderSide(color: AppColors.white.withValues(alpha: 0.1))),
       ),
       child: GestureDetector(

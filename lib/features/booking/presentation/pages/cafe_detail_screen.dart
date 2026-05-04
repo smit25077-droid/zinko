@@ -504,7 +504,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
       decoration: BoxDecoration(
-        color: OptimizedColors.backgroundDark70,
+        color: AppColors.black,
         border: const Border(top: BorderSide(color: OptimizedColors.white10)),
       ),
       child: Row(

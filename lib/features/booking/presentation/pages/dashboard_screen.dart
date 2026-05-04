@@ -171,13 +171,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Padding(
                         padding: CommonUtil.pH24,
                         child: Text(
-                          'SKIP THE WAIT\nBOOK WITH ZINKO',
+                          'Skip The Wait,\nBook With ZINKO',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w900,
                             color: GlassTheme.textColor(context),
                             height: 1.1,
-                            letterSpacing: -1,
+                            // letterSpacing: -1,
                           ),
                         ),
                       ),
@@ -401,6 +401,7 @@ class _RecommendedList extends StatelessWidget {
     return SizedBox(
       height: 200,
       child: ListView.builder(
+        clipBehavior: Clip.none,
         scrollDirection: Axis.horizontal,
         padding: CommonUtil.pH16,
         itemCount: workspaces.length,

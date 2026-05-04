@@ -17,6 +17,7 @@ import 'package:zinko_app/features/onboarding/presentation/pages/splash_screen.d
 import 'package:zinko_app/features/settings/presentation/pages/reset_password_screen.dart';
 import 'package:zinko_app/features/settings/presentation/bloc/settings_bloc.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
+import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
@@ -24,7 +25,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
-
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = '/settings';
@@ -73,6 +73,7 @@ class _SettingsContent extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      CommonUtil.vGap12,
                       _buildSectionTitle(context, 'PREFERENCES'),
                       CommonUtil.vGap12,
                       _buildGlassGroup(
@@ -106,7 +107,6 @@ class _SettingsContent extends StatelessWidget {
                             settingsState.showStartupVideo,
                             (v) => context.read<SettingsBloc>().add(ToggleStartupVideo(v)),
                           ),
-
                         ],
                       ),
                       CommonUtil.vGap24,
@@ -220,19 +220,14 @@ class _SettingsContent extends StatelessWidget {
   }
 
   Widget _buildGlassGroup(BuildContext context, List<Widget> children) {
-    return ClipRRect(
-      borderRadius: CommonUtil.bRadius24,
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          decoration: BoxDecoration(
-            color: GlassTheme.glassColor(context),
-            borderRadius: CommonUtil.bRadius24,
-            border: Border.all(color: GlassTheme.glassBorder(context), width: 1.2),
-          ),
-          child: Column(children: children),
-        ),
-      ),
+    return ZinkoCommonCard(
+      padding: EdgeInsets.zero,
+      // decoration: BoxDecoration(
+      //   color: GlassTheme.glassColor(context),
+      //   borderRadius: CommonUtil.bRadius24,
+      //   border: Border.all(color: GlassTheme.glassBorder(context), width: 1.2),
+      // ),
+      child: Column(children: children),
     ).animate(delay: 200.ms).fadeIn();
   }
 
