@@ -13,14 +13,67 @@ import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 import 'package:zinko_app/core/routes/app_router.dart';
+import 'package:zinko_app/widgets/zinko_common_bottom_sheet.dart';
 
 class SubscriptionPlansScreen extends StatelessWidget {
   static const String routeName = '/subscription-plans';
 
   const SubscriptionPlansScreen({super.key});
 
-  void _onPlanSelected(BuildContext context, String planName) {
-    context.read<UserBloc>().add(SetMembershipEvent(planName));
+  // void _onPlanSelected(BuildContext context, String planName) {
+  //   context.read<UserBloc>().add(SetMembershipEvent(planName));
+  // }
+
+  void _showComingSoon(BuildContext context) {
+    ZinkoCommonBottomSheet.show(
+      context: context,
+      title: 'COMING SOON',
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.primary.withValues(alpha: 0.1),
+            ),
+            child: const Icon(
+              Icons.rocket_launch_rounded,
+              color: AppColors.primary,
+              size: 40,
+            ),
+          ).animate().scale(delay: 200.ms, duration: 600.ms, curve: Curves.easeOutBack),
+          const SizedBox(height: 24),
+          Text(
+            'We are currently refining these premium experiences to ensure they meet the highest standards of luxury and convenience.',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: GlassTheme.secondaryTextColor(context),
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              child: const Text(
+                'NOTIFY ME',
+                style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -73,7 +126,8 @@ class SubscriptionPlansScreen extends StatelessWidget {
                       'Premium Badge Profile',
                     ],
                     accentColor: AppColors.primary,
-                    onTap: () => _onPlanSelected(context, 'PRO'),
+                    onTap: () => _showComingSoon(context),
+                    // onTap: () => _onPlanSelected(context, 'PRO'),
                   ).animate().fadeIn(duration: 800.ms),
                   const SizedBox(height: 24),
                   _SubscriptionCard(
@@ -90,7 +144,8 @@ class SubscriptionPlansScreen extends StatelessWidget {
                     ],
                     accentColor: AppColors.elite,
                     isElite: true,
-                    onTap: () => _onPlanSelected(context, 'ELITE'),
+                    onTap: () => _showComingSoon(context),
+                    // onTap: () => _onPlanSelected(context, 'ELITE'),
                   ).animate(delay: 200.ms).fadeIn(duration: 800.ms),
                 ],
               ),

@@ -36,7 +36,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }) : super(UserInitial()) {
     on<GetUserProfileEvent>(_onGetUserProfile);
     on<UpdateUserProfileEvent>(_onUpdateUserProfile);
-    on<SetMembershipEvent>(_onSetMembership);
+    // on<SetMembershipEvent>(_onSetMembership);
     on<AddMoneyEvent>(_onAddMoney);
     on<RedeemReferralEvent>(_onRedeemReferral);
     on<UpdateVisibilityEvent>(_onUpdateVisibility);
@@ -94,30 +94,30 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     );
   }
 
-  Future<void> _onSetMembership(
-      SetMembershipEvent event, Emitter<UserState> emit) async {
-    if (state is UserLoaded) {
-      final user = (state as UserLoaded).user;
-
-      final result = await updateUserProfile(UpdateUserParams(
-        name: user.name,  
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        bio: user.bio,
-        userCode: user.userCode,
-        membership: event.membership,
-      ));
-
-      result.fold(
-        (failure) => emit(UserError(failure.message)),
-        (updatedUser) {
-          emit(UserLoaded(updatedUser));
-          emit(UserMembershipUpdateSuccess(updatedUser, event.membership));
-        },
-      );
-    }
-  }
+  // Future<void> _onSetMembership(
+  //     SetMembershipEvent event, Emitter<UserState> emit) async {
+  //   if (state is UserLoaded) {
+  //     final user = (state as UserLoaded).user;
+  //
+  //     final result = await updateUserProfile(UpdateUserParams(
+  //       name: user.name,
+  //       email: user.email,
+  //       phone: user.phone,
+  //       role: user.role,
+  //       bio: user.bio,
+  //       userCode: user.userCode,
+  //       membership: event.membership,
+  //     ));
+  //
+  //     result.fold(
+  //       (failure) => emit(UserError(failure.message)),
+  //       (updatedUser) {
+  //         emit(UserLoaded(updatedUser));
+  //         emit(UserMembershipUpdateSuccess(updatedUser, event.membership));
+  //       },
+  //     );
+  //   }
+  // }
 
   Future<void> _onAddMoney(AddMoneyEvent event, Emitter<UserState> emit) async {
     emit(UserLoading());
