@@ -8,6 +8,7 @@ import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
+import 'package:zinko_app/widgets/zinko_empty_state.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
@@ -82,7 +83,12 @@ class _CompleteCafeListScreenState extends State<CompleteCafeListScreen> {
                         },
                         color: GlassTheme.textColor(context),
                         child: filteredBookings.isEmpty
-                                    ? _buildEmptyState(context)
+                                    ?
+                        ZinkoEmptyState(
+                          title: 'NO BOOKINGS',
+                          message: 'Your future reservations will appear here. Start exploring workspaces now.',
+                        )
+                        // _buildEmptyState(context)
                                     : ListView.builder(
                                         padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
                                         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -108,58 +114,58 @@ class _CompleteCafeListScreenState extends State<CompleteCafeListScreen> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: GlassTheme.glassColor(context),
-              shape: BoxShape.circle,
-              border: Border.all(color: GlassTheme.glassBorder(context)),
-              boxShadow: [
-                BoxShadow(
-                  color: OptimizedColors.black20,
-                  blurRadius: 30,
-                  offset: const Offset(0, 10),
-                )
-              ],
-            ),
-            child: Icon(
-              Icons.event_busy_rounded,
-              size: 40,
-              color: OptimizedColors.white40,
-            ),
-          ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-          const SizedBox(height: 24),
-          Text(
-            'NO RECORDS FOUND',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: GlassTheme.textColor(context),
-              letterSpacing: -0.5,
-            ),
-          ).animate().fadeIn(delay: 200.ms),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 48),
-            child: Text(
-              'Your history will appear here. Start exploring workspaces now.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: GlassTheme.secondaryTextColor(context),
-                height: 1.5,
-              ),
-            ),
-          ).animate().fadeIn(delay: 400.ms),
-        ],
-      ),
-    );
-  }
+  // Widget _buildEmptyState(BuildContext context) {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Container(
+  //           padding: const EdgeInsets.all(24),
+  //           decoration: BoxDecoration(
+  //             color: GlassTheme.glassColor(context),
+  //             shape: BoxShape.circle,
+  //             border: Border.all(color: GlassTheme.glassBorder(context)),
+  //             boxShadow: [
+  //               BoxShadow(
+  //                 color: OptimizedColors.black20,
+  //                 blurRadius: 30,
+  //                 offset: const Offset(0, 10),
+  //               )
+  //             ],
+  //           ),
+  //           child: Icon(
+  //             Icons.event_busy_rounded,
+  //             size: 40,
+  //             color: OptimizedColors.white40,
+  //           ),
+  //         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+  //         const SizedBox(height: 24),
+  //         Text(
+  //           'NO RECORDS FOUND',
+  //           style: TextStyle(
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.w900,
+  //             color: GlassTheme.textColor(context),
+  //             letterSpacing: -0.5,
+  //           ),
+  //         ).animate().fadeIn(delay: 200.ms),
+  //         const SizedBox(height: 8),
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 48),
+  //           child: Text(
+  //             'Your history will appear here. Start exploring workspaces now.',
+  //             textAlign: TextAlign.center,
+  //             style: TextStyle(
+  //               fontSize: 12,
+  //               color: GlassTheme.secondaryTextColor(context),
+  //               height: 1.5,
+  //             ),
+  //           ),
+  //         ).animate().fadeIn(delay: 400.ms),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildTabs(BuildContext context, int selectedTab) {
     return Padding(

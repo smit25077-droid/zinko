@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
-import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/complete_cafe_list_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/booking_details_screen.dart';
 import 'package:zinko_app/features/feedback/presentation/pages/cafe_reviews_screen.dart';
 import 'package:zinko_app/features/feedback/presentation/bloc/feedback_bloc.dart';

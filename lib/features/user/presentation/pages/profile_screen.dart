@@ -5,7 +5,7 @@ import 'package:zinko_app/widgets/zinko_webview_screen.dart';
 import 'package:zinko_app/utils/common_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
-import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/complete_cafe_list_screen.dart';
 import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 

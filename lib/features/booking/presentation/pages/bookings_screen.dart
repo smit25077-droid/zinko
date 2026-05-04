@@ -15,6 +15,7 @@ import 'package:zinko_app/features/booking/presentation/pages/booking_details_sc
 import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_empty_state.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 
 class BookingsScreen extends StatelessWidget {
@@ -46,8 +47,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar:
-      ZinkoAppBar(title: 'BOOKINGS'),
+      appBar: ZinkoAppBar(title: 'BOOKINGS'),
       // AppBar(
       //   title: Text(
       //     'BOOKINGS',
@@ -99,9 +99,7 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
           child: SafeArea(
             child: BlocBuilder<BookingBloc, BookingState>(
               buildWhen: (previous, current) =>
-                  current is BookingLoading ||
-                  current is BookingsLoaded ||
-                  current is BookingError,
+                  current is BookingLoading || current is BookingsLoaded || current is BookingError,
               builder: (context, state) {
                 if (state is BookingLoading) {
                   return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
@@ -125,17 +123,23 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
                           },
                           color: GlassTheme.textColor(context),
                           child: filteredBookings.isEmpty
-                              ? _buildEmptyState(context)
+                              ? ZinkoEmptyState(
+                                  title: 'NO BOOKINGS',
+                                  message: 'Your future reservations will appear here. Start exploring workspaces now.',
+                                )
+
+                              // _buildEmptyState(context)
                               : ListView.builder(
                                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                                   // physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                                   itemCount: filteredBookings.length,
-                                  itemExtent: 180, // Fixed height for booking cards
+                                  itemExtent: 180,
+                                  // Fixed height for booking cards
                                   addAutomaticKeepAlives: false,
                                   itemBuilder: (context, index) {
-                                      return _BookingCard(
-                                        booking: filteredBookings[index],
-                                      ).animate().fadeIn(delay: (index * 30).ms, duration: 250.ms);
+                                    return _BookingCard(
+                                      booking: filteredBookings[index],
+                                    ).animate().fadeIn(delay: (index * 30).ms, duration: 250.ms);
                                   },
                                 ),
                         ),
@@ -177,58 +181,58 @@ class _BookingsScreenContentState extends State<_BookingsScreenContent> {
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: AppColors.backgroundDark,
-              shape: BoxShape.circle,
-              border: Border.all(color: OptimizedColors.white10),
-              boxShadow: [
-                BoxShadow(
-                    color: OptimizedColors.applyAlpha(AppColors.secondary, 0.1),
-                    blurRadius: 30,
-                    offset: const Offset(0, 10),
-                )
-              ],
-            ),
-            child: Icon(
-              Icons.event_busy_rounded,
-              size: 40,
-              color: AppColors.white50,
-            ),
-          ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
-          const SizedBox(height: 24),
-          Text(
-            'NO BOOKINGS',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              color: GlassTheme.textColor(context),
-              letterSpacing: -0.5,
-            ),
-          ).animate().fadeIn(delay: 150.ms, duration: 250.ms),
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 48),
-            child: Text(
-              'Your future reservations will appear here. Start exploring workspaces now.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 12,
-                color: GlassTheme.secondaryTextColor(context),
-                height: 1.5,
-              ),
-            ),
-          ).animate().fadeIn(delay: 250.ms, duration: 250.ms),
-        ],
-      ),
-    );
-  }
+  // Widget _buildEmptyState(BuildContext context) {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Container(
+  //           padding: const EdgeInsets.all(24),
+  //           decoration: BoxDecoration(
+  //             color: AppColors.backgroundDark,
+  //             shape: BoxShape.circle,
+  //             border: Border.all(color: OptimizedColors.white10),
+  //             boxShadow: [
+  //               BoxShadow(
+  //                 color: OptimizedColors.applyAlpha(AppColors.secondary, 0.1),
+  //                 blurRadius: 30,
+  //                 offset: const Offset(0, 10),
+  //               )
+  //             ],
+  //           ),
+  //           child: Icon(
+  //             Icons.event_busy_rounded,
+  //             size: 40,
+  //             color: AppColors.white50,
+  //           ),
+  //         ).animate().scale(duration: 600.ms, curve: Curves.easeOutBack),
+  //         const SizedBox(height: 24),
+  //         Text(
+  //           'NO BOOKINGS',
+  //           style: TextStyle(
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.w900,
+  //             color: GlassTheme.textColor(context),
+  //             letterSpacing: -0.5,
+  //           ),
+  //         ).animate().fadeIn(delay: 150.ms, duration: 250.ms),
+  //         const SizedBox(height: 8),
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 48),
+  //           child: Text(
+  //             'Your future reservations will appear here. Start exploring workspaces now.',
+  //             textAlign: TextAlign.center,
+  //             style: TextStyle(
+  //               fontSize: 12,
+  //               color: GlassTheme.secondaryTextColor(context),
+  //               height: 1.5,
+  //             ),
+  //           ),
+  //         ).animate().fadeIn(delay: 250.ms, duration: 250.ms),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
 
 class _TabItem extends StatelessWidget {
@@ -244,7 +248,9 @@ class _TabItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16,),
+          padding: const EdgeInsets.symmetric(
+            vertical: 16,
+          ),
           decoration: BoxDecoration(
             color: isSelected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(50),
@@ -326,9 +332,7 @@ class _BookingCard extends StatelessWidget {
                               child: Text(
                                 location,
                                 style: TextStyle(
-                                    fontSize: 11,
-                                    color: OptimizedColors.white50,
-                                    fontWeight: FontWeight.w600),
+                                    fontSize: 11, color: OptimizedColors.white50, fontWeight: FontWeight.w600),
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
