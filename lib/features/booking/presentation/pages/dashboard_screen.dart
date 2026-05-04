@@ -99,10 +99,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         builder: (context, state) {
                           String firstName = 'Explorer';
                           String profileImage = '';
+                          String gender = 'male';
 
                           if (state is UserLoaded) {
                             firstName = state.user.name.split(' ').first;
                             profileImage = state.user.profileImage;
+                            gender = state.user.gender.toLowerCase();
                           }
 
                           return Padding(
@@ -125,20 +127,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           )
                                         ],
                                       ),
-                                      child: profileImage.isNotEmpty
-                                          ? ZinkoNetworkImage(
-                                              imageUrl: profileImage,
-                                              width: 44,
-                                              height: 44,
-                                              borderRadius: CommonUtil.r22,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : Container(
-                                              decoration: const BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                color: AppColors.backgroundDark,
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadiusGeometry.all(Radius.circular(CommonUtil.s24)),
+                                        child: Image.asset(
+                                                gender == 'female'
+                                                    ? 'assets/images/female_user.png'
+                                                    : 'assets/images/male_user.png',
+                                                width: 44,
+                                                height: 44,
+                                                fit: BoxFit.cover,
                                               ),
-                                              child: const Icon(Icons.person, color: AppColors.white)),
+                                      ),
                                     ),
                                     CommonUtil.hGap12,
                                     Column(
@@ -172,9 +171,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Padding(
                         padding: CommonUtil.pH24,
                         child: Text(
-                          'DISCOVER YOUR\nCREATIVE HAVEN',
+                          'SKIP THE WAIT\nBOOK WITH ZINKO',
                           style: TextStyle(
-                            fontSize: 28,
+                            fontSize: 24,
                             fontWeight: FontWeight.w900,
                             color: GlassTheme.textColor(context),
                             height: 1.1,

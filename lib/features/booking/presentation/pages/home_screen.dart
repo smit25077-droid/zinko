@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/services.dart';
 import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';

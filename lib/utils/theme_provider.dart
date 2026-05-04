@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:google_fonts/google_fonts.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 
 class ThemeProvider with ChangeNotifier {
@@ -20,6 +20,7 @@ class ThemeProvider with ChangeNotifier {
     brightness: Brightness.light,
     primaryColor: AppColors.primary,
     scaffoldBackgroundColor: AppColors.backgroundLight,
+    textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
@@ -62,6 +63,7 @@ class ThemeProvider with ChangeNotifier {
     brightness: Brightness.dark,
     primaryColor: AppColors.primary,
     scaffoldBackgroundColor: AppColors.backgroundDark,
+    textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
     pageTransitionsTheme: const PageTransitionsTheme(
       builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
