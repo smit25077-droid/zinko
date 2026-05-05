@@ -63,59 +63,50 @@ class BookingDetailsScreen extends StatelessWidget {
           title: 'RESERVATION DETAILS',
         ),
         body: ZinkoBackground(
-          child: Stack(
-            children: [
-              ZinkoScrollBody(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 140),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildPremiumHeader(context),
-                    const SizedBox(height: 24),
-                    _buildStatusCard(context),
-                    const SizedBox(height: 24),
-                    _buildInfoSection(context, 'MAIN INFORMATION', [
-                      _DetailItem(label: 'BOOKING CODE', value: booking.bookingCode, icon: Icons.qr_code_2_rounded),
-                      _DetailItem(label: 'WORKSPACE', value: booking.seatType, icon: Icons.work_outline_rounded),
-                      _DetailItem(label: 'PERSONS', value: '${booking.noOfPersons} Persons', icon: Icons.person_outline_rounded),
-                    ]),
-                    const SizedBox(height: 16),
-                    _buildInfoSection(context, 'SCHEDULE & TIME', [
-                      _DetailItem(
-                        label: 'DATE',
-                        value: booking.bookingDate != null 
-                          ? DateFormat('EEEE, d MMMM yyyy').format(booking.bookingDate!)
-                          : 'TBD',
-                        icon: Icons.calendar_today_rounded,
-                      ),
-                      _DetailItem(label: 'TIME SLOT', value: booking.timeSlot, icon: Icons.access_time_rounded),
-                      _DetailItem(label: 'TOTAL DURATION', value: '${booking.totalHours} Hours', icon: Icons.timelapse_rounded),
-                    ]),
-                    const SizedBox(height: 16),
-                    _buildInfoSection(context, 'CHECK-IN/OUT LOGS', [
-                      _DetailItem(label: 'TENTATIVE IN', value: _formatTime(booking.tentativeCheckInDatetime), icon: Icons.login_rounded),
-                      _DetailItem(label: 'TENTATIVE OUT', value: _formatTime(booking.tentativeCheckOutDatetime), icon: Icons.logout_rounded),
-                      _DetailItem(
-                        label: 'ACTUAL IN', 
-                        value: (booking.checkInDatetime?.isNotEmpty ?? false) ? _formatTime(booking.checkInDatetime!) : '--:--', 
-                        icon: Icons.check_circle_outline_rounded,
-                        valueColor: (booking.checkInDatetime?.isNotEmpty ?? false) ? AppColors.success : null,
-                      ),
-                    ]),
-                    const SizedBox(height: 16),
-                    _buildPriceCard(context),
-                  ],
-                ),
-              ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _buildBottomActions(context),
-              ),
-            ],
+          child: ZinkoScrollBody(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildPremiumHeader(context),
+                const SizedBox(height: 24),
+                _buildStatusCard(context),
+                const SizedBox(height: 24),
+                _buildInfoSection(context, 'MAIN INFORMATION', [
+                  _DetailItem(label: 'BOOKING CODE', value: booking.bookingCode, icon: Icons.qr_code_2_rounded),
+                  _DetailItem(label: 'WORKSPACE', value: booking.seatType, icon: Icons.work_outline_rounded),
+                  _DetailItem(label: 'PERSONS', value: '${booking.noOfPersons} Persons', icon: Icons.person_outline_rounded),
+                ]),
+                const SizedBox(height: 16),
+                _buildInfoSection(context, 'SCHEDULE & TIME', [
+                  _DetailItem(
+                    label: 'DATE',
+                    value: booking.bookingDate != null
+                      ? DateFormat('EEEE, d MMMM yyyy').format(booking.bookingDate!)
+                      : 'TBD',
+                    icon: Icons.calendar_today_rounded,
+                  ),
+                  _DetailItem(label: 'TIME SLOT', value: booking.timeSlot, icon: Icons.access_time_rounded),
+                  _DetailItem(label: 'TOTAL DURATION', value: '${booking.totalHours} Hours', icon: Icons.timelapse_rounded),
+                ]),
+                const SizedBox(height: 16),
+                _buildInfoSection(context, 'CHECK-IN/OUT LOGS', [
+                  _DetailItem(label: 'TENTATIVE IN', value: _formatTime(booking.tentativeCheckInDatetime), icon: Icons.login_rounded),
+                  _DetailItem(label: 'TENTATIVE OUT', value: _formatTime(booking.tentativeCheckOutDatetime), icon: Icons.logout_rounded),
+                  _DetailItem(
+                    label: 'ACTUAL IN',
+                    value: (booking.checkInDatetime?.isNotEmpty ?? false) ? _formatTime(booking.checkInDatetime!) : '--:--',
+                    icon: Icons.check_circle_outline_rounded,
+                    valueColor: (booking.checkInDatetime?.isNotEmpty ?? false) ? AppColors.success : null,
+                  ),
+                ]),
+                const SizedBox(height: 16),
+                _buildPriceCard(context),
+              ],
+            ),
           ),
         ),
+        bottomNavigationBar: _buildBottomActions(context),
       ),
     );
   }
@@ -186,8 +177,12 @@ class BookingDetailsScreen extends StatelessWidget {
         statusColor = AppColors.error;
         statusIcon = Icons.cancel_rounded;
         break;
+        case 'COMPLETED':
+        statusColor = AppColors.success;
+        statusIcon = Icons.check_circle_outlined;
+        break;
       default:
-        statusColor = Colors.white54;
+        statusColor = Colors.white;
         statusIcon = Icons.info_outline_rounded;
     }
 
@@ -241,15 +236,15 @@ class BookingDetailsScreen extends StatelessWidget {
           child: Text(
             title,
             style: TextStyle(
-              color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.4),
-              fontSize: 11,
+              color: AppColors.white,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
               letterSpacing: 1.5,
             ),
           ),
         ),
         ZinkoCommonCard(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Column(
             children: items.asMap().entries.map((entry) {
               final isLast = entry.key == items.length - 1;
@@ -279,8 +274,8 @@ class BookingDetailsScreen extends StatelessWidget {
               Text(
                 item.label,
                 style: TextStyle(
-                  color: GlassTheme.textColor(context).withValues(alpha: 0.3),
-                  fontSize: 9,
+                  color: GlassTheme.textColor(context).withValues(alpha: 0.8),
+                  fontSize: 11,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.5,
                 ),
@@ -360,67 +355,60 @@ class BookingDetailsScreen extends StatelessWidget {
     final isCompleted = status == 'COMPLETED';
 
     return ClipRRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 30),
-          decoration: BoxDecoration(
-            color: OptimizedColors.applyAlpha(Colors.black, 0.5),
-            border: Border(top: BorderSide(color: OptimizedColors.white10)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isConfirmed)
-                _PrimaryButton(
-                  label: 'CHECK IN AT CENTRE',
-                  onTap: () => Navigator.pushNamed(context, OTPCheckInScreen.routeName, arguments: [
-                    booking.bookingCode,
-                    booking.bookingCode,
-                  ]),
+      child: ZinkoCommonCard(
+      borderRadius: 0,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isConfirmed)
+              _PrimaryButton(
+                label: 'CHECK IN AT CENTRE',
+                onTap: () => Navigator.pushNamed(context, OTPCheckInScreen.routeName, arguments: [
+                  booking.bookingCode,
+                  booking.bookingCode,
+                ]),
+              ),
+            if (isUpcoming || isPending)
+              _SecondaryButton(
+                label: 'CANCEL RESERVATION',
+                color: AppColors.error,
+                onTap: () => _showCancelDialog(context),
+              ),
+            if (isCompleted) ...[
+              _SecondaryButton(
+                label: 'VIEW REVIEWS',
+                color: AppColors.primary,
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  CafeReviewsScreen.routeName,
+                  arguments: {
+                    'cafeId': booking.cafeId,
+                    'cafeName': booking.cafeName,
+                  },
                 ),
-              if (isUpcoming || isPending)
-                _SecondaryButton(
-                  label: 'CANCEL RESERVATION',
-                  color: AppColors.error,
-                  onTap: () => _showCancelDialog(context),
-                ),
-              if (isCompleted) ...[
-                _SecondaryButton(
-                  label: 'VIEW REVIEWS',
-                  color: AppColors.primary,
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    CafeReviewsScreen.routeName,
-                    arguments: {
-                      'cafeId': booking.cafeId,
-                      'cafeName': booking.cafeName,
-                    },
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SecondaryButton(
+                      label: 'Add Review',
+                      color: Colors.amber,
+                      onTap: () => _showReviewBottomSheet(context, booking),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _SecondaryButton(
-                        label: 'Add Review',
-                        color: Colors.amber,
-                        onTap: () => _showReviewBottomSheet(context, booking),
-                      ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _SecondaryButton(
+                      label: 'SUGGESTION',
+                      color: Colors.grey,
+                      onTap: () => _showSuggestionBottomSheet(context, booking),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _SecondaryButton(
-                        label: 'SUGGESTION',
-                        color: OptimizedColors.white10,
-                        onTap: () => _showSuggestionBottomSheet(context, booking),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
@@ -468,81 +456,85 @@ class BookingDetailsScreen extends StatelessWidget {
   void _showReviewBottomSheet(BuildContext context, UserBookingEntity booking) {
     final textController = TextEditingController();
     double currentRating = 5.0;
+    final feedbackBloc = context.read<FeedbackBloc>();
 
     ZinkoCommonBottomSheet.show(
       context: context,
       title: 'RATE YOUR EXPERIENCE',
-      child: StatefulBuilder(
-        builder: (context, setModalState) {
-          String ratingLabel;
-          Color labelColor;
-          if (currentRating <= 1) { ratingLabel = "TERRIBLE"; labelColor = Colors.red; }
-          else if (currentRating <= 2) { ratingLabel = "POOR"; labelColor = Colors.orange; }
-          else if (currentRating <= 3) { ratingLabel = "AVERAGE"; labelColor = Colors.amber; }
-          else if (currentRating <= 4) { ratingLabel = "GOOD"; labelColor = Colors.lightGreen; }
-          else { ratingLabel = "EXCELLENT"; labelColor = AppColors.success; }
+      child: BlocProvider.value(
+        value: feedbackBloc,
+        child: StatefulBuilder(
+          builder: (context, setModalState) {
+            String ratingLabel;
+            Color labelColor;
+            if (currentRating <= 1) { ratingLabel = "TERRIBLE"; labelColor = Colors.red; }
+            else if (currentRating <= 2) { ratingLabel = "POOR"; labelColor = Colors.orange; }
+            else if (currentRating <= 3) { ratingLabel = "AVERAGE"; labelColor = Colors.amber; }
+            else if (currentRating <= 4) { ratingLabel = "GOOD"; labelColor = Colors.lightGreen; }
+            else { ratingLabel = "EXCELLENT"; labelColor = AppColors.success; }
 
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 10),
-              Text(
-                ratingLabel,
-                style: TextStyle(color: labelColor, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 2),
-              ),
-              const SizedBox(height: 16),
-              RatingBar.builder(
-                initialRating: currentRating,
-                minRating: 1,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemSize: 46,
-                glow: true,
-                glowColor: OptimizedColors.applyAlpha(Colors.amber, 0.3),
-                itemPadding: const EdgeInsets.symmetric(horizontal: 6.0),
-                itemBuilder: (context, _) => const Icon(Icons.star_rounded, color: Colors.amber),
-                onRatingUpdate: (val) {
-                  setModalState(() => currentRating = val);
-                },
-              ),
-              const SizedBox(height: 32),
-              TextField(
-                controller: textController,
-                maxLines: 4,
-                style: const TextStyle(color: Colors.white, fontSize: 14),
-                decoration: InputDecoration(
-                  hintText: 'Tell us more about your visit...',
-                  hintStyle: TextStyle(color: OptimizedColors.white20),
-                  filled: true,
-                  fillColor: OptimizedColors.white05,
-                  contentPadding: const EdgeInsets.all(20),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: OptimizedColors.white10),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 10),
+                Text(
+                  ratingLabel,
+                  style: TextStyle(color: labelColor, fontWeight: FontWeight.w900, fontSize: 18, letterSpacing: 2),
+                ),
+                const SizedBox(height: 16),
+                RatingBar.builder(
+                  initialRating: currentRating,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemSize: 46,
+                  glow: true,
+                  glowColor: OptimizedColors.applyAlpha(Colors.amber, 0.3),
+                  itemPadding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  itemBuilder: (context, _) => const Icon(Icons.star_rounded, color: Colors.amber),
+                  onRatingUpdate: (val) {
+                    setModalState(() => currentRating = val);
+                  },
+                ),
+                const SizedBox(height: 32),
+                TextField(
+                  controller: textController,
+                  maxLines: 4,
+                  style: const TextStyle(color: Colors.white, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: 'Tell us more about your visit...',
+                    hintStyle: TextStyle(color: OptimizedColors.white20),
+                    filled: true,
+                    fillColor: OptimizedColors.white05,
+                    contentPadding: const EdgeInsets.all(20),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      borderSide: BorderSide(color: OptimizedColors.white10),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 32),
-              _PrimaryButton(
-                label: 'SUBMIT REVIEW',
-                onTap: () {
-                  final authState = context.read<AuthBloc>().state;
-                  if (authState is AuthAuthenticated) {
-                    context.read<FeedbackBloc>().add(SubmitReviewEvent(
-                      cafeId: booking.cafeId,
-                      reviewText: textController.text,
-                      reviewStar: currentRating.toString(),
-                      userId: authState.userData.userCode.toString(),
-                    ));
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-            ],
-          );
-        },
+                const SizedBox(height: 32),
+                _PrimaryButton(
+                  label: 'SUBMIT REVIEW',
+                  onTap: () {
+                    final authState = context.read<AuthBloc>().state;
+                    if (authState is AuthAuthenticated) {
+                      context.read<FeedbackBloc>().add(SubmitReviewEvent(
+                        cafeId: booking.cafeId,
+                        reviewText: textController.text,
+                        reviewStar: currentRating.toString(),
+                        userId: authState.userData.userCode.toString(),
+                      ));
+                      Navigator.pop(context);
+                    }
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -643,19 +635,19 @@ class _SecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 54,
+      height: 50,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: OptimizedColors.applyAlpha(color, 0.1),
+            color: OptimizedColors.applyAlpha(color, 1),
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: OptimizedColors.applyAlpha(color, 0.2)),
           ),
           child: Center(
             child: Text(
               label,
-              style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 1),
             ),
           ),
         ),

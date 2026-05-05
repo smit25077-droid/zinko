@@ -13,6 +13,7 @@ import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
+import 'package:zinko_app/utils/debouncer.dart';
 
 class AllWorkspacesScreen extends StatefulWidget {
   static const String routeName = '/all-workspaces';
@@ -25,6 +26,7 @@ class AllWorkspacesScreen extends StatefulWidget {
 
 class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final _debouncer = Debouncer(milliseconds: 500);
 
   @override
   void initState() {
@@ -37,6 +39,7 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    _debouncer.dispose();
     super.dispose();
   }
 
@@ -63,7 +66,11 @@ class _AllWorkspacesScreenState extends State<AllWorkspacesScreen> {
                         height: 52,
                         child: TextField(
                           controller: _searchController,
-                          onChanged: (val) => context.read<WorkspaceBloc>().add(SearchWorkspacesEvent(val)),
+                          onChanged: (val) {
+                            _debouncer.run(() {
+                              context.read<WorkspaceBloc>().add(SearchWorkspacesEvent(val));
+                            });
+                          },
                           style: TextStyle(
                               color: GlassTheme.textColor(context), fontSize: 14, fontWeight: FontWeight.w600),
                           decoration: InputDecoration(
