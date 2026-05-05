@@ -204,7 +204,7 @@ class _FloatingGlassDock extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(CommonUtil.s20, 0, CommonUtil.s20, bottomPadding + CommonUtil.s10),
       child: ZinkoGlassBox.thick(
         blur: 25,
-        borderRadius: CommonUtil.r24,
+        borderRadius: CommonUtil.r50,
         color: OptimizedColors.backgroundDark70,
         border: Border.all(color: OptimizedColors.glassBorderDark, width: 1.5),
         boxShadow: const [

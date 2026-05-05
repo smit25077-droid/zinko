@@ -68,12 +68,28 @@ class _SplashContentState extends State<_SplashContent> {
     if (sl.isRegistered<VideoPlayerController>()) {
       _controller = sl<VideoPlayerController>();
       if (mounted && _controller != null) {
-        context.read<SplashBloc>().add(SetSplashInitialized(true));
-        _controller!.play();
-        _controller!.setLooping(false);
-        _controller!.addListener(_videoListener);
+        try {
+          if (_controller!.value.isInitialized &&
+              _controller!.value.size.width > 0 &&
+              _controller!.value.size.height > 0) {
+            _controller!.setVolume(0.0);
+            await _controller!.seekTo(Duration.zero);
+            if (!mounted) return;
+            _controller!.play();
+            _controller!.setLooping(false);
+            _controller!.addListener(_videoListener);
+            context.read<SplashBloc>().add(SetSplashInitialized(true));
+            return;
+          }
+        } catch (e) {
+          debugPrint("SL Video controller check failed: $e");
+        }
+        // If SL controller is not ready or failed, unregister and try manual init
+        if (sl.isRegistered<VideoPlayerController>()) {
+          sl.unregister<VideoPlayerController>();
+        }
+        _controller = null;
       }
-      return;
     }
 
     _controller = VideoPlayerController.asset('assets/images/zinko_video.mp4');
@@ -82,26 +98,27 @@ class _SplashContentState extends State<_SplashContent> {
     try {
       _controller!.setVolume(0.0);
       await _controller!.initialize().timeout(const Duration(seconds: 7));
+      if (!mounted) return;
 
-      if (mounted) {
-        if (_controller!.value.size.width > 0 && _controller!.value.size.height > 0) {
-          splashBloc.add(SetSplashInitialized(true));
-          _controller!.play();
-          _controller!.setLooping(false);
-          _controller!.addListener(_videoListener);
-        } else {
-          throw Exception("Video has zero size");
-        }
+      if (_controller!.value.size.width > 0 && _controller!.value.size.height > 0) {
+        await _controller!.seekTo(Duration.zero);
+        if (!mounted) return;
+        splashBloc.add(SetSplashInitialized(true));
+        _controller!.play();
+        _controller!.setLooping(false);
+        _controller!.addListener(_videoListener);
+      } else {
+        throw Exception("Video has zero size");
       }
     } catch (e) {
       debugPrint("Video initialization failed or timed out: $e");
       if (mounted) {
         splashBloc.add(SetSplashInitialized(false));
+        splashBloc.add(SetSplashVideoFinished(true));
+        Future.delayed(const Duration(seconds: 1), () {
+          if (mounted) _navigateToNext();
+        });
       }
-      splashBloc.add(SetSplashVideoFinished(true));
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) _navigateToNext();
-      });
     }
   }
 
@@ -182,31 +199,91 @@ class _SplashContentState extends State<_SplashContent> {
                   ),
 
                 // Fallback/Loading Logo shows while initializing or if video fails
-                if (!splashState.isInitialized)
+                if (!splashState.isInitialized || _controller == null || !_controller!.value.isInitialized)
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: AppColors.primary.withValues(alpha: 0.3), blurRadius: 40, spreadRadius: 10),
+                        SizedBox(
+                          width: 200,
+                          height: 200,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Outer Glow - Breathing
+                              Container(
+                                width: 180,
+                                height: 180,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      AppColors.primary.withValues(alpha: 0.2),
+                                      AppColors.primary.withValues(alpha: 0.0),
+                                    ],
+                                  ),
+                                ),
+                              ).animate(onPlay: (c) => c.repeat(reverse: true)).scale(
+                                    begin: const Offset(0.8, 0.8),
+                                    end: const Offset(1.1, 1.1),
+                                    duration: 2.seconds,
+                                    curve: Curves.easeInOut,
+                                  ),
+
+                              // Logo Container with Shimmer
+                          
+                              ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(20),
+                                child: Container(
+                                  width: 200,
+                                  height: 200,
+                                  decoration: BoxDecoration(
+                                    // shape: BoxShape.circle,
+                                    color: Colors.black.withValues(alpha: 0.5),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: AppColors.primary.withValues(alpha: 0.4),
+                                          blurRadius: 30,
+                                          spreadRadius: 5),
+                                    ],
+                                  ),
+                                  child: Image.asset(
+                                      'assets/images/zinkoLogo.png',
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) =>
+                                          const Icon(Icons.flash_on_rounded, color: Colors.white, size: 60),
+                                    ),
+                                  )
+                                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                                    .scale(
+                                      begin: const Offset(0.95, 0.95),
+                                      end: const Offset(1.05, 1.05),
+                                      duration: 2.5.seconds,
+                                      curve: Curves.easeInOut,
+                                    )
+                                    .animate(onPlay: (c) => c.repeat())
+                                    .shimmer(
+                                      delay: 500.ms,
+                                      duration: 2.seconds,
+                                      color: Colors.white24,
+                                    ),
+                              ),
                             ],
                           ),
-                          child: Image.asset('assets/images/zinkoLogo.png',
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.flash_on_rounded, color: Colors.white, size: 60)),
-                        ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 1500.ms, color: Colors.white24),
-                        CommonUtil.vGap24,
+                        ),
+                        CommonUtil.vGap32,
                         const Text(
                           'ZINKO',
                           style: TextStyle(
-                              color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 8),
-                        ).animate().fadeIn(delay: 300.ms),
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 12,
+                              shadows: [
+                                Shadow(color: AppColors.primary, blurRadius: 20),
+                              ]),
+                        ).animate().fadeIn(delay: 600.ms).moveY(begin: 10, end: 0, duration: 600.ms),
                       ],
                     ),
                   ),

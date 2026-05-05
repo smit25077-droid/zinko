@@ -200,34 +200,32 @@ class _BookingScreenContent extends StatelessWidget {
         final canContinue = selState.selectedTable != null;
 
         return Scaffold(
-          extendBodyBehindAppBar: true,
+          // extendBodyBehindAppBar: true,
           appBar: ZinkoAppBar(title: 'BOOK A SEAT'),
           body: ZinkoBackground(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: ZinkoScrollBody(
-                      padding: CommonUtil.pAll16,
-                      child: Column(
-                        children: [
-                          _buildGlassCalendar(context, selState),
-                          const SizedBox(height: 12),
-                          _buildPeopleSelection(context, selState, workspace),
-                          const SizedBox(height: 12),
-                          _buildDynamicTimeSelection(context, workspace, selState),
-                          const SizedBox(height: 12),
-                          _buildDynamicTableSelection(context, workspace, selState),
-                          const SizedBox(height: 12),
-                          _buildGlassBillSummary(context, subtotal, tax, total, selState.durationHours),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ZinkoScrollBody(
+                    padding: CommonUtil.pAll16,
+                    child: Column(
+                      children: [
+                        _buildGlassCalendar(context, selState),
+                        const SizedBox(height: 12),
+                        _buildPeopleSelection(context, selState, workspace),
+                        const SizedBox(height: 12),
+                        _buildDynamicTimeSelection(context, workspace, selState),
+                        const SizedBox(height: 12),
+                        _buildDynamicTableSelection(context, workspace, selState),
+                        const SizedBox(height: 12),
+                        _buildGlassBillSummary(context, subtotal, tax, total, selState.durationHours),
+                        const SizedBox(height: 20),
+                      ],
                     ),
                   ),
-                  _buildContinueAction(context, workspace, selState, subtotal, tax, total, canContinue),
-                ],
-              ),
+                ),
+                _buildContinueAction(context, workspace, selState, subtotal, tax, total, canContinue),
+              ],
             ),
           ),
         );

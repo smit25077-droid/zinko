@@ -47,7 +47,7 @@ class _LoginContentState extends State<_LoginContent> {
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   DateTime? _lastBackPressTime;
-  bool _canPop = false;
+  // bool _canPop = false;
 
   @override
   void initState() {
