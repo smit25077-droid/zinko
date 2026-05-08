@@ -57,56 +57,69 @@ class BookingDetailsScreen extends StatelessWidget {
           },
         ),
       ],
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: const ZinkoAppBar(
-          title: 'RESERVATION DETAILS',
-        ),
-        body: ZinkoBackground(
-          child: ZinkoScrollBody(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPremiumHeader(context),
-                const SizedBox(height: 24),
-                _buildStatusCard(context),
-                const SizedBox(height: 24),
-                _buildInfoSection(context, 'MAIN INFORMATION', [
-                  _DetailItem(label: 'BOOKING CODE', value: booking.bookingCode, icon: Icons.qr_code_2_rounded),
-                  _DetailItem(label: 'WORKSPACE', value: booking.seatType, icon: Icons.work_outline_rounded),
-                  _DetailItem(label: 'PERSONS', value: '${booking.noOfPersons} Persons', icon: Icons.person_outline_rounded),
-                ]),
-                const SizedBox(height: 16),
-                _buildInfoSection(context, 'SCHEDULE & TIME', [
-                  _DetailItem(
-                    label: 'DATE',
-                    value: booking.bookingDate != null
-                      ? DateFormat('EEEE, d MMMM yyyy').format(booking.bookingDate!)
-                      : 'TBD',
-                    icon: Icons.calendar_today_rounded,
-                  ),
-                  _DetailItem(label: 'TIME SLOT', value: booking.timeSlot, icon: Icons.access_time_rounded),
-                  _DetailItem(label: 'TOTAL DURATION', value: '${booking.totalHours} Hours', icon: Icons.timelapse_rounded),
-                ]),
-                const SizedBox(height: 16),
-                _buildInfoSection(context, 'CHECK-IN/OUT LOGS', [
-                  _DetailItem(label: 'TENTATIVE IN', value: _formatTime(booking.tentativeCheckInDatetime), icon: Icons.login_rounded),
-                  _DetailItem(label: 'TENTATIVE OUT', value: _formatTime(booking.tentativeCheckOutDatetime), icon: Icons.logout_rounded),
-                  _DetailItem(
-                    label: 'ACTUAL IN',
-                    value: (booking.checkInDatetime?.isNotEmpty ?? false) ? _formatTime(booking.checkInDatetime!) : '--:--',
-                    icon: Icons.check_circle_outline_rounded,
-                    valueColor: (booking.checkInDatetime?.isNotEmpty ?? false) ? AppColors.success : null,
-                  ),
-                ]),
-                const SizedBox(height: 16),
-                _buildPriceCard(context),
-              ],
+      child: ZinkoBackground(
+        child: Scaffold(
+          extendBodyBehindAppBar: true,
+          backgroundColor: AppColors.transparent,
+          appBar: const ZinkoAppBar(
+            title: 'RESERVATION DETAILS',
+          ),
+          body: SafeArea(
+            child: ZinkoScrollBody(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildPremiumHeader(context),
+                  const SizedBox(height: 24),
+                  _buildStatusCard(context),
+                  const SizedBox(height: 24),
+                  _buildInfoSection(context, 'MAIN INFORMATION', [
+                    _DetailItem(label: 'BOOKING CODE', value: booking.bookingCode, icon: Icons.qr_code_2_rounded),
+                    _DetailItem(label: 'WORKSPACE', value: booking.seatType, icon: Icons.work_outline_rounded),
+                    _DetailItem(
+                        label: 'PERSONS', value: '${booking.noOfPersons} Persons', icon: Icons.person_outline_rounded),
+                  ]),
+                  const SizedBox(height: 16),
+                  _buildInfoSection(context, 'SCHEDULE & TIME', [
+                    _DetailItem(
+                      label: 'DATE',
+                      value: booking.bookingDate != null
+                          ? DateFormat('EEEE, d MMMM yyyy').format(booking.bookingDate!)
+                          : 'TBD',
+                      icon: Icons.calendar_today_rounded,
+                    ),
+                    _DetailItem(label: 'TIME SLOT', value: booking.timeSlot, icon: Icons.access_time_rounded),
+                    _DetailItem(
+                        label: 'TOTAL DURATION', value: '${booking.totalHours} Hours', icon: Icons.timelapse_rounded),
+                  ]),
+                  const SizedBox(height: 16),
+                  _buildInfoSection(context, 'CHECK-IN/OUT LOGS', [
+                    _DetailItem(
+                        label: 'TENTATIVE IN',
+                        value: _formatTime(booking.tentativeCheckInDatetime),
+                        icon: Icons.login_rounded),
+                    _DetailItem(
+                        label: 'TENTATIVE OUT',
+                        value: _formatTime(booking.tentativeCheckOutDatetime),
+                        icon: Icons.logout_rounded),
+                    _DetailItem(
+                      label: 'ACTUAL IN',
+                      value: (booking.checkInDatetime?.isNotEmpty ?? false)
+                          ? _formatTime(booking.checkInDatetime!)
+                          : '--:--',
+                      icon: Icons.check_circle_outline_rounded,
+                      valueColor: (booking.checkInDatetime?.isNotEmpty ?? false) ? AppColors.success : null,
+                    ),
+                  ]),
+                  const SizedBox(height: 16),
+                  _buildPriceCard(context),
+                ],
+              ),
             ),
           ),
+          bottomNavigationBar: _buildBottomActions(context),
         ),
-        bottomNavigationBar: _buildBottomActions(context),
       ),
     );
   }
@@ -137,7 +150,8 @@ class BookingDetailsScreen extends StatelessWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            Icon(Icons.location_on_rounded, size: 14, color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.5)),
+            Icon(Icons.location_on_rounded,
+                size: 14, color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.5)),
             const SizedBox(width: 4),
             Expanded(
               child: Text(
@@ -177,7 +191,7 @@ class BookingDetailsScreen extends StatelessWidget {
         statusColor = AppColors.error;
         statusIcon = Icons.cancel_rounded;
         break;
-        case 'COMPLETED':
+      case 'COMPLETED':
         statusColor = AppColors.success;
         statusIcon = Icons.check_circle_outlined;
         break;
@@ -251,8 +265,7 @@ class BookingDetailsScreen extends StatelessWidget {
               return Column(
                 children: [
                   _buildDetailRow(context, entry.value),
-                  if (!isLast)
-                    Divider(height: 32, color: OptimizedColors.white05),
+                  if (!isLast) Divider(height: 32, color: OptimizedColors.white05),
                 ],
               );
             }).toList(),
@@ -356,7 +369,7 @@ class BookingDetailsScreen extends StatelessWidget {
 
     return ClipRRect(
       child: ZinkoCommonCard(
-      borderRadius: 0,
+        borderRadius: 0,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -467,11 +480,22 @@ class BookingDetailsScreen extends StatelessWidget {
           builder: (context, setModalState) {
             String ratingLabel;
             Color labelColor;
-            if (currentRating <= 1) { ratingLabel = "TERRIBLE"; labelColor = Colors.red; }
-            else if (currentRating <= 2) { ratingLabel = "POOR"; labelColor = Colors.orange; }
-            else if (currentRating <= 3) { ratingLabel = "AVERAGE"; labelColor = Colors.amber; }
-            else if (currentRating <= 4) { ratingLabel = "GOOD"; labelColor = Colors.lightGreen; }
-            else { ratingLabel = "EXCELLENT"; labelColor = AppColors.success; }
+            if (currentRating <= 1) {
+              ratingLabel = "TERRIBLE";
+              labelColor = Colors.red;
+            } else if (currentRating <= 2) {
+              ratingLabel = "POOR";
+              labelColor = Colors.orange;
+            } else if (currentRating <= 3) {
+              ratingLabel = "AVERAGE";
+              labelColor = Colors.amber;
+            } else if (currentRating <= 4) {
+              ratingLabel = "GOOD";
+              labelColor = Colors.lightGreen;
+            } else {
+              ratingLabel = "EXCELLENT";
+              labelColor = AppColors.success;
+            }
 
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -522,11 +546,11 @@ class BookingDetailsScreen extends StatelessWidget {
                     final authState = context.read<AuthBloc>().state;
                     if (authState is AuthAuthenticated) {
                       context.read<FeedbackBloc>().add(SubmitReviewEvent(
-                        cafeId: booking.cafeId,
-                        reviewText: textController.text,
-                        reviewStar: currentRating.toString(),
-                        userId: authState.userData.userCode.toString(),
-                      ));
+                            cafeId: booking.cafeId,
+                            reviewText: textController.text,
+                            reviewStar: currentRating.toString(),
+                            userId: authState.userData.userCode.toString(),
+                          ));
                       Navigator.pop(context);
                     }
                   },
@@ -579,10 +603,10 @@ class BookingDetailsScreen extends StatelessWidget {
               final authState = context.read<AuthBloc>().state;
               if (authState is AuthAuthenticated) {
                 context.read<FeedbackBloc>().add(SubmitSuggestionEvent(
-                  userCode: authState.userData.userCode,
-                  suggestionData: textController.text,
-                  cafeId: booking.cafeId,
-                ));
+                      userCode: authState.userData.userCode,
+                      suggestionData: textController.text,
+                      cafeId: booking.cafeId,
+                    ));
                 Navigator.pop(context);
               }
             },
@@ -598,12 +622,14 @@ class _DetailItem {
   final String value;
   final IconData icon;
   final Color? valueColor;
+
   _DetailItem({required this.label, required this.value, required this.icon, this.valueColor});
 }
 
 class _PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
+
   const _PrimaryButton({required this.label, required this.onTap});
 
   @override
@@ -629,6 +655,7 @@ class _SecondaryButton extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
+
   const _SecondaryButton({required this.label, required this.color, required this.onTap});
 
   @override
@@ -655,5 +682,3 @@ class _SecondaryButton extends StatelessWidget {
     );
   }
 }
-
-

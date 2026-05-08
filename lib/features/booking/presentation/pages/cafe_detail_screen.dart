@@ -586,6 +586,16 @@ class _FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cafeState = context.watch<CafeBloc>().state;
+    bool isLiked = workspace.isFavorite;
+    if (cafeState is CafeLoaded) {
+      final c = cafeState.cafes.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+      if (c != null) isLiked = c.isLiked;
+    } else if (cafeState is CafeWishlistLoaded) {
+      final c = cafeState.wishlist.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+      if (c != null) isLiked = c.isLiked;
+    }
+
     return IconButton(
       icon: Container(
         padding: const EdgeInsets.all(8),
@@ -594,23 +604,10 @@ class _FavoriteButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: OptimizedColors.white20),
         ),
-        child: BlocBuilder<CafeBloc, CafeState>(
-          builder: (context, cafeState) {
-            bool isLiked = workspace.isFavorite;
-            if (cafeState is CafeLoaded) {
-              final c = cafeState.cafes.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
-              if (c != null) isLiked = c.isLiked;
-            } else if (cafeState is CafeWishlistLoaded) {
-              final c = cafeState.wishlist.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
-              if (c != null) isLiked = c.isLiked;
-            }
-
-            return Icon(
-              isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: isLiked ? Colors.redAccent : Colors.white,
-              size: 20,
-            );
-          },
+        child: Icon(
+          isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          color: isLiked ? Colors.redAccent : Colors.white,
+          size: 20,
         ),
       ),
       onPressed: () {
@@ -619,6 +616,7 @@ class _FavoriteButton extends StatelessWidget {
           context.read<CafeBloc>().add(ToggleWishlistEvent(
                 cafeId: int.parse(workspace.id),
                 userCode: userState.user.userCode,
+                isWishlist: !isLiked,
               ));
         }
       },

@@ -45,7 +45,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
   ) async {
     final currentState = state;
     try {
-      await toggleWishlist(event.cafeId, event.userCode);
+      await toggleWishlist(event.cafeId, event.userCode, event.isWishlist);
 
       // Effect UI only after successful status code 200
       if (currentState is CafeLoaded) {

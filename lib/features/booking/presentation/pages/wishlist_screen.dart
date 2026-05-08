@@ -86,6 +86,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                             context.read<CafeBloc>().add(ToggleWishlistEvent(
                                   cafeId: cafe.cafeId,
                                   userCode: userState.user.userCode,
+                                  isWishlist: false,
                                 ));
                           }
                         },

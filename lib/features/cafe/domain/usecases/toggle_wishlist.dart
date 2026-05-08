@@ -5,7 +5,7 @@ class ToggleWishlist {
 
   ToggleWishlist({required this.repository});
 
-  Future<void> call(int cafeId, int userCode) async {
-    return await repository.toggleWishlist(cafeId, userCode);
+  Future<void> call(int cafeId, int userCode, bool isWishlist) async {
+    return await repository.toggleWishlist(cafeId, userCode, isWishlist);
   }
 }

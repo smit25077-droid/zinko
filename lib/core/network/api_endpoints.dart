@@ -25,8 +25,7 @@ class ApiEndpoints {
   // Cafe interaction endpoints
   static const String addReview = 'cafe/review';
   static const String addSuggestion = 'cafe/add/suggestion';
-  static const String addWishlist = 'cafe/add/wishlist';
-  static const String editWishlist = 'cafe/edit/wishlist';
+  static const String toggleWishlist = 'cafe/add/update/wishlist';
   static const String getWishlist = 'cafe/get/wishlist';
   static String getCafeReviews(int cafeId) => 'cafe/get/review/$cafeId';
   static String getCafeDetail(int id) => 'cafe/get/$id';

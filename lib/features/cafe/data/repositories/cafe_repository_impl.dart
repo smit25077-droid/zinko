@@ -16,8 +16,8 @@ class CafeRepositoryImpl implements CafeRepository {
   }
 
   @override
-  Future<void> toggleWishlist(int cafeId, int userCode) async {
-    final response = await remoteDataSource.toggleWishlist(cafeId, userCode);
+  Future<void> toggleWishlist(int cafeId, int userCode, bool isWishlist) async {
+    final response = await remoteDataSource.toggleWishlist(cafeId, userCode, isWishlist);
     if (response.statusCode != 200) {
       throw Exception(response.message);
     }

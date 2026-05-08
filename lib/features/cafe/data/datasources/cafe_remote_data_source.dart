@@ -8,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class CafeRemoteDataSource {
   Future<ApiResponse<List<CafeModel>>> searchCafes(String keyword);
-  Future<ApiResponse<dynamic>> toggleWishlist(int cafeId, int userCode);
+  Future<ApiResponse<dynamic>> toggleWishlist(int cafeId, int userCode, bool isWishlist);
   Future<ApiResponse<List<Map<String, dynamic>>>> getWishlist(int userCode);
 }
 
@@ -43,7 +43,7 @@ class CafeRemoteDataSourceImpl implements CafeRemoteDataSource {
   }
 
   @override
-  Future<ApiResponse<dynamic>> toggleWishlist(int cafeId, int userCode) async {
+  Future<ApiResponse<dynamic>> toggleWishlist(int cafeId, int userCode, bool isWishlist) async {
     final jsonString = sharedPreferences.getString('CACHED_USER_DATA');
     String? token;
     if (jsonString != null) {
@@ -53,45 +53,22 @@ class CafeRemoteDataSourceImpl implements CafeRemoteDataSource {
     final data = {
       'cafe_id': cafeId,
       'user_code': userCode.toString(),
+      'is_wishlist': isWishlist,
     };
     final options = Options(
       headers: token != null ? {'Authentication': token} : {},
     );
 
-    try {
-      final response = await client.post(
-        ApiEndpoints.editWishlist,
-        data: data,
-        options: options,
-      );
+    final response = await client.post(
+      ApiEndpoints.toggleWishlist,
+      data: data,
+      options: options,
+    );
 
-      return ApiResponse<dynamic>.fromJson(
-        response.data,
-        (data) => data,
-      );
-    } catch (e) {
-      // If editWishlist fails with 500, attempt to use addWishlist as fallback
-      bool is500 = false;
-      if (e is DioException) {
-        if (e.response?.statusCode == 500) is500 = true;
-        if (e.response?.data is Map && e.response?.data['statusCode'] == 500) {
-          is500 = true;
-        }
-      }
-
-      if (is500) {
-        final fallbackResponse = await client.post(
-          ApiEndpoints.addWishlist,
-          data: data,
-          options: options,
-        );
-        return ApiResponse<dynamic>.fromJson(
-          fallbackResponse.data,
-          (data) => data,
-        );
-      }
-      rethrow;
-    }
+    return ApiResponse<dynamic>.fromJson(
+      response.data,
+      (data) => data,
+    );
   }
 
   @override

@@ -236,12 +236,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             final recommended = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
                             return _RecommendedList(
                               workspaces: recommended,
-                              onFavTap: (id) {
+                              onFavTap: (id, isFavorite) {
                                 final userState = context.read<UserBloc>().state;
                                 if (userState is UserLoaded) {
                                   context.read<CafeBloc>().add(ToggleWishlistEvent(
                                         cafeId: int.parse(id),
                                         userCode: userState.user.userCode,
+                                        isWishlist: !isFavorite,
                                       ));
                                 }
                               },
@@ -273,12 +274,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             final nearbyEntities = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
                             return _NearbyList(
                               nearby: nearbyEntities,
-                              onFavTap: (id) {
+                              onFavTap: (id, isFavorite) {
                                 final userState = context.read<UserBloc>().state;
                                 if (userState is UserLoaded) {
                                   context.read<CafeBloc>().add(ToggleWishlistEvent(
                                         cafeId: int.parse(id),
                                         userCode: userState.user.userCode,
+                                        isWishlist: !isFavorite,
                                       ));
                                 }
                               },
@@ -318,7 +320,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 class _NearbyList extends StatelessWidget {
   final List<WorkspaceEntity> nearby;
-  final Function(String)? onFavTap;
+  final Function(String, bool)? onFavTap;
 
   const _NearbyList({required this.nearby, this.onFavTap});
 
@@ -334,7 +336,7 @@ class _NearbyList extends StatelessWidget {
             return _NearbyCard(
               workspace: w,
               onFavTap: () => onFavTap != null
-                  ? onFavTap!(w.id)
+                  ? onFavTap!(w.id, w.isFavorite)
                   : context.read<WorkspaceBloc>().add(ToggleFavoriteWorkspaceEvent(w.id)),
             ).animate().fadeIn(delay: (index * 30).ms);
           },
@@ -392,7 +394,7 @@ class _SectionHeader extends StatelessWidget {
 
 class _RecommendedList extends StatelessWidget {
   final List<WorkspaceEntity> workspaces;
-  final void Function(String) onFavTap;
+  final void Function(String, bool) onFavTap;
 
   const _RecommendedList({required this.workspaces, required this.onFavTap});
 
@@ -443,6 +445,14 @@ class _RecommendedList extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(),
+                Positioned(
+                  top: CommonUtil.s12,
+                  right: CommonUtil.s12,
+                  child: _GlassFavButton(
+                    isFavorite: w.isFavorite,
+                    onTap: () => onFavTap(w.id, w.isFavorite),
+                  ),
+                ),
                 Positioned(
                   bottom: CommonUtil.s20,
                   left: CommonUtil.s20,
