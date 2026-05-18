@@ -32,15 +32,12 @@ class _OverlayContentState extends State<_OverlayContent>
     with SingleTickerProviderStateMixin {
   bool _dialogShowing = false;
   late AnimationController _bannerCtrl;
-  late Animation<Offset> _bannerSlide;
 
   @override
   void initState() {
     super.initState();
     _bannerCtrl = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 400));
-    _bannerSlide = Tween<Offset>(begin: const Offset(0, -1), end: Offset.zero)
-        .animate(CurvedAnimation(parent: _bannerCtrl, curve: Curves.easeOut));
   }
 
   void _onStatusChanged(bool connected) {

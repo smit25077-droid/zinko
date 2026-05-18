@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/utils/zinko_flushbar.dart';
@@ -107,16 +107,12 @@ class _RegisterContentState extends State<_RegisterContent> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          backgroundColor: Colors.transparent,
-          // appBar: const ZinkoAppBar(
-          //   title: 'Register',
-          //   showBackButton: true,
-          // ),
-          body: ZinkoBackground(
-            backgroundColor: OptimizedColors.white05,
-            child: SafeArea(
+        child: ZinkoBackground(
+          backgroundColor: Colors.white.withValues(alpha: 0.05),
+          child: Scaffold(
+            resizeToAvoidBottomInset: true,
+            backgroundColor: Colors.transparent,
+            body: SafeArea(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return ZinkoScrollBody(
@@ -125,11 +121,11 @@ class _RegisterContentState extends State<_RegisterContent> {
                       constraints: BoxConstraints(minHeight: constraints.maxHeight),
                       child: IntrinsicHeight(
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          padding: CommonUtil.pH24,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const SizedBox(height: 50),
+                              CommonUtil.vGap50,
                               Column(
                                 children: [
                                   const Text(
@@ -148,7 +144,7 @@ class _RegisterContentState extends State<_RegisterContent> {
                                       ],
                                     ),
                                   ).animate().fadeIn(duration: 250.ms).slideY(begin: 0.1, end: 0),
-                                  const SizedBox(height: 8),
+                                  CommonUtil.vGap8,
                                   const Text(
                                     'Begin your journey with the finest experiences.',
                                     textAlign: TextAlign.center,
@@ -159,18 +155,16 @@ class _RegisterContentState extends State<_RegisterContent> {
                                       letterSpacing: 0.2,
                                     ),
                                   ).animate(delay: 150.ms).fadeIn(duration: 250.ms),
-                    
-                              const SizedBox(height: 40),
+                                ],
+                              ),
+                              CommonUtil.vGap32,
                               _buildGlassRegisterCard(context),
-                              const SizedBox(height: 32),
+                              CommonUtil.vGap32,
                               const _LoginFooter(),
-                              const SizedBox(height: 40),
-                              SizedBox(
-                                height: 50,
-                              )
+                              CommonUtil.vGap32,
                             ],
                           ),
-                        ])),
+                        ),
                       ),
                     ),
                   );
@@ -190,14 +184,14 @@ class _RegisterContentState extends State<_RegisterContent> {
           builder: (context, state) {
             return ZinkoGlassBox(
               color: OptimizedColors.white20,
-              padding: const EdgeInsets.all(24),
+              padding: CommonUtil.pAll24,
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldLabel('Username'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _userNameController,
                       hint: 'Enter your username',
@@ -211,9 +205,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    CommonUtil.vGap16,
                     _buildFieldLabel('Email'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _emailController,
                       hint: 'Enter your email',
@@ -228,9 +222,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    CommonUtil.vGap16,
                     _buildFieldLabel('Phone Number'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _phoneController,
                       hint: 'Enter mobile number',
@@ -246,9 +240,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    CommonUtil.vGap16,
                     _buildFieldLabel('Password'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _passwordController,
                       hint: 'Enter your password',
@@ -271,9 +265,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    CommonUtil.vGap16,
                     _buildFieldLabel('Confirm Password'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _confirmPasswordController,
                       hint: 'Repeat your password',
@@ -296,9 +290,9 @@ class _RegisterContentState extends State<_RegisterContent> {
                         return null;
                       },
                     ),
-                    const SizedBox(height: 18),
+                    CommonUtil.vGap16,
                     _buildFieldLabel('Referral Code (Optional)'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _referralController,
                       hint: 'Enter referral code',
@@ -308,7 +302,7 @@ class _RegisterContentState extends State<_RegisterContent> {
                         FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
                       ],
                     ),
-                    const SizedBox(height: 28),
+                    CommonUtil.vGap28,
                     _PremiumButton(
                       text: 'Create Account',
                       onPressed: () => _handleRegister(context),
@@ -343,7 +337,7 @@ class _ModernTextField extends StatelessWidget {
   final IconData icon;
   final bool obscureText;
   final TextInputType? keyboardType;
-  final TextCapitalization textCapitalization;
+  // final TextCapitalization textCapitalization;
   final Widget? suffixIcon;
   final List<TextInputFormatter>? inputFormatters;
   final String? Function(String?)? validator;
@@ -354,7 +348,7 @@ class _ModernTextField extends StatelessWidget {
     required this.icon,
     this.obscureText = false,
     this.keyboardType,
-    this.textCapitalization = TextCapitalization.none,
+    // this.textCapitalization = TextCapitalization.none,
     this.suffixIcon,
     this.inputFormatters,
     this.validator,
@@ -367,7 +361,7 @@ class _ModernTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       keyboardType: keyboardType,
-      textCapitalization: textCapitalization,
+      // textCapitalization: textCapitalization,
       inputFormatters: inputFormatters,
       scrollPadding: const EdgeInsets.only(bottom: 120),
       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500),
@@ -379,18 +373,18 @@ class _ModernTextField extends StatelessWidget {
         prefixIcon:  Icon(icon, color: OptimizedColors.white60, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: const BorderSide(color: OptimizedColors.white10),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: const BorderSide(color: OptimizedColors.white10),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: const BorderSide(color: Colors.white, width: 1),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: CommonUtil.pH16V18,
       ),
     );
   }
@@ -417,7 +411,7 @@ class _PremiumButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: CommonUtil.bRadius18),
           elevation: 0,
         ),
         child: isLoading

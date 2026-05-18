@@ -16,13 +16,19 @@ class CafeRepositoryImpl implements CafeRepository {
   }
 
   @override
-  Future<void> toggleWishlist(int cafeId, int userCode) async {
-    await remoteDataSource.toggleWishlist(cafeId, userCode);
+  Future<void> toggleWishlist(int cafeId, int userCode, bool isWishlist) async {
+    final response = await remoteDataSource.toggleWishlist(cafeId, userCode, isWishlist);
+    if (response.statusCode != 200) {
+      throw Exception(response.message);
+    }
   }
 
   @override
   Future<List<Cafe>> getWishlist(int userCode) async {
     final response = await remoteDataSource.getWishlist(userCode);
+    if (response.statusCode != 200 && response.statusCode != 201) {
+      throw Exception(response.message);
+    }
     return response.data?.map((e) => CafeModel.fromWishlistJson(e)).toList() ??
         [];
   }

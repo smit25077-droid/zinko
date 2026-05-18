@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
 import 'package:zinko_app/features/event/domain/repositories/event_repository.dart';
@@ -14,6 +15,8 @@ class EventRepositoryImpl implements EventRepository {
     try {
       final remoteEvents = await remoteDataSource.getEvents();
       return Right(remoteEvents.cast<EventEntity>());
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -24,6 +27,8 @@ class EventRepositoryImpl implements EventRepository {
     try {
       final updatedEvent = await remoteDataSource.toggleFavoriteEvent(id);
       return Right(updatedEvent);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -34,6 +39,8 @@ class EventRepositoryImpl implements EventRepository {
     try {
       final updatedEvent = await remoteDataSource.registerEvent(id);
       return Right(updatedEvent);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

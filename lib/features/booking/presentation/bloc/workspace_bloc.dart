@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:zinko_app/features/booking/domain/usecases/get_workspaces.dart';
 import 'package:zinko_app/features/booking/domain/usecases/search_workspaces.dart';
 import 'package:zinko_app/features/booking/domain/usecases/watch_workspaces.dart';
@@ -13,7 +14,6 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
   final SearchWorkspaces searchWorkspaces;
   final WatchWorkspaces watchWorkspaces;
   final WorkspaceRepository repository; // For toggle events
-  Timer? _debounce;
   StreamSubscription? _streamSubscription;
 
   WorkspaceBloc({
@@ -26,7 +26,10 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     on<ToggleFavoriteWorkspaceEvent>(_onToggleFavorite);
     on<ToggleBookmarkWorkspaceEvent>(_onToggleBookmark);
     on<FilterWorkspacesByCategoryEvent>(_onFilterByCategory);
-    on<SearchWorkspacesEvent>(_onSearchWorkspaces);
+    on<SearchWorkspacesEvent>(
+      _onSearchWorkspaces,
+      transformer: restartable(),
+    );
     on<WorkspacesUpdated>(_onWorkspacesUpdated);
     on<GetWorkspaceDetailEvent>(_onGetWorkspaceDetail);
 
@@ -63,20 +66,6 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
       emit((state as WorkspaceLoaded).copyWith(searchQuery: query));
     }
 
-    if (query.isNotEmpty && query.length < 3) {
-      return;
-    }
-
-    _debounce?.cancel();
-    
-    // Create a completer to handle the async debounce
-    final completer = Completer<void>();
-    _debounce = Timer(const Duration(milliseconds: 500), () async {
-      completer.complete();
-    });
-
-    await completer.future;
-
     emit(WorkspaceLoading());
     final result = await searchWorkspaces(query);
     result.fold(
@@ -87,7 +76,6 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
 
   @override
   Future<void> close() {
-    _debounce?.cancel();
     _streamSubscription?.cancel();
     return super.close();
   }
@@ -96,6 +84,7 @@ class WorkspaceBloc extends Bloc<WorkspaceEvent, WorkspaceState> {
     GetWorkspacesEvent event,
     Emitter<WorkspaceState> emit,
   ) async {
+    if (state is WorkspaceLoading) return;
     emit(WorkspaceLoading());
     final result = await getWorkspaces();
     result.fold(

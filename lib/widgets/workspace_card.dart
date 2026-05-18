@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/utils/common_util.dart';
 
 class WorkspaceCard extends StatelessWidget {
   final String name;
@@ -34,14 +35,14 @@ class WorkspaceCard extends StatelessWidget {
         elevation: 4,
         color: isDark ? const Color(0xFF1A1D1E) : Colors.white,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: CommonUtil.bRadius20,
           side: BorderSide(
             color: theme.dividerColor.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: CommonUtil.pAll16,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,7 +71,7 @@ class WorkspaceCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              CommonUtil.vGap8,
               Row(
                 children: [
                   Icon(
@@ -78,7 +79,7 @@ class WorkspaceCard extends StatelessWidget {
                     size: 16,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(width: 4),
+                  CommonUtil.hGap4,
                   Expanded(
                     child: Text(
                       location,
@@ -92,12 +93,12 @@ class WorkspaceCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              CommonUtil.vGap12,
               Row(
                 children: [
                   const Icon(Icons.star_rounded,
                       size: 18, color: Colors.amberAccent),
-                  const SizedBox(width: 4),
+                  CommonUtil.hGap4,
                   Text(
                     rating.toStringAsFixed(1),
                     style: const TextStyle(
@@ -105,17 +106,16 @@ class WorkspaceCard extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              CommonUtil.vGap16,
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: CommonUtil.s8,
+                runSpacing: CommonUtil.s8,
                 children: amenities.take(3).map((amenity) {
                   return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: CommonUtil.pHor10Ver6,
                     decoration: BoxDecoration(
                       color: theme.primaryColor.withValues(alpha: 0.08),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: CommonUtil.bRadius10,
                       border: Border.all(
                           color: theme.primaryColor.withValues(alpha: 0.15)),
                     ),
@@ -130,7 +130,7 @@ class WorkspaceCard extends StatelessWidget {
                   );
                 }).toList(),
               ),
-              const SizedBox(height: 20),
+              CommonUtil.vGap20,
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -149,10 +149,9 @@ class WorkspaceCard extends StatelessWidget {
                       foregroundColor: Colors.white,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: CommonUtil.bRadius14,
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
+                      padding: CommonUtil.pHor20Ver12,
                     ),
                     child: const Text('Book Space',
                         style: TextStyle(fontWeight: FontWeight.w800)),

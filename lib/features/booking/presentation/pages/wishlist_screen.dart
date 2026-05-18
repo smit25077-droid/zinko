@@ -8,6 +8,7 @@ import 'package:zinko_app/features/cafe/data/mappers/cafe_mapper.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
@@ -19,9 +20,11 @@ import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:auto_skeleton/auto_skeleton.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
+import 'package:zinko_app/widgets/zinko_empty_state.dart';
 
 class WishlistScreen extends StatefulWidget {
   static const String routeName = '/wishlist';
+
   const WishlistScreen({super.key});
 
   @override
@@ -32,9 +35,15 @@ class _WishlistScreenState extends State<WishlistScreen> {
   @override
   void initState() {
     super.initState();
+    _refreshWishlist(context);
+  }
+
+  void _refreshWishlist(BuildContext context) {
     final userState = context.read<UserBloc>().state;
     if (userState is UserLoaded) {
-      context.read<CafeBloc>().add(GetWishlistEvent(userCode: userState.user.userCode));
+      context
+          .read<CafeBloc>()
+          .add(GetWishlistEvent(userCode: userState.user.userCode));
     }
   }
 
@@ -42,27 +51,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _GlassHeaderButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onTap: () => Navigator.pop(context),
-          ),
-        ),
-        title: Text(
-          'WISHLIST',
-          style: TextStyle(
-            color: GlassTheme.textColor(context),
-            fontWeight: FontWeight.w900,
-            fontSize: 15,
-            letterSpacing: 1.5,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: ZinkoAppBar(title: 'WISHLIST'),
       body: ZinkoBackground(
         child: SafeArea(
           child: BlocBuilder<CafeBloc, CafeState>(
@@ -74,7 +63,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 final favorites = state.wishlist;
                 if (favorites.isEmpty) return _buildEmptyState(context);
                 return ListView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                   physics: const BouncingScrollPhysics(),
                   itemCount: favorites.length,
                   addAutomaticKeepAlives: false,
@@ -86,10 +75,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
                       onTap: () {
                         // Proactively fetch latest details for this workspace
                         context.read<WorkspaceBloc>().add(GetWorkspaceDetailEvent(int.parse(workspace.id)));
-                        
-                        Navigator.pushNamed(
-                            context, WorkspaceDetailScreen.routeName,
-                            arguments: workspace);
+
+                        Navigator.pushNamed(context, WorkspaceDetailScreen.routeName, arguments: workspace);
                       },
                       child: _WishlistCard(
                         workspace: workspace,
@@ -99,6 +86,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
                             context.read<CafeBloc>().add(ToggleWishlistEvent(
                                   cafeId: cafe.cafeId,
                                   userCode: userState.user.userCode,
+                                  isWishlist: false,
                                 ));
                           }
                         },
@@ -108,10 +96,11 @@ class _WishlistScreenState extends State<WishlistScreen> {
                 );
               }
               if (state is CafeError) {
-                return Center(
-                    child: Text(state.message,
-                        style:
-                            TextStyle(color: GlassTheme.textColor(context))));
+                return ZinkoEmptyState(
+                  title: state.message,
+                  // message: state.message,
+                  // onRetry: () => _refreshWishlist(context),
+                );
               }
               return const SizedBox.shrink();
             },
@@ -126,7 +115,8 @@ class _WishlistScreenState extends State<WishlistScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       itemCount: 5,
       addAutomaticKeepAlives: false,
-      itemExtent: 136, // 120 height + 16 padding
+      itemExtent: 136,
+      // 120 height + 16 padding
       itemBuilder: (context, index) => Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: AutoSkeleton(
@@ -148,25 +138,18 @@ class _WishlistScreenState extends State<WishlistScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.favorite_rounded,
-              size: 56, color: OptimizedColors.white10),
+          const Icon(Icons.favorite_rounded, size: 56, color: OptimizedColors.white10),
           const SizedBox(height: 12),
           const Text(
             'EMPTY WISHLIST',
             style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w900,
-                color: OptimizedColors.white50,
-                letterSpacing: 1.5),
+                fontSize: 11, fontWeight: FontWeight.w900, color: OptimizedColors.white50, letterSpacing: 1.5),
           ),
           const SizedBox(height: 6),
           const Text(
             'Your favorite spaces will appear here',
             textAlign: TextAlign.center,
-            style: TextStyle(
-                fontSize: 13,
-                color: OptimizedColors.white50,
-                fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: 13, color: OptimizedColors.white50, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 24),
           GestureDetector(
@@ -186,11 +169,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               ),
               child: const Text(
                 'EXPLORE SPACES',
-                style: TextStyle(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 13,
-                    color: AppColors.white,
-                    letterSpacing: 0.5),
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: AppColors.white, letterSpacing: 0.5),
               ),
             ),
           ).animate().scale(),
@@ -219,42 +198,28 @@ class _WishlistCard extends StatelessWidget {
                 width: 100,
                 height: 100,
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(24),
-                      bottomLeft: Radius.circular(24)),
-                  child: ZinkoNetworkImage(
-                      imageUrl: workspace.imageUrl,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover),
+                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(24), bottomLeft: Radius.circular(24)),
+                  child: ZinkoNetworkImage(imageUrl: workspace.imageUrl, width: 100, height: 100, fit: BoxFit.cover),
                 ),
               ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(workspace.name,
                           style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.white,
-                              letterSpacing: -0.5)),
+                              fontSize: 16, fontWeight: FontWeight.w900, color: AppColors.white, letterSpacing: -0.5)),
                       const SizedBox(height: 2),
                       Row(
                         children: [
-                          const Icon(Icons.location_on_rounded,
-                              color: OptimizedColors.white50,
-                              size: 10),
+                          const Icon(Icons.location_on_rounded, color: OptimizedColors.white50, size: 10),
                           const SizedBox(width: 4),
                           Expanded(
                               child: Text(workspace.location,
                                   style: const TextStyle(
-                                      color: OptimizedColors.white50,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600),
+                                      color: OptimizedColors.white50, fontSize: 11, fontWeight: FontWeight.w600),
                                   overflow: TextOverflow.ellipsis)),
                         ],
                       ),
@@ -266,10 +231,7 @@ class _WishlistCard extends StatelessWidget {
                           Text(
                             '£${workspace.price}',
                             style: const TextStyle(
-                                color: AppColors.white,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 15,
-                                letterSpacing: -0.5),
+                                color: AppColors.white, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: -0.5),
                           ),
                         ],
                       ),
@@ -284,8 +246,7 @@ class _WishlistCard extends StatelessWidget {
             right: 4,
             child: IconButton(
               onPressed: onRemove,
-              icon: const Icon(Icons.favorite_rounded,
-                  color: Colors.redAccent, size: 20),
+              icon: const Icon(Icons.favorite_rounded, color: Colors.redAccent, size: 20),
             ),
           ),
         ],
@@ -297,6 +258,7 @@ class _WishlistCard extends StatelessWidget {
 class _GlassHeaderButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
+
   const _GlassHeaderButton({required this.icon, required this.onTap});
 
   @override
@@ -316,4 +278,3 @@ class _GlassHeaderButton extends StatelessWidget {
     );
   }
 }
-

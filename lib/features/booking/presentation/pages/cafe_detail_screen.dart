@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,6 +8,7 @@ import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 import 'dart:io' show Platform;
@@ -122,7 +122,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
                     carouselController: _carouselController,
                   ),
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+                    padding: CommonUtil.pAll16,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -504,7 +504,7 @@ class _DetailContentState extends State<_DetailContent> with WidgetsBindingObser
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
       decoration: BoxDecoration(
-        color: OptimizedColors.backgroundDark70,
+        color: AppColors.black,
         border: const Border(top: BorderSide(color: OptimizedColors.white10)),
       ),
       child: Row(
@@ -586,6 +586,16 @@ class _FavoriteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cafeState = context.watch<CafeBloc>().state;
+    bool isLiked = workspace.isFavorite;
+    if (cafeState is CafeLoaded) {
+      final c = cafeState.cafes.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+      if (c != null) isLiked = c.isLiked;
+    } else if (cafeState is CafeWishlistLoaded) {
+      final c = cafeState.wishlist.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
+      if (c != null) isLiked = c.isLiked;
+    }
+
     return IconButton(
       icon: Container(
         padding: const EdgeInsets.all(8),
@@ -594,23 +604,10 @@ class _FavoriteButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: OptimizedColors.white20),
         ),
-        child: BlocBuilder<CafeBloc, CafeState>(
-          builder: (context, cafeState) {
-            bool isLiked = workspace.isFavorite;
-            if (cafeState is CafeLoaded) {
-              final c = cafeState.cafes.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
-              if (c != null) isLiked = c.isLiked;
-            } else if (cafeState is CafeWishlistLoaded) {
-              final c = cafeState.wishlist.firstWhereOrNull((e) => e.cafeId.toString() == workspace.id);
-              if (c != null) isLiked = c.isLiked;
-            }
-
-            return Icon(
-              isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-              color: isLiked ? Colors.redAccent : Colors.white,
-              size: 20,
-            );
-          },
+        child: Icon(
+          isLiked ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+          color: isLiked ? Colors.redAccent : Colors.white,
+          size: 20,
         ),
       ),
       onPressed: () {
@@ -619,6 +616,7 @@ class _FavoriteButton extends StatelessWidget {
           context.read<CafeBloc>().add(ToggleWishlistEvent(
                 cafeId: int.parse(workspace.id),
                 userCode: userState.user.userCode,
+                isWishlist: !isLiked,
               ));
         }
       },

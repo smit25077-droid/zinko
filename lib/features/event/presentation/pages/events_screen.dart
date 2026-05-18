@@ -12,6 +12,7 @@ import 'package:zinko_app/features/event/presentation/bloc/event_event.dart';
 import 'package:zinko_app/features/event/presentation/bloc/event_state.dart';
 import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/features/event/presentation/pages/event_detail_screen.dart';
+import 'package:auto_skeleton/auto_skeleton.dart';
 
 class EventsScreen extends StatefulWidget {
   static const String routeName = '/events';
@@ -38,49 +39,85 @@ class _EventsScreenState extends State<EventsScreen> {
           title: 'EVENTS',
           leading: SizedBox(),
         ),
-        body: Column(
-          children: [
-            // SizedBox(height: 80),
-            // Scrollable Event List
-            Expanded(
-              child: BlocBuilder<EventBloc, EventState>(
-                builder: (context, state) {
-                  if (state is EventLoading) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                            color: GlassTheme.textColor(context)));
-                  }
-                  if (state is EventLoaded) {
-                    final events = state.events;
-                    return ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16,),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: events.length,
-                      itemBuilder: (context, index) {
-                        final event = events[index];
-                        return _EventCard(event: event,index: index)
-                            .animate()
-                            .fadeIn(duration: 400.ms, delay: 100.ms)
-                            ;
-                      },
-                    );
-                  }
-                  if (state is EventError) {
-                    return Center(
-                        child: Text(state.message,
-                            style: TextStyle(
-                                color: GlassTheme.textColor(context))));
-                  }
-                  return const SizedBox.shrink();
+        body: BlocBuilder<EventBloc, EventState>(
+          builder: (context, state) {
+            if (state is EventLoading) {
+              return _buildLoadingState(context);
+            }
+
+            if (state is EventLoaded) {
+              final events = state.events;
+              return ListView.builder(
+                padding: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return _EventCard(event: event, index: index).animate().fadeIn(duration: 400.ms, delay: 100.ms);
                 },
-              ),
-            ),
-            // Bottom padding for the navigation bar
-            // const SizedBox(height: 100),
-          ],
+              );
+            }
+            if (state is EventError) {
+              return Center(child: Text(state.message, style: TextStyle(color: GlassTheme.textColor(context))));
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ),
-      );
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 100, left: 16, right: 16),
+      itemCount: 4,
+      itemBuilder: (context, index) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: Container(
+            height: 190,
+            decoration: BoxDecoration(
+              color: GlassTheme.glassColor(context),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: GlassTheme.glassBorder(context)),
+            ),
+            child: AutoSkeleton(
+              enabled: true,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Skeleton Image Area
+                  Container(
+                    height: 110,
+                    decoration: const BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+                    ),
+                  ),
+                  // Skeleton Text Area
+                  Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(width: 60, height: 8, color: Colors.white10),
+                            const Spacer(),
+                            Container(width: 40, height: 8, color: Colors.white10),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Container(width: 200, height: 16, color: Colors.white10),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -94,10 +131,9 @@ class _EventCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return RepaintBoundary(
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, EventDetailScreen.routeName,
-            arguments: event),
+        onTap: () => Navigator.pushNamed(context, EventDetailScreen.routeName, arguments: event),
         child: Container(
-          margin: EdgeInsets.only(bottom: 12,top: index == 0 ? 12 :0),
+          margin: EdgeInsets.only(bottom: 12, top: index == 0 ? 12 : 0),
           decoration: BoxDecoration(
             color: GlassTheme.glassColor(context),
             borderRadius: BorderRadius.circular(30),
@@ -110,8 +146,7 @@ class _EventCard extends StatelessWidget {
               Stack(
                 children: [
                   ClipRRect(
-                    borderRadius:
-                        const BorderRadius.vertical(top: Radius.circular(30)),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
                     child: ZinkoNetworkImage(
                       imageUrl: event.imageUrl,
                       width: double.infinity,
@@ -144,9 +179,7 @@ class _EventCard extends StatelessWidget {
                               letterSpacing: 0.5),
                         ),
                         const Spacer(),
-                        Icon(Icons.access_time_rounded,
-                            size: 12,
-                            color: GlassTheme.tertiaryTextColor(context)),
+                        Icon(Icons.access_time_rounded, size: 12, color: GlassTheme.tertiaryTextColor(context)),
                         const SizedBox(width: 4),
                         Text(
                           '${event.date} ${event.month}',
@@ -175,9 +208,7 @@ class _EventCard extends StatelessWidget {
                     Row(
                       children: [
                         Icon(Icons.location_on_rounded,
-                            size: 12,
-                            color:
-                                GlassTheme.textColor(context).withValues(alpha: 0.6)),
+                            size: 12, color: GlassTheme.textColor(context).withValues(alpha: 0.6)),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
@@ -185,8 +216,7 @@ class _EventCard extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              color: GlassTheme.textColor(context)
-                                  .withValues(alpha: 0.6),
+                              color: GlassTheme.textColor(context).withValues(alpha: 0.6),
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
@@ -255,10 +285,7 @@ class _HostAvatar extends StatelessWidget {
             backgroundColor: OptimizedColors.white30,
             child: Text(
               hostName[0],
-              style: TextStyle(
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
-                  color: GlassTheme.textColor(context)),
+              style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: GlassTheme.textColor(context)),
             ),
           ),
           const SizedBox(width: 6),
@@ -276,4 +303,3 @@ class _HostAvatar extends StatelessWidget {
     );
   }
 }
-

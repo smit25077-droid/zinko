@@ -18,6 +18,7 @@ import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 import 'package:zinko_app/widgets/zinko_common_dialog.dart';
 import 'package:zinko_app/core/di/service_locator.dart';
+import 'package:zinko_app/utils/common_util.dart';
 
 class WalletScreen extends StatelessWidget {
   static const String routeName = '/wallet';
@@ -29,74 +30,77 @@ class WalletScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) => sl<WalletBloc>(),
       child: Scaffold(
+        extendBodyBehindAppBar: true,
         appBar: const ZinkoAppBar(
           title: 'My Wallet',
         ),
         body: ZinkoBackground(
-          child: BlocListener<WalletBloc, WalletState>(
-            listener: (context, state) {
-              if (state is WalletLoaded) {
-                // We could check for a flag in state, but assuming a load after redeem is success
-                // _showStatusPopup(context, 'Success!', isSuccess: true);
-              }
-              if (state is WalletError) {
-                _showStatusPopup(context, state.message, isSuccess: false);
-              }
-            },
-            child: BlocBuilder<WalletBloc, WalletState>(
-              buildWhen: (p, c) => c is WalletLoading || c is WalletLoaded || c is WalletError,
-              builder: (context, state) {
-                if (state is WalletInitial) {
-                  context.read<WalletBloc>().add(FetchWalletDataEvent());
-                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
-                }
-                if (state is WalletLoading) {
-                  return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+          child: SafeArea(
+            child: BlocListener<WalletBloc, WalletState>(
+              listener: (context, state) {
+                if (state is WalletLoaded) {
+                  // We could check for a flag in state, but assuming a load after redeem is success
+                  // _showStatusPopup(context, 'Success!', isSuccess: true);
                 }
                 if (state is WalletError) {
-                  // Return an empty state or show standard error UI snippet. Usually we'd show a retry button.
+                  _showStatusPopup(context, state.message, isSuccess: false);
                 }
-                if (state is WalletLoaded) {
-                  final balance = state.balance;
-                  final transactions = state.transactions;
-                  return ZinkoScrollBody(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        _buildWalletCard(context, balance.balance),
-                        const SizedBox(height: 24),
-                        _buildActionButton(
-                          context,
-                          Icons.add_circle_outline_rounded,
-                          'ADD MONEY',
-                          () => _showAddMoneyDialog(context),
-                          highlight: true,
-                        ).animate(delay: 200.ms).fadeIn(duration: 250.ms).slideX(begin: 0.05, end: 0),
-                        const SizedBox(height: 32),
-                        Text(
-                          'RECENT TRANSACTIONS',
-                          style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w900,
-                               color: OptimizedColors.white50,
-                              letterSpacing: 1.5),
-                        ).animate(delay: 250.ms).fadeIn(duration: 250.ms),
-                        const SizedBox(height: 16),
-                        ...transactions.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final tx = entry.value;
-                          return _buildTransactionItem(context, tx)
-                              .animate()
-                              .fadeIn(delay: (index * 30 + 150).ms, duration: 250.ms);
-                        }),
-                        const SizedBox(height: 120),
-                      ],
-                    ),
-                  );
-                }
-                return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
               },
+              child: BlocBuilder<WalletBloc, WalletState>(
+                buildWhen: (p, c) => c is WalletLoading || c is WalletLoaded || c is WalletError,
+                builder: (context, state) {
+                  if (state is WalletInitial) {
+                    context.read<WalletBloc>().add(FetchWalletDataEvent());
+                    return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+                  }
+                  if (state is WalletLoading) {
+                    return Center(child: CircularProgressIndicator(color: GlassTheme.textColor(context)));
+                  }
+                  if (state is WalletError) {
+                    // Return an empty state or show standard error UI snippet. Usually we'd show a retry button.
+                  }
+                  if (state is WalletLoaded) {
+                    final balance = state.balance;
+                    final transactions = state.transactions;
+                    return ZinkoScrollBody(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CommonUtil.vGap20,
+                          _buildWalletCard(context, balance.balance),
+                          CommonUtil.vGap24,
+                          // _buildActionButton(
+                          //   context,
+                          //   Icons.add_circle_outline_rounded,
+                          //   'ADD MONEY',
+                          //   () => _showAddMoneyDialog(context),
+                          //   highlight: true,
+                          // ).animate(delay: 200.ms).fadeIn(duration: 250.ms).slideX(begin: 0.05, end: 0),
+                          // CommonUtil.vGap32,
+                          Text(
+                            'RECENT TRANSACTIONS',
+                            style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                                 color: AppColors.white,
+                                letterSpacing: 1.5),
+                          ).animate(delay: 250.ms).fadeIn(duration: 250.ms),
+                          CommonUtil.vGap16,
+                          ...transactions.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final tx = entry.value;
+                            return _buildTransactionItem(context, tx)
+                                .animate()
+                                .fadeIn(delay: (index * 30 + 150).ms, duration: 250.ms);
+                          }),
+                          CommonUtil.vGap120,
+                        ],
+                      ),
+                    );
+                  }
+                  return Center(child: Text('Data error', style: TextStyle(color: GlassTheme.textColor(context))));
+                },
+              ),
             ),
           ),
         ),
@@ -108,7 +112,7 @@ class WalletScreen extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: CommonUtil.bRadius28,
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -127,11 +131,11 @@ class WalletScreen extends StatelessWidget {
       ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: CommonUtil.bRadius28,
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: CommonUtil.pAll20,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -147,7 +151,7 @@ class WalletScreen extends StatelessWidget {
                                 fontSize: 16,
                                 fontWeight: FontWeight.w900,
                                 letterSpacing: 1.5)),
-                        const SizedBox(height: 4),
+                        CommonUtil.vGap4,
                         Text('VIRTUAL CARD',
                             style: TextStyle(
                                 color: OptimizedColors.white40,
@@ -159,7 +163,7 @@ class WalletScreen extends StatelessWidget {
                     Icon(Icons.nfc_rounded, color: OptimizedColors.white30, size: 28),
                   ],
                 ),
-                const SizedBox(height: 25),
+                CommonUtil.vGap25,
                 Text('AVAILABLE BALANCE',
                     style: TextStyle(
                         color: OptimizedColors.white40,
@@ -172,7 +176,7 @@ class WalletScreen extends StatelessWidget {
                   style: const TextStyle(
                       color: Colors.white, fontSize: 38, fontWeight: FontWeight.w900, letterSpacing: -1.0),
                 ),
-                const SizedBox(height: 25),
+                CommonUtil.vGap25,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -215,7 +219,7 @@ class WalletScreen extends StatelessWidget {
           height: 56,
           decoration: BoxDecoration(
             color: highlight ? Colors.white : OptimizedColors.white05,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: CommonUtil.bRadius18,
             border: Border.all(color: highlight ? Colors.white : OptimizedColors.white16, width: 1.5),
             boxShadow: highlight
                 ? [
@@ -231,7 +235,7 @@ class WalletScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 20, color: highlight ? Colors.black : Colors.white),
-              const SizedBox(width: 12),
+              CommonUtil.hGap12,
               Text(
                 label,
                 style: TextStyle(
@@ -251,7 +255,7 @@ class WalletScreen extends StatelessWidget {
     final isCredit = tx.isCredit;
     return RepaintBoundary(
       child: ZinkoCommonCard(
-        margin: const EdgeInsets.only(bottom: 12),
+        margin: CommonUtil.pBottom12,
         child: Row(
           children: [
             Container(
@@ -259,7 +263,7 @@ class WalletScreen extends StatelessWidget {
               height: 44,
               decoration: BoxDecoration(
                 color: isCredit ? OptimizedColors.success20 : OptimizedColors.error08,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: CommonUtil.bRadius14,
                 border: Border.all(
                     color: isCredit ? OptimizedColors.success20 : OptimizedColors.error20),
               ),
@@ -269,7 +273,7 @@ class WalletScreen extends StatelessWidget {
                 size: 22,
               ),
             ),
-            const SizedBox(width: 16),
+            CommonUtil.hGap16,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,7 +282,7 @@ class WalletScreen extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: Colors.white)),
-                  const SizedBox(height: 4),
+                  CommonUtil.vGap4,
                   Text(tx.eventMode,
                       style: const TextStyle(
                           fontSize: 10,
@@ -286,7 +290,7 @@ class WalletScreen extends StatelessWidget {
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5)),
                   if (tx.remark != null && tx.remark!.isNotEmpty) ...{
-                    const SizedBox(height: 4),
+                    CommonUtil.vGap4,
                     Text(tx.remark ?? 'NA',
                         style: const TextStyle(
                             fontSize: 10,
@@ -341,7 +345,7 @@ class WalletScreen extends StatelessWidget {
           prefixStyle: TextStyle(color: GlassTheme.textColor(context), fontWeight: FontWeight.w800),
           filled: true,
           fillColor: GlassTheme.textColor(context).withValues(alpha: 0.05),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+          border: OutlineInputBorder(borderRadius: CommonUtil.bRadius16, borderSide: BorderSide.none),
         ),
       ),
       onAction: () {

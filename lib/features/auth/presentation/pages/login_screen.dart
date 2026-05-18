@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
 import 'package:zinko_app/features/password_change/presentation/pages/password_change_screen.dart';
 import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -42,6 +46,8 @@ class _LoginContentState extends State<_LoginContent> {
   final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  DateTime? _lastBackPressTime;
+  // bool _canPop = false;
 
   @override
   void initState() {
@@ -76,6 +82,25 @@ class _LoginContentState extends State<_LoginContent> {
         );
   }
 
+  Timer? _backPressTimer;
+
+  Future<bool> handleDoubleBackPress(BuildContext context) async {
+    final now = DateTime.now();
+    _backPressTimer?.cancel();
+
+    if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      _backPressTimer = Timer(Duration(seconds: 2), () {
+        _lastBackPressTime = null;
+      });
+      ZinkoFlushbar.showToast(
+        message: 'Press back again to exit app',
+      );
+      return false; // Don't exit
+    }
+    return true; // Exit app
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<AuthBloc, AuthState>(
@@ -93,69 +118,83 @@ class _LoginContentState extends State<_LoginContent> {
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
-        child: ZinkoBackground(
-          backgroundColor: Colors.white.withValues(alpha: 0.05),
-          image: AssetImage('assets/images/cafe_hotel_bg.png'),
-          child: Scaffold(
-            resizeToAvoidBottomInset: true,
-            backgroundColor: Colors.transparent,
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) return;
+            final shouldPop = await handleDoubleBackPress(context);
+            if (shouldPop) {
+              if (Platform.isAndroid) {
+                SystemNavigator.pop();
+              } else {
+                exit(0);
+              }
+            }
+          },
+          child: ZinkoBackground(
+            backgroundColor: Colors.white.withValues(alpha: 0.05),
+            // image: AssetImage('assets/images/cafe_hotel_bg.png'),
+            child: Scaffold(
+              resizeToAvoidBottomInset: true,
+              backgroundColor: Colors.transparent,
 
-            // appBar: const ZinkoAppBar(
-            //   title: 'Login',
-            //   showBackButton: true,
-            // ),
-            body: SafeArea(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return ZinkoScrollBody(
-                    padding: EdgeInsets.zero,
-                    // physics: const ClampingScrollPhysics(),
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                      child: IntrinsicHeight(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(height: 20),
-                              Column(
-                                children: [
-                                  const Text(
-                                    'Welcome to Zinko',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 34,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: -0.5,
-                                      shadows: [
-                                        Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
-                                      ],
-                                    ),
-                                  ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Login to continue your journey',
-                                    style: TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ).animate(delay: 200.ms).fadeIn(),
-                                ],
-                              ),
-                              const SizedBox(height: 48),
-                              _buildGlassContainer(context),
-                              const SizedBox(height: 32),
-                              const _SignupFooter(),
-                              const SizedBox(height: 20),
-                            ],
+              // appBar: const ZinkoAppBar(
+              //   title: 'Login',
+              //   showBackButton: true,
+              // ),
+              body: SafeArea(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return ZinkoScrollBody(
+                      padding: EdgeInsets.zero,
+                      // physics: const ClampingScrollPhysics(),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                        child: IntrinsicHeight(
+                          child: Padding(
+                            padding: CommonUtil.pH24,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CommonUtil.vGap20,
+                                Column(
+                                  children: [
+                                    const Text(
+                                      'Welcome to Zinko',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 34,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: -0.5,
+                                        shadows: [
+                                          Shadow(color: Colors.black26, offset: Offset(0, 4), blurRadius: 10),
+                                        ],
+                                      ),
+                                    ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.2, end: 0),
+                                    CommonUtil.vGap8,
+                                    const Text(
+                                      'Login to continue your journey',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ).animate(delay: 200.ms).fadeIn(),
+                                  ],
+                                ),
+                                CommonUtil.vGap48,
+                                _buildGlassContainer(context),
+                                CommonUtil.vGap32,
+                                const _SignupFooter(),
+                                CommonUtil.vGap20,
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -171,14 +210,14 @@ class _LoginContentState extends State<_LoginContent> {
           builder: (context, state) {
             return ZinkoGlassBox(
               color: Colors.white.withValues(alpha: 0.2),
-              padding: const EdgeInsets.all(32),
+              padding: CommonUtil.pAll32,
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _buildFieldLabel('UserName Or Email'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _userNameController,
                       hint: 'Enter your user name Or Email',
@@ -188,12 +227,13 @@ class _LoginContentState extends State<_LoginContent> {
                         return null;
                       },
                       inputFormatters: [
-                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                        FilteringTextInputFormatter.deny(RegExp(
+                            r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    CommonUtil.vGap20,
                     _buildFieldLabel('Password'),
-                    const SizedBox(height: 10),
+                    CommonUtil.vGap10,
                     _ModernTextField(
                       controller: _passwordController,
                       hint: 'Enter your password',
@@ -212,10 +252,11 @@ class _LoginContentState extends State<_LoginContent> {
                         return null;
                       },
                       inputFormatters: [
-                        FilteringTextInputFormatter.deny(RegExp(r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
+                        FilteringTextInputFormatter.deny(RegExp(
+                            r'(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])')),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    CommonUtil.vGap12,
                     Row(
                       children: [
                         // SizedBox(
@@ -244,7 +285,7 @@ class _LoginContentState extends State<_LoginContent> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 28),
+                    CommonUtil.vGap28,
                     _PremiumButton(
                       text: 'Sign In',
                       onPressed: () => _handleLogin(context),
@@ -309,18 +350,18 @@ class _ModernTextField extends StatelessWidget {
         prefixIcon: Icon(icon, color: Colors.white60, size: 20),
         suffixIcon: suffixIcon,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.1)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: CommonUtil.bRadius16,
           borderSide: const BorderSide(color: Colors.white, width: 1),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: CommonUtil.pH16V18,
       ),
     );
   }
@@ -347,7 +388,7 @@ class _PremiumButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.white,
           foregroundColor: Colors.black,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          shape: RoundedRectangleBorder(borderRadius: CommonUtil.bRadius18),
           elevation: 0,
         ),
         child: isLoading
@@ -378,10 +419,9 @@ class _SignupFooter extends StatelessWidget {
           style: TextStyle(color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w500),
         ),
         GestureDetector(
-          onTap: () => Navigator.pushNamedAndRemoveUntil(
+          onTap: () => Navigator.pushNamed(
             context,
             RegisterScreen.routeName,
-            (route) => false,
           ),
           child: const Text(
             'Join Zinko',

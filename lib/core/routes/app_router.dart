@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/features/booking/domain/entities/user_booking_entity.dart';
-import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/complete_cafe_list_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/booking_details_screen.dart';
 import 'package:zinko_app/features/feedback/presentation/pages/cafe_reviews_screen.dart';
 import 'package:zinko_app/features/feedback/presentation/bloc/feedback_bloc.dart';
@@ -42,7 +42,10 @@ import 'package:zinko_app/features/event/domain/entities/event_entity.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/chat/domain/entities/chat_entity.dart';
 import 'package:zinko_app/features/user/domain/entities/person_entity.dart';
+import 'package:zinko_app/features/booking/domain/entities/booking_details_entity.dart';
 import 'package:zinko_app/models/app_models.dart';
+import 'package:zinko_app/widgets/zinko_webview_screen.dart';
+
 
 class AppRouter {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
@@ -70,7 +73,7 @@ class AppRouter {
       case BookingsScreen.routeName:
         return MaterialPageRoute(builder: (_) => const BookingsScreen());
       case ReviewBookingScreen.routeName:
-        final args = settings.arguments as Map<String, dynamic>;
+        final args = settings.arguments as BookingDetailsEntity;
         return MaterialPageRoute(
           builder: (_) => ReviewBookingScreen(bookingData: args),
         );
@@ -174,7 +177,16 @@ class AppRouter {
             child: const CompleteCafeListScreen(),
           ),
         );
+      case ZinkoWebViewScreen.routeName:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ZinkoWebViewScreen(
+            title: args['title'] as String,
+            url: args['url'] as String,
+          ),
+        );
       case CafeReviewsScreen.routeName:
+
         final args = settings.arguments as Map<String, dynamic>;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(

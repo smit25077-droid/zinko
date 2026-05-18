@@ -27,22 +27,59 @@ import 'package:zinko_app/features/booking/presentation/bloc/map/map_event.dart'
 import 'package:zinko_app/features/booking/presentation/bloc/map/map_state.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
 
-class MapScreen extends StatelessWidget {
+class MapScreen extends StatefulWidget {
   static const String routeName = '/map';
   const MapScreen({super.key});
 
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  late MapBloc _mapBloc;
+  final ValueNotifier<GoogleMapController?> mapController = ValueNotifier(null);
+
   static const CameraPosition _initialCameraPosition = CameraPosition(
+
     target: LatLng(51.5074, -0.1278),
     zoom: 13,
   );
 
   @override
-  Widget build(BuildContext context) {
-    final ValueNotifier<GoogleMapController?> mapController =
-        ValueNotifier(null);
+  void initState() {
+    super.initState();
+    _mapBloc = di.sl<MapBloc>();
 
-    return BlocProvider(
-      create: (_) => di.sl<MapBloc>(),
+    // Initial data sync if already loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final workspaceState = context.read<WorkspaceBloc>().state;
+      final communityState = context.read<CommunityBloc>().state;
+
+      if (workspaceState is WorkspaceLoaded) {
+        final people = (communityState is CommunityDataLoaded)
+            ? communityState.people
+            : <PersonEntity>[];
+        _mapBloc.add(MapDataUpdated(
+            workspaces: workspaceState.workspaces, people: people));
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    mapController.dispose();
+    _mapBloc.close();
+    super.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider.value(
+
+      value: _mapBloc,
+
       child: MultiBlocListener(
         listeners: [
           BlocListener<WorkspaceBloc, WorkspaceState>(
@@ -122,6 +159,40 @@ class MapScreen extends StatelessWidget {
                     bottom: 110,
                     child: _MyLocationButton(mapController: mapController),
                   ),
+                  if (mapState.isLoading)
+                    Positioned.fill(
+                      child: Container(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        child: Center(
+                          child: Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: GlassTheme.glassColor(context),
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(color: GlassTheme.glassBorder(context)),
+                            ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: GlassTheme.textColor(context),
+                                  strokeWidth: 3,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Loading Map...',
+                                  style: TextStyle(
+                                    color: GlassTheme.textColor(context),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ).animate().fadeIn(duration: 200.ms),
+                    ),
                 ],
               ),
             );

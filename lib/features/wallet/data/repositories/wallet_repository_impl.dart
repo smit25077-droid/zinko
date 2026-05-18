@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:zinko_app/core/error/failures.dart';
 import 'package:zinko_app/features/wallet/domain/entities/wallet_balance.dart';
 import 'package:zinko_app/features/wallet/domain/entities/wallet_transaction.dart';
@@ -15,6 +16,8 @@ class WalletRepositoryImpl implements WalletRepository {
     try {
       final result = await remoteDataSource.getBalance();
       return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }
@@ -25,6 +28,8 @@ class WalletRepositoryImpl implements WalletRepository {
     try {
       final result = await remoteDataSource.getTransactions();
       return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure.fromDioException(e));
     } catch (e) {
       return Left(ServerFailure(e.toString()));
     }

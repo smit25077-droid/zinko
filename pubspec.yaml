@@ -63,6 +63,10 @@ dependencies:
   collection: any
   carousel_slider: ^5.1.2
   auto_skeleton: ^0.4.1
+  webview_flutter: ^4.13.1
+  fluttertoast: ^9.0.0
+  google_fonts: ^8.1.0
+  bloc_concurrency: ^0.3.0
 dev_dependencies:
 
   flutter_test:

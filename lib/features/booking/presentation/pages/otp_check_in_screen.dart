@@ -9,6 +9,7 @@ import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart'
 import 'package:zinko_app/features/booking/presentation/bloc/booking_state.dart';
 import 'package:zinko_app/features/booking/presentation/pages/cafe_menu_screen.dart';
 import 'package:zinko_app/utils/glass_theme.dart';
+import 'package:zinko_app/widgets/zinko_app_bar.dart';
 import 'package:zinko_app/widgets/zinko_background.dart';
 import 'package:zinko_app/widgets/zinko_success_overlay.dart';
 
@@ -39,15 +40,16 @@ class _OTPCheckInScreenState extends State<OTPCheckInScreen> {
     final bookingCode = args?[1] as String?;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_rounded, color: GlassTheme.textColor(context)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      // extendBodyBehindAppBar: true,
+      appBar: ZinkoAppBar(title: ''),
+      // AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back_ios_new_rounded, color: GlassTheme.textColor(context)),
+      //     onPressed: () => Navigator.pop(context),
+      //   ),
+      // ),
       body: ZinkoBackground(
         child: BlocListener<BookingBloc, BookingState>(
           listener: (context, state) {
@@ -57,11 +59,12 @@ class _OTPCheckInScreenState extends State<OTPCheckInScreen> {
                 title: 'CHECKED IN!',
                 subtitle: state.message,
                 onFinish: () {
-                  Navigator.pushReplacementNamed(
-                    context,
-                    CafeMenuScreen.routeName,
-                    arguments: {'bookingId': bookingId, 'bookingCode': bookingCode, 'isCheckIn': true},
-                  );
+                  Navigator.pop(context);
+                  // Navigator.pushReplacementNamed(
+                  //   context,
+                  //   CafeMenuScreen.routeName,
+                  //   arguments: {'bookingId': bookingId, 'bookingCode': bookingCode, 'isCheckIn': true},
+                  // );
                 },
               );
             } else if (state is CheckInError) {

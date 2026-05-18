@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:zinko_app/widgets/zinko_webview_screen.dart';
+
+import 'package:zinko_app/utils/common_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
-import 'package:zinko_app/features/auth/presentation/pages/login_screen.dart';
-import 'package:zinko_app/features/booking/presentation/pages/complate_cafe_list_screen.dart';
+import 'package:zinko_app/features/booking/presentation/pages/complete_cafe_list_screen.dart';
 import 'package:zinko_app/features/user/domain/entities/user_entity.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 
 import 'package:zinko_app/features/booking/presentation/pages/bookings_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/wishlist_screen.dart';
 import 'package:zinko_app/features/settings/presentation/pages/settings_screen.dart';
-import 'package:zinko_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:zinko_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
@@ -23,10 +22,7 @@ import 'package:zinko_app/utils/glass_theme.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 
 import 'package:zinko_app/widgets/zinko_background.dart';
-import 'package:zinko_app/widgets/zinko_common_dialog.dart';
-import 'package:zinko_app/widgets/zinko_network_image.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
-import 'package:zinko_app/core/di/service_locator.dart';
 import 'package:zinko_app/widgets/zinko_scroll_body.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -76,35 +72,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // physics: const BouncingScrollPhysics(
                   //   parent: AlwaysScrollableScrollPhysics(),
                   // ),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: CommonUtil.pH20,
                   child: Column(
                     children: [
                       _buildHeader(context, user, isLoading),
                       if (isError) ...[
-                        const SizedBox(height: 12),
+                        CommonUtil.vGap12,
                         _buildErrorBanner(context, (state).message),
                       ],
-                      const SizedBox(height: 12),
+                      CommonUtil.vGap12,
                       // if (user != null) ...[
                       //   _buildCompletionCard(context, user),
-                      //   const SizedBox(height: 12),
+                      //   CommonUtil.vGap12,
                       // ],
                       _buildMembershipCard(context, user),
-                      const SizedBox(height: 12),
-                      _buildSectionTitle(context, 'MY ACCOUNT'),
-                      const SizedBox(height: 10),
-                      _buildAccountCard(context, user),
-                      const SizedBox(height: 20),
+                      CommonUtil.vGap12,
                       _buildSectionTitle(context, 'RECENT ACTIVITY'),
-                      const SizedBox(height: 10),
+                      CommonUtil.vGap10,
                       _buildMenuGrid(context),
-                      const SizedBox(height: 20),
+                      CommonUtil.vGap20,
+                      _buildSectionTitle(context, 'MY ACCOUNT'),
+                      CommonUtil.vGap10,
+                      _buildAccountCard(context, user),
+                      CommonUtil.vGap20,
+
                       _buildSectionTitle(context, 'PREFERENCES & SETTINGS'),
-                      const SizedBox(height: 10),
+                      CommonUtil.vGap10,
                       _buildGeneralList(context, user),
-                      const SizedBox(height: 24),
-                      _buildLogoutBtn(context),
-                      const SizedBox(height: 100),
+                      CommonUtil.vGap24,
+                      CommonUtil.vGap100,
                     ],
                   ),
                 ),
@@ -118,16 +114,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildErrorBanner(BuildContext context, String message) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: CommonUtil.pAll16,
       decoration: BoxDecoration(
         color: OptimizedColors.error08,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: CommonUtil.bRadius20,
         border: Border.all(color: OptimizedColors.error25),
       ),
       child: Row(
         children: [
           const Icon(Icons.error_outline_rounded, color: AppColors.error),
-          const SizedBox(width: 12),
+          CommonUtil.hGap12,
           Expanded(
             child: Text(
               message,
@@ -148,7 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final double percentage = user?.completionPercentage ?? 0.0;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 30),
+      padding: CommonUtil.pV30,
       child: Row(
         children: [
           Column(
@@ -240,23 +236,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ).animate().scale(curve: Curves.easeOutBack, duration: 300.ms).slideX(begin: -0.2, end: 0),
                 ],
               ),
-              const SizedBox(height: 12),
+              CommonUtil.vGap12,
               if (user != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: CommonUtil.pHor8Ver4,
                   decoration: BoxDecoration(
                     color: OptimizedColors.applyAlpha(
                       user.isProfileComplete ? AppColors.success : AppColors.secondary,
                       0.5,
                     ),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: CommonUtil.bRadius10,
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (user.isProfileComplete)
                         const Padding(
-                          padding: EdgeInsets.only(right: 4.0),
+                          padding: CommonUtil.pRight4,
                           child: Icon(Icons.verified_rounded, size: 10, color: AppColors.success),
                         ),
                       Text(
@@ -273,7 +269,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
             ],
           ),
-          const SizedBox(width: 24),
+          CommonUtil.hGap24,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,20 +282,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: GlassTheme.textColor(context),
                       letterSpacing: -0.5),
                 ).animate(delay: 150.ms).fadeIn(duration: 250.ms).slideX(begin: 0.1, end: 0),
-                const SizedBox(height: 4),
+                CommonUtil.vGap4,
                 Text(
                   user?.role ?? 'Zinko Professional',
                   style: TextStyle(
                       fontSize: 13, fontWeight: FontWeight.w600, color: GlassTheme.secondaryTextColor(context)),
                 ).animate(delay: 200.ms).fadeIn(duration: 250.ms),
-                const SizedBox(height: 12),
+                CommonUtil.vGap12,
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                      padding: CommonUtil.pHor12Ver4,
                       decoration: BoxDecoration(
                         color: GlassTheme.glassColor(context),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: CommonUtil.bRadius10,
                         border: Border.all(color: GlassTheme.glassBorder(context)),
                       ),
                       child: Text(
@@ -325,13 +321,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.only(left: 4),
+        padding: CommonUtil.pLeft4,
         child: Text(
           title,
           style: TextStyle(
-            fontSize: 11,
+            fontSize: 14,
             fontWeight: FontWeight.w900,
-            color: GlassTheme.tertiaryTextColor(context),
+            color: Colors.white,
             letterSpacing: 1.2,
           ),
         ),
@@ -357,9 +353,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ],
           ),
         ).animate().fadeIn(delay: 300.ms, duration: 250.ms),
-        const SizedBox(height: 20),
+        CommonUtil.vGap20,
         _buildSectionTitle(context, 'PERSONAL INFORMATION'),
-        const SizedBox(height: 10),
+        CommonUtil.vGap10,
         ZinkoCommonCard(
           padding: EdgeInsets.zero,
           child: Column(
@@ -389,16 +385,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Widget _buildAccountTile(BuildContext context, String label, String value, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      padding: CommonUtil.pH16V12,
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: CommonUtil.pAll8,
             decoration: BoxDecoration(
                 color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08), shape: BoxShape.circle),
             child: Icon(icon, color: GlassTheme.secondaryTextColor(context), size: 18),
           ),
-          const SizedBox(width: 16),
+          CommonUtil.hGap16,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -409,7 +405,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: GlassTheme.tertiaryTextColor(context),
                         fontWeight: FontWeight.w900,
                         letterSpacing: 0.5)),
-                const SizedBox(height: 2),
+                CommonUtil.vGap4,
                 Text(value,
                     style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context))),
               ],
@@ -432,14 +428,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Navigator.pushNamed(context, SubscriptionPlansScreen.routeName);
         }
       },
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      padding: CommonUtil.pAll20,
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: CommonUtil.pAll12,
             decoration: BoxDecoration(
               color: OptimizedColors.applyAlpha(themeColor, 0.1),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: CommonUtil.bRadius16,
               border: Border.all(
                 color: OptimizedColors.applyAlpha(themeColor, 0.2),
                 width: 1.5,
@@ -451,7 +447,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               size: 28,
             ),
           ),
-          const SizedBox(width: 20),
+          CommonUtil.hGap20,
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,7 +461,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 2),
+                CommonUtil.vGap4,
                 Text(
                   isPro ? 'All premium benefits active' : 'View membership plans',
                   style: TextStyle(
@@ -493,8 +489,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // padding: EdgeInsets.zero,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount: 2,
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
+      mainAxisSpacing: CommonUtil.s10,
+      crossAxisSpacing: CommonUtil.s10,
       childAspectRatio: 1.8,
 
       children: [
@@ -516,7 +512,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(icon, color: AppColors.secondary, size: 24),
-            const SizedBox(height: 8),
+            CommonUtil.vGap8,
             Text(
               title,
               style: const TextStyle(
@@ -533,58 +529,47 @@ class _ProfileScreenState extends State<ProfileScreen> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          _buildToggleTile(context, 'Public Visibility', Icons.visibility_rounded, user?.userVisibility ?? false,
-              (val) {
-            context.read<UserBloc>().add(UpdateVisibilityEvent(val));
-          }),
-          Divider(height: 1, color: OptimizedColors.white05),
           _buildListTile(context, 'Edit Profile', Icons.person_rounded, EditProfileScreen.routeName),
           Divider(height: 1, color: OptimizedColors.white05),
           _buildListTile(context, 'Account Settings', Icons.settings_rounded, SettingsScreen.routeName),
           Divider(height: 1, color: OptimizedColors.white05),
-          _buildListTile(context, 'Security & Privacy', Icons.shield_rounded, ''),
+          _buildListTile(context, 'Security & Privacy', Icons.shield_rounded, 'http://www.zinko.io/site/privacy-policy'),
           Divider(height: 1, color: OptimizedColors.white05),
-          _buildListTile(context, 'Help & Support', Icons.help_center_rounded, ''),
-          Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
-          _buildListTile(context, 'App Feedback', Icons.feedback_rounded, ''),
+
+          // _buildListTile(context, 'Help & Support', Icons.help_center_rounded, ''),
+          // Divider(height: 1, color: AppColors.white.withValues(alpha: 0.05)),
+          // _buildListTile(context, 'App Feedback', Icons.feedback_rounded, ''),
         ],
       ),
     ).animate(delay: 450.ms).fadeIn(duration: 250.ms);
   }
 
-  Widget _buildToggleTile(BuildContext context, String title, IconData icon, bool value, Function(bool) onChanged) {
-    return ListTile(
-      dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      leading: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-            color: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.08),
-            borderRadius: BorderRadius.circular(10)),
-        child: Icon(icon, color: GlassTheme.textColor(context), size: 18),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlassTheme.textColor(context)),
-      ),
-      trailing: Switch.adaptive(
-        value: value,
-        onChanged: onChanged,
-        activeThumbColor: GlassTheme.textColor(context),
-        activeTrackColor: OptimizedColors.applyAlpha(GlassTheme.textColor(context), 0.3),
-      ),
-    );
-  }
-
   Widget _buildListTile(BuildContext context, String title, IconData icon, String route) {
     return ListTile(
       dense: true,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-      onTap: route.isNotEmpty ? () => Navigator.pushNamed(context, route) : null,
+      contentPadding: CommonUtil.pH20V4,
+      onTap: route.isNotEmpty
+          ? () async {
+              if (route.startsWith('http')) {
+                Navigator.pushNamed(
+                  context,
+                  ZinkoWebViewScreen.routeName,
+                  arguments: {
+                    'title': title,
+                    'url': route,
+                  },
+                );
+              } else {
+                Navigator.pushNamed(context, route);
+              }
+            }
+          : null,
+
+
       leading: Container(
-        padding: const EdgeInsets.all(8),
+        padding: CommonUtil.pAll8,
         decoration: BoxDecoration(
-            color: OptimizedColors.white08, borderRadius: BorderRadius.circular(10)),
+            color: OptimizedColors.white08, borderRadius: CommonUtil.bRadius10),
         child: Icon(icon, color: OptimizedColors.white70, size: 20),
       ),
       title: Text(
@@ -594,60 +579,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
       trailing: Icon(Icons.chevron_right_rounded,
           color: OptimizedColors.applyAlpha(GlassTheme.tertiaryTextColor(context), 0.3), size: 18),
     );
-  }
-
-  void _showLogoutConfirmation(BuildContext context) {
-    ZinkoCommonDialog.show(
-      context: context,
-      title: 'CONFIRM LOGOUT',
-      message: 'Are you sure you want to sign out from Zinko? All session data will be cleared.',
-      icon: Icons.logout_rounded,
-      iconColor: AppColors.error,
-      actionLabel: 'LOGOUT',
-      actionColor: AppColors.error,
-      onAction: () async {
-        // 1. Clear SharedPreferences
-        await sl<SharedPreferences>().clear();
-
-        // 2. Reset All relevant global Blocs
-        if (context.mounted) {
-          context.read<UserBloc>().add(ResetUserEvent());
-          context.read<AuthBloc>().add(LogoutRequested());
-
-          // 3. Navigate to Login
-          Navigator.pushNamedAndRemoveUntil(context, LoginScreen.routeName, (route) => false);
-        }
-      },
-    );
-  }
-
-  Widget _buildLogoutBtn(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 54,
-      decoration: BoxDecoration(
-        color: OptimizedColors.error08,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: OptimizedColors.error25, width: 1.5),
-      ),
-      child: TextButton(
-        onPressed: () => _showLogoutConfirmation(context),
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          foregroundColor: AppColors.error,
-        ),
-        child: const Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.logout_rounded, size: 20),
-            SizedBox(width: 12),
-            Text(
-              'LOGOUT ACCOUNT',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 1.2),
-            ),
-          ],
-        ),
-      ),
-    ).animate(delay: 500.ms).fadeIn(duration: 250.ms);
   }
 }

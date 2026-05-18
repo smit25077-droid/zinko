@@ -34,10 +34,10 @@ class UpdateUserProfileEvent extends UserEvent {
   });
 }
 
-class SetMembershipEvent extends UserEvent {
-  final String membership;
-  SetMembershipEvent(this.membership);
-}
+// class SetMembershipEvent extends UserEvent {
+//   final String membership;
+//   SetMembershipEvent(this.membership);
+// }
 
 class AddMoneyEvent extends UserEvent {
   final double amount;

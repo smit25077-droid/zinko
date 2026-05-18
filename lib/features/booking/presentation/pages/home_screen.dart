@@ -1,17 +1,26 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:zinko_app/utils/common_util.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_bloc.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/booking_event.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_event.dart';
+import 'package:zinko_app/features/booking/presentation/bloc/workspace_state.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_bloc.dart';
 import 'package:zinko_app/features/cafe/presentation/bloc/cafe_event.dart';
+import 'package:zinko_app/features/cafe/presentation/bloc/cafe_state.dart';
 
 import 'package:zinko_app/features/event/presentation/pages/events_screen.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_event.dart';
 import 'package:zinko_app/features/user/presentation/pages/profile_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/dashboard_screen.dart';
 import 'package:zinko_app/features/booking/presentation/pages/map_screen.dart';
-import 'package:zinko_app/features/community/presentation/pages/community_screen.dart';
+
+// import 'package:zinko_app/features/community/presentation/pages/community_screen.dart';
 import 'package:zinko_app/core/theme/app_colors.dart';
 import 'package:zinko_app/core/theme/optimized_colors.dart';
 import 'package:zinko_app/widgets/zinko_glass_box.dart';
@@ -21,10 +30,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/core/bloc/navigation/navigation_bloc.dart';
 import 'package:zinko_app/core/bloc/navigation/navigation_event.dart';
 import 'package:zinko_app/core/bloc/navigation/navigation_state.dart';
-import 'package:zinko_app/injection_container.dart' as di;
 import 'package:zinko_app/features/user/presentation/bloc/user_bloc.dart';
 import 'package:zinko_app/features/user/presentation/bloc/user_state.dart';
 import 'package:zinko_app/widgets/zinko_profile_completion_dialog.dart';
+
+// import 'package:zinko_app/features/community/presentation/bloc/community_bloc.dart';
+// import 'package:zinko_app/features/community/presentation/bloc/community_event.dart';
 
 class HomeScreen extends StatefulWidget {
   static const String routeName = '/home';
@@ -36,103 +47,143 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  DateTime? _lastBackPressTime;
   final List<Widget> _screens = const [
     DashboardScreen(),
     MapScreen(),
     EventsScreen(),
-    CommunityScreen(),
+    // CommunityScreen(),
     ProfileScreen(),
   ];
 
-  // Track visited tabs for lazy loading
+  // Track visited tabs for lazy loading.
+  // Initially only include the Dashboard (0).
   final Set<int> _visitedTabs = {0};
 
   @override
+  void initState() {
+    super.initState();
+    // After the first frame, we can safely initialize the Map tab (1) in the background.
+    // This avoids the 'RenderBox was not laid out' crash during startup.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _visitedTabs.add(1);
+        });
+      }
+    });
+  }
+
+  Timer? _backPressTimer;
+
+  Future<bool> handleDoubleBackPress(BuildContext context) async {
+    final now = DateTime.now();
+    _backPressTimer?.cancel();
+
+    if (_lastBackPressTime == null || now.difference(_lastBackPressTime!) > Duration(seconds: 2)) {
+      _lastBackPressTime = now;
+      _backPressTimer = Timer(Duration(seconds: 2), () {
+        _lastBackPressTime = null;
+      });
+      ZinkoFlushbar.showToast(
+        message: 'Press back again to exit app',
+      );
+      return false; // Don't exit
+    }
+    return true; // Exit app
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => di.sl<NavigationBloc>(),
-      child: BlocBuilder<NavigationBloc, NavigationState>(
-        buildWhen: (previous, current) => previous.index != current.index,
-        builder: (context, state) {
-          _visitedTabs.add(state.index);
-          return ZinkoBackground(
-            child: PopScope(
-              canPop: state.index == 0,
-              onPopInvokedWithResult: (didPop, result) {
-                if (didPop) return;
-                if (state.index != 0) {
-                  context.read<NavigationBloc>().add(const NavigationTabChanged(0));
+    return BlocBuilder<NavigationBloc, NavigationState>(
+      buildWhen: (previous, current) => previous.index != current.index,
+      builder: (context, state) {
+        _visitedTabs.add(state.index);
+        return ZinkoBackground(
+          child: PopScope(
+            canPop: false,
+            onPopInvokedWithResult: (didPop, result) async {
+              if (didPop) return;
+              final shouldPop = await handleDoubleBackPress(context);
+              if (shouldPop) {
+                if (Platform.isAndroid) {
+                  SystemNavigator.pop();
+                } else {
+                  exit(0);
                 }
-              },
-              child: Scaffold(
-                backgroundColor: AppColors.transparent,
-                body: Stack(
-                  children: [
-                    Stack(
-                      children: List.generate(_screens.length, (index) {
-                        final bool isSelected = state.index == index;
-                        if (isSelected || _visitedTabs.contains(index)) {
-                          return Offstage(
-                            offstage: !isSelected,
-                            child: _screens[index],
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      }),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      child: _FloatingGlassDock(
-                        currentIndex: state.index,
-                        onTap: (index) {
-                          if (index == 1 || index == 2 || index == 3) {
-                            final userState = context.read<UserBloc>().state;
-                            if (userState is UserLoaded && !userState.user.isProfileComplete) {
-                              ZinkoProfileCompletionDialog.show(context, userState.user);
-                              return;
-                            }
+              }
+            },
+            child: Scaffold(
+              backgroundColor: AppColors.transparent,
+              body: Stack(
+                children: [
+                  // Use a manual Stack with Visibility for true lazy loading + background pre-loading
+                  Stack(
+                    children: List.generate(_screens.length, (index) {
+                      final bool isVisited = _visitedTabs.contains(index);
+                      final bool isSelected = state.index == index;
+
+                      if (!isVisited) return const SizedBox.shrink();
+
+                      return Visibility(
+                        visible: isSelected,
+                        maintainState: true,
+                        child: _screens[index],
+                      );
+                    }),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: _FloatingGlassDock(
+                      currentIndex: state.index,
+                      onTap: (index) {
+                        if (index == 1 || index == 2 || index == 3 || index == 4) {
+                          final userState = context.read<UserBloc>().state;
+                          if (userState is UserLoaded && !userState.user.isProfileComplete) {
+                            ZinkoProfileCompletionDialog.show(context, userState.user);
+                            return;
                           }
-                          
-                          // 1. Change the tab in UI
-                          context.read<NavigationBloc>().add(NavigationTabChanged(index));
-                          
-                          // 2. Trigger API Refresh for the selected tab
-                          _triggerTabRefresh(context, index);
-                        },
-                      ),
+                        }
+
+                        context.read<NavigationBloc>().add(NavigationTabChanged(index));
+                        _triggerTabRefresh(context, index);
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 
   void _triggerTabRefresh(BuildContext context, int index) {
     switch (index) {
       case 0:
-        // Refresh Dashboard/Home Data
-        context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
-        context.read<CafeBloc>().add(const SearchCafesEvent());
+        if (context.read<WorkspaceBloc>().state is! WorkspaceLoading) {
+          context.read<WorkspaceBloc>().add(GetWorkspacesEvent());
+        }
+        if (context.read<CafeBloc>().state is! CafeLoading) {
+          context.read<CafeBloc>().add(const SearchCafesEvent());
+        }
         break;
       case 1:
-        // Refresh Bookings Data
         context.read<BookingBloc>().add(GetBookingsEvent());
         break;
       case 2:
-        // Refresh Wishlist Data
         final userState = context.read<UserBloc>().state;
         if (userState is UserLoaded) {
           context.read<CafeBloc>().add(GetWishlistEvent(userCode: userState.user.userCode));
         }
         break;
+      // case 3:
+      //   context.read<CommunityBloc>().add(GetCommunityDataEvent());
+      //   break;
       case 3:
-        // Refresh Profile Data
         context.read<UserBloc>().add(GetUserProfileEvent());
         break;
     }
@@ -150,10 +201,10 @@ class _FloatingGlassDock extends StatelessWidget {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, bottomPadding + 10),
+      padding: EdgeInsets.fromLTRB(CommonUtil.s20, 0, CommonUtil.s20, bottomPadding + CommonUtil.s10),
       child: ZinkoGlassBox.thick(
         blur: 25,
-        borderRadius: 30,
+        borderRadius: CommonUtil.r50,
         color: OptimizedColors.backgroundDark70,
         border: Border.all(color: OptimizedColors.glassBorderDark, width: 1.5),
         boxShadow: const [
@@ -166,7 +217,7 @@ class _FloatingGlassDock extends StatelessWidget {
         child: SizedBox(
           height: 60,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: CommonUtil.pH8,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -175,10 +226,10 @@ class _FloatingGlassDock extends StatelessWidget {
                 _ExpandingNavItem(index: 1, current: currentIndex, icon: Icons.map_rounded, label: 'MAP', onTap: onTap),
                 _ExpandingNavItem(
                     index: 2, current: currentIndex, icon: Icons.star_rounded, label: 'EVENTS', onTap: onTap),
+                // _ExpandingNavItem(
+                //     index: 3, current: currentIndex, icon: Icons.chat_bubble_rounded, label: 'COMMUNITY', onTap: onTap),
                 _ExpandingNavItem(
-                    index: 3, current: currentIndex, icon: Icons.chat_bubble_rounded, label: 'COMMUNITY', onTap: onTap),
-                _ExpandingNavItem(
-                    index: 4, current: currentIndex, icon: Icons.person_rounded, label: 'PROFILE', onTap: onTap),
+                    index: 3, current: currentIndex, icon: Icons.person_rounded, label: 'PROFILE', onTap: onTap),
               ],
             ),
           ),
@@ -214,10 +265,10 @@ class _ExpandingNavItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOutCubic,
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: CommonUtil.pHor12Ver10,
         decoration: BoxDecoration(
           color: isSelected ? OptimizedColors.white12 : Colors.transparent,
-          borderRadius: BorderRadius.circular(50),
+          borderRadius: CommonUtil.bRadius50,
           border: Border.all(
             color: isSelected ? OptimizedColors.white10 : Colors.transparent,
             width: 1,
