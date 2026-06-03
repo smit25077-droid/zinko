@@ -68,7 +68,7 @@ class _PasswordChangeScreenState extends State<PasswordChangeScreen> {
                 onBackTap: () => AppRouter.safetyPop(context),
               ),
               body: ZinkoBackground(
-                backgroundColor: Colors.white.withValues(alpha: 0.05),
+                // backgroundColor: Colors.white.withValues(alpha: 0.05),
                 image: AssetImage('assets/images/cafe_hotel_bg.png'),
                 child: SafeArea(
                   child: ZinkoScrollBody(

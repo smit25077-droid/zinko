@@ -108,7 +108,7 @@ class _RegisterContentState extends State<_RegisterContent> {
       child: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
         child: ZinkoBackground(
-          backgroundColor: Colors.white.withValues(alpha: 0.05),
+          // backgroundColor: Colors.white.withValues(alpha: 0.05),
           child: Scaffold(
             resizeToAvoidBottomInset: true,
             backgroundColor: Colors.transparent,

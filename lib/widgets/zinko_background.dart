@@ -43,7 +43,7 @@ class ZinkoBackground extends StatelessWidget {
             child: showOverlay
                 ? Container(
                     decoration: BoxDecoration(
-                      color: backgroundColor ??  Colors.black.withValues(alpha: 0.5),
+                      color: backgroundColor ??  Colors.black.withValues(alpha: 0.7),
                     ),
                   )
                 : null,
