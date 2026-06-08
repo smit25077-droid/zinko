@@ -88,7 +88,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
     if (response.statusCode == 200) {
       // Re-fetch profile to get updated totals/states
-      return await getUserProfile();
+      // return await getUserProfile();
     }
     throw Exception('Failed to update profile');
   }

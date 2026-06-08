@@ -223,7 +223,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   if (Navigator.of(context).canPop()) {
                     AppRouter.safetyPop(context);
                   }
-                  context.read<UserBloc>().add(GetUserProfileEvent());
+                  // context.read<UserBloc>().add(GetUserProfileEvent());
                   
                   if (zinkoNavigatorKey.currentContext != null) {
                     ZinkoFlushbar.showSuccess(

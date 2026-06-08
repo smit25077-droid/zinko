@@ -40,14 +40,15 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
   }
 
   Future<void> _onToggleWishlist(
-    ToggleWishlistEvent event,
-    Emitter<CafeState> emit,
-  ) async {
+      ToggleWishlistEvent event,
+      Emitter<CafeState> emit,
+      ) async {
     final currentState = state;
     try {
+      // 1. Await server verification first
       await toggleWishlist(event.cafeId, event.userCode, event.isWishlist);
 
-      // Effect UI only after successful status code 200
+      // 2. The code ONLY reaches this section if the status code was 200 perfect
       if (currentState is CafeLoaded) {
         final updatedCafes = currentState.cafes.map((cafe) {
           if (cafe.cafeId == event.cafeId) {
@@ -56,8 +57,7 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
           return cafe;
         }).toList();
 
-        emit(CafeLoaded(
-            cafes: updatedCafes, categories: currentState.categories));
+        emit(CafeLoaded(cafes: updatedCafes, categories: currentState.categories));
       } else if (currentState is CafeWishlistLoaded) {
         final updatedWishlist = currentState.wishlist
             .where((cafe) => cafe.cafeId != event.cafeId)
@@ -66,9 +66,16 @@ class CafeBloc extends Bloc<CafeEvent, CafeState> {
         emit(CafeWishlistLoaded(wishlist: updatedWishlist));
       }
     } catch (e) {
+      // 3. If API fails, UI state isn't modified.
+      // We emit an error, but don't clear the existing loaded cafes list.
       emit(CafeError(message: NetworkErrorHandler.getErrorMessage(e)));
+
+      // Optional optimization: re-emit your original state after showing the error toast
+      // so the UI can safely recover and listen for future interactions.
+      emit(currentState);
     }
   }
+
 
   Future<void> _onSearchCafes(
     SearchCafesEvent event,

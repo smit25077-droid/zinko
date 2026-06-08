@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zinko_app/utils/common_util.dart';
+import 'package:zinko_app/utils/zinko_flushbar.dart';
 import 'package:zinko_app/widgets/zinko_common_card.dart';
 import 'package:zinko_app/features/booking/domain/entities/workspace_entity.dart';
 import 'package:zinko_app/features/booking/presentation/bloc/workspace_bloc.dart';
@@ -130,13 +131,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       child: ClipRRect(
                                         borderRadius: BorderRadiusGeometry.all(Radius.circular(CommonUtil.s24)),
                                         child: Image.asset(
-                                                gender == 'female'
-                                                    ? 'assets/images/female_user.png'
-                                                    : 'assets/images/male_user.png',
-                                                width: 44,
-                                                height: 44,
-                                                fit: BoxFit.cover,
-                                              ),
+                                          gender == 'female'
+                                              ? 'assets/images/female_user.png'
+                                              : 'assets/images/male_user.png',
+                                          width: 44,
+                                          height: 44,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                     CommonUtil.hGap12,
@@ -198,14 +199,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   padding: CommonUtil.pH16,
                                   child: Row(
                                     children: [
-                                      Icon(Icons.search_rounded,
-                                          color: OptimizedColors.white40, size: 20),
+                                      Icon(Icons.search_rounded, color: OptimizedColors.white40, size: 20),
                                       CommonUtil.hGap12,
                                       Text(
                                         'Search office, cafe, location...',
-                                        style: TextStyle(
-                                            color: OptimizedColors.white30,
-                                            fontSize: 13),
+                                        style: TextStyle(color: OptimizedColors.white30, fontSize: 13),
                                       ),
                                     ],
                                   ),
@@ -219,38 +217,99 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       _SectionHeader(
                         title: 'RECOMMENDED',
                       ),
-                      BlocBuilder<CafeBloc, CafeState>(
-                        buildWhen: (p, c) => c is CafeLoading || c is CafeLoaded || c is CafeError,
-                        builder: (context, cafeState) {
-                          if (cafeState is CafeLoading) return const _HorizontalShimmer();
-                          if (cafeState is CafeLoaded) {
-                            if (cafeState.cafes.isEmpty) {
-                              return const Padding(
-                                padding: CommonUtil.pV40,
-                                child: ZinkoEmptyState(
-                                  title: 'No Recommendations',
-                                  message: 'Check back later for curated spaces.',
-                                ),
+                      // BlocBuilder<CafeBloc, CafeState>(
+                      //   buildWhen: (p, c) => c is CafeLoading || c is CafeLoaded || c is CafeError,
+                      //   builder: (context, cafeState) {
+                      //     if (cafeState is CafeLoading) return const _HorizontalShimmer();
+                      //     if (cafeState is CafeLoaded) {
+                      //       if (cafeState.cafes.isEmpty) {
+                      //         return const Padding(
+                      //           padding: CommonUtil.pV40,
+                      //           child: ZinkoEmptyState(
+                      //             title: 'No Recommendations',
+                      //             message: 'Check back later for curated spaces.',
+                      //           ),
+                      //         );
+                      //       }
+                      //       final recommended = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
+                      //       return _RecommendedList(
+                      //         workspaces: recommended,
+                      //         onFavTap: (id, isFavorite) {
+                      //           try {
+                      //             final userState = context.read<UserBloc>().state;
+                      //             if (userState is UserLoaded) {
+                      //               context.read<CafeBloc>().add(ToggleWishlistEvent(
+                      //                 cafeId: int.parse(id),
+                      //                 userCode: userState.user.userCode,
+                      //                 isWishlist: !isFavorite,
+                      //               ));
+                      //             }
+                      //           } catch (e, stackTrace) {
+                      //             debugPrint('Error initiating wishlist toggle: $e');
+                      //             debugPrint('StackTrace: $stackTrace');
+                      //           }
+                      //         },
+                      //
+                      //       );
+                      //     }
+                      //     return const _HorizontalShimmer();
+                      //   },
+                      // ),
+                      // 1. Wrap your BlocBuilder inside a BlocListener to catch and display errors
+                      BlocListener<CafeBloc, CafeState>(
+                        listenWhen: (p, c) => c is CafeError,
+                        listener: (context, state) {
+                          if (state is CafeError) {
+                            ZinkoFlushbar.showToast(message: state.message);
+                            // ScaffoldMessenger.of(context).showSnackBar(
+                            //   SnackBar(content: Text(state.message)),
+                            // );
+                          }
+                        },
+                        child: BlocBuilder<CafeBloc, CafeState>(
+                          // 2. CRITICAL FIX: Only rebuild the UI if it's Loading or Loaded. Ignore CafeError.
+                          buildWhen: (p, c) => c is CafeLoading || c is CafeLoaded,
+                          builder: (context, cafeState) {
+                            if (cafeState is CafeLoading) return const _HorizontalShimmer();
+
+                            if (cafeState is CafeLoaded) {
+                              if (cafeState.cafes.isEmpty) {
+                                return const Padding(
+                                  padding: CommonUtil.pV40,
+                                  child: ZinkoEmptyState(
+                                    title: 'No Recommendations',
+                                    message: 'Check back later for curated spaces.',
+                                  ),
+                                );
+                              }
+
+                              final recommended = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
+                              return _RecommendedList(
+                                workspaces: recommended,
+                                onFavTap: (id, isFavorite) {
+                                  try {
+                                    final userState = context.read<UserBloc>().state;
+                                    if (userState is UserLoaded) {
+                                      context.read<CafeBloc>().add(ToggleWishlistEvent(
+                                            cafeId: int.parse(id),
+                                            userCode: userState.user.userCode,
+                                            isWishlist: !isFavorite,
+                                          ));
+                                    }
+                                  } catch (e, stackTrace) {
+                                    debugPrint('Error initiating wishlist toggle: $e');
+                                    debugPrint('StackTrace: $stackTrace');
+                                  }
+                                },
                               );
                             }
-                            final recommended = cafeState.cafes.map((c) => CafeMapper.toWorkspaceEntity(c)).toList();
-                            return _RecommendedList(
-                              workspaces: recommended,
-                              onFavTap: (id, isFavorite) {
-                                final userState = context.read<UserBloc>().state;
-                                if (userState is UserLoaded) {
-                                  context.read<CafeBloc>().add(ToggleWishlistEvent(
-                                        cafeId: int.parse(id),
-                                        userCode: userState.user.userCode,
-                                        isWishlist: !isFavorite,
-                                      ));
-                                }
-                              },
-                            );
-                          }
-                          return const _HorizontalShimmer();
-                        },
+
+                            // Fallback fallback option if state somehow drops out
+                            return const SizedBox.shrink();
+                          },
+                        ),
                       ),
+
                       CommonUtil.vGap12,
                       _SectionHeader(
                         title: 'NEARBY PLACES',
@@ -369,6 +428,7 @@ class _GlassIconButton extends StatelessWidget {
 
 class _SectionHeader extends StatelessWidget {
   final String title;
+
   const _SectionHeader({
     required this.title,
   });
@@ -382,10 +442,7 @@ class _SectionHeader extends StatelessWidget {
         children: [
           Text(title,
               style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: GlassTheme.textColor(context),
-                  letterSpacing: 1.5)),
+                  fontSize: 16, fontWeight: FontWeight.w900, color: GlassTheme.textColor(context), letterSpacing: 1.5)),
         ],
       ),
     );
@@ -430,7 +487,8 @@ class _RecommendedList extends StatelessWidget {
               children: [
                 Hero(
                   tag: 'hero_rec_${w.id}',
-                  child: ZinkoNetworkImage(imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: CommonUtil.r24),
+                  child: ZinkoNetworkImage(
+                      imageUrl: w.imageUrl, width: 280, height: double.infinity, borderRadius: CommonUtil.r24),
                 ),
                 Positioned.fill(
                   child: Container(
@@ -606,9 +664,8 @@ class _NearbyCard extends StatelessWidget {
                   children: workspace.amenities.take(4).map((icon) {
                     return Container(
                       padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                          color: OptimizedColors.primary08, borderRadius: CommonUtil.bRadius8),
-                      child:  Icon(icon, size: 14, color: AppColors.secondary),
+                      decoration: BoxDecoration(color: OptimizedColors.primary08, borderRadius: CommonUtil.bRadius8),
+                      child: Icon(icon, size: 14, color: AppColors.secondary),
                     );
                   }).toList(),
                 ),
@@ -775,5 +832,3 @@ class _VerticalShimmer extends StatelessWidget {
     );
   }
 }
-
-
